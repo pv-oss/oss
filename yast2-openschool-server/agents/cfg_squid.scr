@@ -1,0 +1,30 @@
+/**
+ * File:
+ *   cfg_squid.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/squid
+ *   using the ini-agent
+ * Access:
+ *   read/write
+ * Authors:
+ *   Peter Varkoly	<varkoly@suse.de>
+ * See:
+ *   yast2-agent-ini/ini.html
+ *   libscr
+ * Example:
+ *   Read(.sysconfig.squid.SOMETHING)
+ *   ("no")
+ **
+ *   Write(.sysconfig.squid.SOMETHING, "yes")
+ *   (true)
+ *
+ * $Id: cfg_squid.scr,v 2.0.0.1 2005/01/21 13:08:38 pv Exp $
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/squid</tt>
+ * in an easy manner.
+ */
+.sysconfig.squid
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/squid")
+)

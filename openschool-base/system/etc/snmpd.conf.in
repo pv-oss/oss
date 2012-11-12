@@ -1,0 +1,37 @@
+# Please see /usr/share/doc/packages/net-snmp/EXAMPLE.conf for a
+# more complete example and snmpd.conf(5).
+#
+# Writing is disabled by default for security reasons.  If you'd like
+# to enable it uncomment the rwcommunity line and change the community
+# name to something nominally secure (keeping in mind that this is
+# transmitted in clear text).
+
+# don't use ' < > in strings for syslocation or syscontact
+# Note that if you define the following here you won't be able to change
+# them with snmpset
+# % snmpwalk -v 1 -c public admin system
+syslocation Open School Server
+syscontact  Systemadministator (admin@mailserver)
+
+# These really aren't meant for production use.  They include all MIBS
+# and can use considerable resources.  See snmpd.conf(5) for information
+# on setting up groups and limiting MIBS.
+rocommunity public SCHOOL_SERVER_NET
+# rwcommunity mysecret 127.0.0.1
+
+
+# % snmpwalk -v 1 -c public admin .1.3.6.1.4.1.2021.2
+proc slapd
+proc smbd
+proc nmbd
+proc named
+proc dhcpd
+proc httpd2-prefork
+proc suad
+proc sessiond
+
+# % snmpwalk -v 1 -c public admin .1.3.6.1.4.1.2021.9
+disk /		
+disk /var
+disk /home
+

@@ -1,0 +1,138 @@
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+dn: ou=BlackLists,#LDAPBASE#
+objectClass: organizationalUnit
+ou: BlackLists
+
+dn: ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+ou: WhiteLists
+
+dn: ou=Generic,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1BbGxnZW1laW4KTkFNRS1FTj1HZW5lcmljCk5BTUUtSFU9w4FsdGFsw6Fub3MK
+ou: Generic
+
+dn: cn=Encyclopedia,ou=Generic,ou=WhiteLists,#LDAPBASE#
+objectClass: WhiteList
+description:: TkFNRS1ERT1OYWNoc2NobGFnZXdlcmtlCk5BTUUtRU49RW5jeWNsb3BlZGlhCk5BTUUtSFU9TGV4aWtvbm9rCg==
+cn: Encyclopedia
+allowedDomain: wikipedia.org
+allowedDomain: wikipedia.de
+allowedDomain: wikipedia.en
+allowedDomain: wikipedia.hu
+allowedDomain: wikipedia.fr
+allowedDomain: wikipedia.ro
+
+dn: cn=Translator,ou=Generic,ou=WhiteLists,#LDAPBASE#
+objectClass: WhiteList
+description:: TkFNRS1ERT3DnGJlcnNldHp0ZXIKTkFNRS1FTj1UcmFuc2xhdG9yCk5BTUUtSFU9Rm9yZMOtdMOzawo=
+cn: Translator
+allowedDomain: dict.leo.org
+allowedDomain: de.pons.eu
+allowedDomain: pons.eu
+allowedDomain: pons.de
+allowedDomain: leo.org
+allowedDomain: leo.de
+allowedDomain: bildwoerterbuch.pons.eu
+allowedDomain: cookieless.ponsline.net
+
+dn: cn=Webmail,ou=Generic,ou=WhiteLists,#LDAPBASE#
+objectClass: WhiteList
+description:: TkFNRS1ERT1XZWJtYWlsZXIKTkFNRS1FTj1XZWJtYWlsCk5BTUUtSFU9V2VibWFpbAo=
+cn: Webmail
+allowedDomain: freemail.web.de
+allowedDomain: freenet.de
+allowedDomain: gmx.de
+allowedDomain: hotmail.de
+allowedDomain: hotmail.com
+allowedDomain: gmx.at
+allowedDomain: gmx.net
+allowedDomain: mail.google.com
+allowedDomain: gmail.google.com
+allowedDomain: googlemail.com
+allowedDomain: webmail.artfiles.de
+allowedDomain: de.mail.yahoo.com
+allowedDomain: de.yahoo.com
+
+dn: ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1VbnRlcnJpY2h0Ck5BTUUtRU49RWR1Y2F0aW9uCk5BTUUtSFU9VGFudMOhcmd5YWsK
+ou: Education
+
+dn: cn=Common,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: WhiteList
+description:: TkFNRS1ERT1BbGxnZW1laW4KTkFNRS1FTj1Db21tb24KTkFNRS1IVT3DgWx0YWzDoW5vcwo=
+cn: Common
+allowedDomain: zum.de
+allowedDomain: netzwerk-lernen.de
+
+dn: ou=English,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1FbmdsaXNjaCAKTkFNRS1FTj1FbmdsaXNoIApOQU1FLUhVPUFuZ29sCg==
+ou: English
+
+dn: ou=Latin,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1MYXRlaW4gCk5BTUUtRU49TGF0aW4gCk5BTUUtSFU9TGF0aW4K
+ou: Latin
+
+dn: ou=French,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1GcmFuesO2c2lzY2ggCk5BTUUtRU49RnJlbmNoIApOQU1FLUhVPUZyYW5jaWEK
+ou: French
+
+dn: ou=Chemistry,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1DaGVtaWUgCk5BTUUtRU49Q2hlbWlzdHJ5IApOQU1FLUhVPUvDqW1pYQo=
+ou: Chemistry
+
+dn: ou=Physics,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1QaHlzaWsgCk5BTUUtRU49UGh5c2ljcyAKTkFNRS1IVT1GaXppa2EK
+ou: Physics
+
+dn: ou=Mathematics,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1NYXRoZW1hdGlrIApOQU1FLUVOPU1hdGhlbWF0aWNzIApOQU1FLUhVPU1hdGVtYXRpa2EK
+ou: Mathematics
+
+dn: ou=Geography,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1FcmRrdW5kZSAKTkFNRS1FTj1HZW9ncmFwaHkgCk5BTUUtSFU9RsO2bGRyYWp6Cg==
+ou: Geography
+
+dn: ou=History,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1HZXNjaGljaHRlCk5BTUUtRU49SGlzdG9yeQpOQU1FLUhVPVTDtnJ0w6luZWxlbQo=
+ou: History
+
+dn: ou=German,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1EZXV0c2NoCk5BTUUtRU49R2VybWFuCk5BTUUtSFU9TsOpbWV0Cg==
+ou: German
+
+dn: ou=Literature,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1MaXRlcmF0dXIKTkFNRS1FTj1MaXRlcmF0dXJlCk5BTUUtSFU9SXJvZGFsb20K
+ou: Literature
+
+dn: ou=Music,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1NdXNpayAKTkFNRS1FTj1NdXNpYyAKTkFNRS1IVT1aZW5lCg==
+ou: Music
+
+dn: ou=Informatics,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1JbmZvcm1hdGlrCk5BTUUtRU49SW5mb3JtYXRpY3MKTkFNRS1IVT1JbmZvcm1hdGlrYQo=
+ou: Informatics
+
+dn: ou=Religion,ou=Education,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1SZWxpZ2lvbiAKTkFNRS1FTj1SZWxpZ2lvbiAKTkFNRS1IVT1IaXR0YW4K
+ou: Religion
+
+dn: ou=Privat,ou=WhiteLists,#LDAPBASE#
+objectClass: organizationalUnit
+description:: TkFNRS1ERT1Qcml2YXQgCk5BTUUtRU49UHJpdmF0IApOQU1FLUhVPVByaXbDoXQK
+ou: Privat
+

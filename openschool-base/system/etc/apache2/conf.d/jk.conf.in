@@ -1,0 +1,12 @@
+# simple configuration for apache (for AJP connector, modul mod_jk.so)
+
+<IfModule mod_jk.c>
+
+    JkWorkersFile /etc/tomcat6/workers.properties 
+    JkShmFile     /var/log/apache2/mod_jk.shm
+    JkLogFile     /var/log/tomcat6/admin-mod_jk.log
+    # Log level to be used by mod_jk
+    JkLogLevel error
+
+
+</IfModule>

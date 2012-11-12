@@ -1,0 +1,10 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+if [ "$1" ]; then
+    U=$1
+else
+    U=$UID
+fi
+DEV=$(mount | grep /home | gawk '{ print $1 }')
+quota -wsl $U | grep $DEV | gawk  '{ print $2 " " $3 }' | sed s/\*//
+

@@ -1,0 +1,9 @@
+require ["envelope", "fileinto", "reject", "vacation", "regex"] ;
+
+ if header :is "X-Spam-Flag" ["YES"]
+
+ {
+    fileinto "Spam";
+
+ }
+

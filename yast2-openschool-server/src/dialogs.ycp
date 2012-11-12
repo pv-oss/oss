@@ -1,0 +1,1423 @@
+/**
+ * File:	include/openschool-server/dialogs.ycp
+ * Package:	Configuration of openschool-server
+ * Summary:	Dialogs definitions
+ * Authors:	Péter Varkoly <peter@varkoly.de>
+ *
+ * $Id: dialogs.ycp,v 2.34 2007/02/01 18:15:59 pv Exp $
+ */
+
+{
+
+textdomain "openschool-server";
+
+import "OpenschoolServer";
+
+import "DSL";
+import "DNS";
+import "Host";
+import "IP";
+import "Label";
+import "Lan";
+import "LanItems";
+import "Map";
+import "Netmask";
+import "NetworkInterfaces";
+import "Report";
+import "Routing";
+import "Popup";
+import "Progress";
+import "Service";
+import "SuSEFirewall";
+import "Wizard";
+
+
+include "openschool-server/helps.ycp";
+include "openschool-server/complex.ycp";
+
+boolean IsInNetwork(string net, string netmask, string ip) ``{
+        string net_net = IP::ComputeNetwork(net,netmask);
+        string ip_net  = IP::ComputeNetwork(ip,netmask);
+        return (net_net == ip_net);
+}
+
+any ReadLan() {
+
+    /* Read dialog caption */
+    string caption = _("Reading Network Settings");
+    /* Read dialog help */
+    string help = "";
+    /* Read dialog contents */
+    term contents = `Label(_("Reading network settings ..."));
+    Wizard::SetContentsButtons(caption, contents, help,
+        Label::BackButton(), Label::NextButton());
+    UI::ChangeWidget(`id(`back), `Enabled, false);
+    UI::ChangeWidget(`id(`next), `Enabled, false);
+    UI::SetFocus(`id(`abort));
+
+    Lan::Read(`nocache);
+
+    return `next;
+
+}
+
+boolean FindOSSConfigFile() ``{
+    string    mountpoint = "/tmp/ossmount";
+    SCR::Execute( .target.bash, sformat("mkdir -p %1",mountpoint));
+    list<map> probe = (list<map>)SCR::Read(.probe.usb);
+    boolean   ok    = false;
+    foreach( map d, probe, ``{
+        if( d["bus"]:"USB" == "SCSI" && haskey(d, "dev_name") ) {
+            integer i  = 0;
+            string dev = d["dev_name"]:"";
+            y2milestone("dev %1",dev);
+            while( SCR::Read(.target.lstat, dev) != $[] ) {
+                if( !(boolean)SCR::Execute(.target.mount, [dev, mountpoint], "-o shortname=mixed") )
+                    WFM::Execute(.local.mount, [ dev, mountpoint ]);
+                y2milestone("trying to find 'schoolserver' on %1", dev);
+                if( SCR::Read(.target.lstat, mountpoint+"/schoolserver" ) != $[] ) {
+                    y2milestone("found");
+                    ok = true;
+		    SCR::Execute( .target.bash,"mkdir -p /var/adm/oss/; cp "+mountpoint+"/schoolserver /var/adm/oss/old-schoolserver");
+                    break;
+                } else {
+                    WFM::Execute (.local.umount, mountpoint);
+                }
+                y2milestone("not found");
+                i = i + 1;
+                dev = d["dev_name"]:"" + sformat("%1",i);
+		y2milestone("%1 %2",dev, SCR::Read(.target.lstat, dev));
+            }
+        }
+    });
+    return ok;
+}
+
+any ReadBackupDialog() ``{
+
+	boolean backup = Popup::YesNoHeadline(_("Do you want to read the configuration of another OSS?"),
+		_("You can save the /etc/sysconfig/schoolserver file from another OSS without path on an USB-stick.\n") +
+	        _("If you have created a backup from an OSS this backup also contains this file.\n") +
+		_("If the backup is on an external HD, you can connect this HD to allow the OSS to read the configuration.\n")
+		);
+	if( ! backup ) return `next;
+	while(true)
+	{
+		if( ! Popup::ContinueCancel(_("Please insert the USB-stick with the configuration file!")) )
+		{
+			break;
+		}
+		if( FindOSSConfigFile() )
+		{
+			OpenschoolServer::readbackup = true;
+			break;
+		}
+		if( ! Popup::YesNoHeadline(_("No configuration file was found."),_("Do you want to try it again?")) )
+		{
+			break;
+		}
+	}
+	return `next;
+
+}
+any GetSchoolType() ``{
+
+	// We do not need to ask if we recover
+	string st = OpenschoolServer::schooltype;
+	if( OpenschoolServer::readbackup )
+	{
+		return `next;
+	}
+	term schooles = `VBox(
+			`VSpacing(1),
+			`Left(`RadioButton(`id("primary"),  _("Primary school"),  ( st == "primary") )),
+			`VSpacing(0.8),
+			`Left(`RadioButton(`id("secondary"),_("Secondary school"),( st == "secondary") )),
+			`VSpacing(0.8),
+			`Left(`RadioButton(`id("gymnasium"),_("Gymnasium"),       ( st == "gymnasium") )),
+			`VSpacing(0.8),
+			`Left(`RadioButton(`id("other"),    _("Other institute"), ( st == "other" ) )),
+			`VSpacing(0.8),
+			`VSpacing(1)
+			);
+	if( OpenschoolServer::Lang == "DE" )
+	{
+		schooles = `VBox(
+				`VSpacing(1),
+				`Left(`RadioButton(`id("primary"),  "Grundschule",        ( st == "primary") )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("secondary"),"Hauptschule",        ( st == "secondary") )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("real"),     "Realschule",         ( st == "real" ) )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("gymnasium"),"Gymnasium",          ( st == "gymnasium") )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("work"),     "Berufsschule",       ( st == "work")  )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("other"),    _("Other institute"),( st == "other" ) )),
+				`VSpacing(0.8),
+				`VSpacing(1)
+				);
+	}
+	else if( OpenschoolServer::Lang == "FR" )
+	{
+		schooles = `VBox(
+				`VSpacing(1),
+				`Left(`RadioButton(`id("primary"),  "École Primaire",      ( st == "primary") )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("secondary"),_("Secondary school"), ( st == "secondary") )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("real"),     "Lycée",               ( st == "real" ) )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("gymnasium"),"Collège",             ( st == "gymnasium") )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("work"),     "École de formation professionnelle", ( st == "work") )),
+				`VSpacing(0.8),
+				`Left(`RadioButton(`id("other"),    _("Other institute"), ( st == "other" ) )),
+				`VSpacing(0.8),
+				`VSpacing(1)
+				);
+	}
+
+	term contents = `HBox(
+			`HSpacing(3),
+			`VBox(
+				`VWeight(6, `VStretch() ),
+				`VSpacing(1),
+				/* Frame label */
+				`Frame(_("Select the type of your school"), `HBox(
+						`HSpacing(4),
+						`RadioButtonGroup( `id( `options ), schooles),
+						`HSpacing(4)
+						)
+				      ),
+				`VWeight(21, `VStretch())
+			     ),
+			`HSpacing(5)
+			);
+
+	/* GATEWAY dialog caption */
+	Wizard::SetContentsButtons(_("Selection of the School Type"), contents, HELPS["SchoolType"]:"", "", Label::NextButton());
+
+	any ret = nil;
+	while(true)
+	{
+		ret = UI::UserInput();
+		y2debug("ret=%1",ret);
+		if(ret == `abort || ret == `cancel)
+		{
+			if(Popup::ReallyAbort(true)) break;
+			else continue;
+		}
+		else if(ret == `next)
+		{
+			OpenschoolServer::schooltype = (string)UI::QueryWidget(`id(`options), `CurrentButton);
+			y2milestone("OSS SchoolType:'%1'",OpenschoolServer::schooltype);
+			if( OpenschoolServer::schooltype == "no"  || OpenschoolServer::schooltype == nil ||  OpenschoolServer::schooltype == "" )
+			{
+				Popup::Error(_("You have to choose the type of your school"));
+				continue;
+			}
+			else if( OpenschoolServer::schooltype == "primary" )
+			{
+				OpenschoolServer::nclasses         = "1 2 3 4";
+				OpenschoolServer::i_anon_dhcp_last = 100;
+				OpenschoolServer::anon_dhcp        = "172.16.1.1 172.16.1.100";
+			}
+			else if( OpenschoolServer::schooltype == "gymnasium" )
+			{
+				OpenschoolServer::nclasses = "5 6 7 8 9 10 11 -12";
+			}
+			else if( OpenschoolServer::schooltype == "work" )
+			{
+				OpenschoolServer::aclasses = "";
+				OpenschoolServer::nclasses = "SAMPLE";
+			}
+			break;
+		}
+		else
+		{
+			y2debug("ret=%1",ret);
+			break;
+		}
+	};
+
+	return ret;
+}
+
+any CardDialog() ``{
+
+	y2milestone("OSS --- Opening CardDialog ---");
+	string caption  = _("Local Network -- Card Selection");
+	term launcher   = `VBox(`VSpacing(1));
+	list cards      = [];
+	foreach(integer key, (list<integer>)Map::Keys(LanItems::Items), {
+			string name = LanItems::Items[key,"hwinfo","name"]:"";
+			string dev  = LanItems::Items[key,"hwinfo","dev_name"]:"";
+			string mac  = LanItems::Items[key,"hwinfo","mac"]:"";
+			name        = dev + " : " + mac + " : " + name;
+			cards   = add ( cards , `item(`id(key) , name) );
+			});
+	term contents = `HBox(
+			`HSpacing(8),
+			`VBox(
+				`VSpacing(3),
+				/* SelectionBox label */
+				`SelectionBox(`id(`sb), _("A&vailable Network Cards:"), cards),
+				`VSpacing(3)
+			     ),
+			`HSpacing(8)
+			);
+
+	Wizard::SetContentsButtons(caption,contents,HELPS["CardDialog"]:"",Label::BackButton(), Label::NextButton());
+	UI::SetFocus(`id(`next));
+
+	any ret = nil;
+	while(true)
+	{
+		ret = UI::UserInput();
+		y2debug("ret=%1",ret);
+		if(ret == `abort || ret == `cancel)
+		{
+			if(Popup::ReallyAbort(true)) break;
+			else continue;
+		}
+		else
+		{
+			y2debug("ret=%1",ret);
+			break;
+		}
+	};
+
+	if(ret == `next)
+	{
+		OpenschoolServer::intdev = (integer)UI::QueryWidget(`id(`sb),`CurrentItem);
+	}
+	y2milestone("OSS --- Closing CardDialog ---%1 current item %2",ret,OpenschoolServer::intdev);
+
+	return ret;
+
+}
+
+any  AddressDialog() ``{
+
+	/* Address dialog caption */
+	string caption = _("Local Network -- Network Address Setup");
+	string valid_domain_chars = ".0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+	y2milestone("OSS --- Opening AddressDialog ---");
+	list lwsnr_in_room = prepend( [ "256", "128", "64", "32", "16" ], OpenschoolServer::wsnr_in_room);
+
+	if(OpenschoolServer::ipaddr == "" && OpenschoolServer::netmask == "")
+	{
+		OpenschoolServer::netmask = "255.255.0.0";
+		OpenschoolServer::ipaddr  = "192.168.0.2";
+	}
+	if(OpenschoolServer::domain == "")
+	{
+		OpenschoolServer::domain  = "site";
+	}
+	term label = `Frame(_("Required Settings"),
+			`VBox (
+				`Left( `InputField (`id(`domain),`opt(`hstretch),_("&Domain name for the School Server." ) , OpenschoolServer::domain)),
+				`Left(  `Label (_("Available Networks:"))),
+				`HBox(
+					`PushButton (`id(`net_10),  `opt (`hstretch), "&10.0.0.0/8"),
+					`PushButton (`id(`net_172), `opt (`hstretch), "1&72.16.0.0/16"),
+					`PushButton (`id(`net_192), `opt (`hstretch), "1&92.168.0.0/16")
+				     )
+			      )
+			);
+
+	/* Frame label */
+	term frame1 = `Frame(_("Basic Network Settings (Usually No Changes Required)"),
+			`VBox(
+				`HBox(
+					`VBox(
+						`InputField (`id(`ipaddr),      `opt(`hstretch), _("&IP Address"), OpenschoolServer::ipaddr),
+						`InputField (`id(`mailserver),  `opt(`hstretch), _("Mail Server IP Address"), OpenschoolServer::mailserver),
+						`InputField (`id(`printserver), `opt(`hstretch), _("Print Server IP Address"), OpenschoolServer::printserver),
+						`InputField (`id(`proxy),       `opt(`hstretch), _("Proxy Server IP Address"), OpenschoolServer::proxy),
+						`InputField (`id(`backup),      `opt(`hstretch), _("Backup Server IP Address"), OpenschoolServer::backup)
+					     ),
+					`VBox(
+						`InputField (`id(`netmask),       `opt(`hstretch), _("&Subnet Mask"), OpenschoolServer::netmask),
+						`InputField (`id(`anon_dhcp),     `opt(`hstretch), _("&Anon_DHCP Range"), OpenschoolServer::anon_dhcp),
+						`InputField (`id(`first_room_net),`opt(`hstretch), _("&First Classroom Network"),   OpenschoolServer::first_room_net),
+						`InputField (`id(`nr_of_room),    `opt(`hstretch), _("Number of Classroom (approx.)"), OpenschoolServer::nr_of_room),
+						`Left( `CheckBox(`id(`use_dhcp), `opt(`notify), _("Enable DHCP Server"),   OpenschoolServer::use_dhcp)),
+						`Label(" ")
+						//TODO `ComboBox(`id(`wsnr_in_room),     `opt(`hstretch), _("Maximal number of IP-Addesses in a Room"), lwsnr_in_room )
+					     )
+				     )
+				//, `Left( `CheckBox(`id(`use_dhcp), `opt(`notify), _("Enable DHCP Server"),   OpenschoolServer::use_dhcp))
+			     )
+			);
+
+	/* Address dialog help */
+	term contents = `RadioButtonGroup(`id(`rb), `HSquash(`VBox(
+					`Left(label),
+					`VSpacing(1),
+					frame1,
+					`VSpacing(1)
+					)));
+
+	Wizard::SetContentsButtons(caption, contents, HELPS["AddressDialog"]:"",
+			Label::BackButton(), Label::NextButton());
+
+
+	UI::ChangeWidget (`id (`domain), `ValidChars, valid_domain_chars);
+	if( !OpenschoolServer::readbackup && OpenschoolServer::schooltype == "other" )
+	{
+		UI::ChangeWidget(`id(`ipaddr),     `Value, "192.168.10.2");
+		UI::ChangeWidget(`id(`mailserver), `Value, "192.168.10.3");
+		UI::ChangeWidget(`id(`printserver),`Value, "192.168.10.4");
+		UI::ChangeWidget(`id(`proxy),      `Value, "192.168.10.5");
+		UI::ChangeWidget(`id(`backup),     `Value, "192.168.10.6");
+		UI::ChangeWidget(`id(`netmask),    `Value, "255.255.255.0");
+		UI::ChangeWidget(`id(`anon_dhcp),  `Value, "192.168.10.64 192.168.10.127");
+		UI::ChangeWidget(`id(`first_room_net),`Value, "192.168.10.128");
+		UI::ChangeWidget(`id(`nr_of_room),  `Value, "2");
+	}
+	UI::SetFocus(`id(`domain));
+
+	any ret = nil;
+	while(true)
+	{
+
+		ret = UI::UserInput();
+
+		OpenschoolServer::domain         = (string)UI::QueryWidget(`id(`domain),    `Value);
+		OpenschoolServer::ipaddr         = (string)UI::QueryWidget(`id(`ipaddr),    `Value);
+		OpenschoolServer::netmask        = (string)UI::QueryWidget(`id(`netmask),   `Value);
+		OpenschoolServer::mailserver     = (string)UI::QueryWidget(`id(`mailserver),    `Value);
+		OpenschoolServer::proxy          = (string)UI::QueryWidget(`id(`proxy),    `Value);
+		OpenschoolServer::backup         = (string)UI::QueryWidget(`id(`backup),    `Value);
+		OpenschoolServer::printserver    = (string)UI::QueryWidget(`id(`printserver),    `Value);
+		OpenschoolServer::anon_dhcp      = (string)UI::QueryWidget(`id(`anon_dhcp), `Value);
+		OpenschoolServer::first_room_net = (string)UI::QueryWidget(`id(`first_room_net), `Value);
+		OpenschoolServer::nr_of_room     = (string)UI::QueryWidget(`id(`nr_of_room), `Value);
+		OpenschoolServer::use_dhcp       = (boolean)UI::QueryWidget(`id(`use_dhcp), `Value);
+		// TODO OpenschoolServer::wsnr_in_room   = (string)UI::QueryWidget(`id(`wsnr_in_room), `Value);
+
+		/* abort? */
+		if(ret == `abort || ret == `cancel) {
+			if(Popup::ReallyAbort(false)) break;
+			else continue;
+		}
+		/* togle dhcp-service */
+		else if (ret == `use_dhcp)
+		{
+			if( OpenschoolServer::schooltype == "other" )
+			{
+				if( OpenschoolServer::use_dhcp )
+				{
+					list lip   = splitstring(OpenschoolServer::ipaddr,".");
+					string tmp = lip[0]:"192"+"."+lip[1]:"168"+"."+lip[2]:"10"+".";
+					UI::ChangeWidget(`id(`anon_dhcp),  `Value,tmp+"64 "+tmp+"127");
+				}
+				else
+				{
+					UI::ChangeWidget(`id(`anon_dhcp),  `Value,"");
+				}
+			}
+			continue;
+		}
+		/* schoosing a network */
+		else if (ret == `net_10)
+		{
+			UI::ChangeWidget(`id(`ipaddr),     `Value, "10.0.0.2");
+			UI::ChangeWidget(`id(`mailserver), `Value, "10.0.0.3");
+			UI::ChangeWidget(`id(`printserver),`Value, "10.0.0.4");
+			UI::ChangeWidget(`id(`proxy),      `Value, "10.0.0.5");
+			UI::ChangeWidget(`id(`backup),     `Value, "10.0.0.6");
+			UI::ChangeWidget(`id(`netmask),    `Value, "255.0.0.0");
+			UI::ChangeWidget(`id(`anon_dhcp),  `Value, sformat("10.0.1.1 10.0.1.%1",OpenschoolServer::i_anon_dhcp_last));
+			UI::ChangeWidget(`id(`first_room_net),  `Value, "10.0.2.0");
+			continue;
+		}
+		else if (ret == `net_172)
+		{
+			UI::ChangeWidget(`id(`ipaddr),     `Value, "172.16.0.2");
+			UI::ChangeWidget(`id(`mailserver), `Value, "172.16.0.3");
+			UI::ChangeWidget(`id(`printserver),`Value, "172.16.0.4");
+			UI::ChangeWidget(`id(`proxy),      `Value, "172.16.0.5");
+			UI::ChangeWidget(`id(`backup),     `Value, "172.16.0.6");
+			UI::ChangeWidget(`id(`netmask),    `Value, "255.255.0.0");
+			UI::ChangeWidget(`id(`anon_dhcp),  `Value, sformat("172.16.1.1 172.16.1.%1",OpenschoolServer::i_anon_dhcp_last));
+			UI::ChangeWidget(`id(`first_room_net),  `Value, "172.16.2.0");
+			continue;
+		}
+		else if (ret == `net_192)
+		{
+			UI::ChangeWidget(`id(`ipaddr),     `Value, "192.168.0.2");
+			UI::ChangeWidget(`id(`mailserver), `Value, "192.168.0.3");
+			UI::ChangeWidget(`id(`printserver),`Value, "192.168.0.4");
+			UI::ChangeWidget(`id(`proxy),      `Value, "192.168.0.5");
+			UI::ChangeWidget(`id(`backup),     `Value, "192.168.0.6");
+			UI::ChangeWidget(`id(`netmask),    `Value, "255.255.0.0");
+			UI::ChangeWidget(`id(`anon_dhcp),  `Value, sformat("192.168.1.1 192.168.1.%1",OpenschoolServer::i_anon_dhcp_last));
+			UI::ChangeWidget(`id(`first_room_net),  `Value, "192.168.2.0");
+			if( OpenschoolServer::schooltype == "other" )
+			{
+				UI::ChangeWidget(`id(`ipaddr),     `Value, "192.168.10.2");
+				UI::ChangeWidget(`id(`mailserver), `Value, "192.168.10.3");
+				UI::ChangeWidget(`id(`printserver),`Value, "192.168.10.4");
+				UI::ChangeWidget(`id(`proxy),      `Value, "192.168.10.5");
+				UI::ChangeWidget(`id(`backup),     `Value, "192.168.10.6");
+				UI::ChangeWidget(`id(`netmask),    `Value, "255.255.255.0");
+				UI::ChangeWidget(`id(`anon_dhcp),  `Value, "192.168.10.129 192.168.10.254");
+				UI::ChangeWidget(`id(`first_room_net),`Value, "192.168.10.128");
+				UI::ChangeWidget(`id(`nr_of_room),  `Value, "2");
+			}
+			continue;
+		}
+		/* back */
+		else if(ret == `back) {
+			break;
+		}
+		else if(ret == `next) {
+			//First we check th domain name
+			list ldomain = splitstring(OpenschoolServer::domain, ".");
+			if( size(ldomain) <= 1 )
+			{
+				string msg = sformat(_("'%1' is an invalid Domain Name. Use something like school.edu."),OpenschoolServer::domain);
+				Popup::Error(msg);
+				UI::SetFocus(`id(`domain));
+				continue;
+			}
+			if( ldomain[size(ldomain)-1]:"" == "local" ) {
+				string msg = sformat(_("'%1' is an invalid Domain Name. You must not use 'local' as top domain."),OpenschoolServer::domain);
+				Popup::Error(msg);
+				UI::SetFocus(`id(`domain));
+				continue;
+			}
+			//Checking the netmask
+			string nm = (string)UI::QueryWidget(`id(`netmask), `Value);
+			if( nm == "255.0.255.0" ) {
+				OpenschoolServer::duesseldorf = true;
+				nm = "255.0.0.0";
+			} else {
+				if(regexpmatch(nm, "^[0-9]+$"))
+				{
+					nm = Netmask::FromBits(tointeger(nm));
+					UI::ChangeWidget(`id(`netmask), `Value, nm);
+				}
+				integer inm = Netmask::ToBits(nm);
+				if(inm > 20 && OpenschoolServer::schooltype != "other" )
+				{
+					Popup::Error(_("The netmask may be maximal 20 bits long (255.255.240.0)"));
+					UI::SetFocus(`id(`netmask));
+					continue;
+				}
+				if(!Netmask::Check4(nm))
+				{
+					/* Popup text */
+					Popup::Error(_("The subnet mask is incorrect"));
+					UI::SetFocus(`id(`netmask));
+					continue;
+				}
+			}
+			OpenschoolServer::netmask = nm;
+			OpenschoolServer::inetmask = Netmask::ToBits(nm);
+			if(!IP::Check4(OpenschoolServer::ipaddr))
+			{
+				Popup::Error(_("The IP address is incorrect"));
+				UI::SetFocus(`id(`ipaddr));
+				continue;
+			}
+			if(!IP::Check4(OpenschoolServer::mailserver))
+			{
+				Popup::Error(_("The IP address is incorrect"));
+				UI::SetFocus(`id(`mailserver));
+				continue;
+			}
+			if(!IP::Check4(OpenschoolServer::printserver))
+			{
+				Popup::Error(_("The IP address is incorrect"));
+				UI::SetFocus(`id(`printserver));
+				continue;
+			}
+			if(!IP::Check4(OpenschoolServer::proxy))
+			{
+				Popup::Error(_("The IP address is incorrect"));
+				UI::SetFocus(`id(`proxy));
+				continue;
+			}
+			if(!IP::Check4(OpenschoolServer::backup))
+			{
+				Popup::Error(_("The IP address is incorrect"));
+				UI::SetFocus(`id(`backup));
+				continue;
+			}
+			if(!IP::Check4(OpenschoolServer::first_room_net))
+			{
+				Popup::Error(_("The IP address is incorrect"));
+				UI::SetFocus(`id(`first_room_net));
+				continue;
+			}
+			list lanon_dhcp = splitstring(OpenschoolServer::anon_dhcp," ");
+			if(OpenschoolServer::use_dhcp && (!IP::Check4(lanon_dhcp[0]:"") || !IP::Check4(lanon_dhcp[1]:"")))
+			{
+				Popup::Error(_("The IP address is incorrect"));
+				UI::SetFocus(`id(`anon_dhcp));
+				continue;
+			}
+
+			//The IP-s must be different
+			if(( OpenschoolServer::schooltype != "other" ) &&
+					( OpenschoolServer::ipaddr     == OpenschoolServer::mailserver  || OpenschoolServer::ipaddr == OpenschoolServer::printserver||
+					  OpenschoolServer::ipaddr     == OpenschoolServer::proxy       || OpenschoolServer::ipaddr == OpenschoolServer::backup     ||
+					  OpenschoolServer::mailserver == OpenschoolServer::printserver || OpenschoolServer::mailserver == OpenschoolServer::proxy ||
+					  OpenschoolServer::proxy      == OpenschoolServer::printserver )
+			  )
+			{  // Backup may be on mailserver or proxy too
+				Popup::Error(_("The IP addresses must be different"));
+				UI::SetFocus(`id(`ipaddr));
+				continue;
+			}
+			// Now we check if everything is in one network
+			if(!IsInNetwork(OpenschoolServer::ipaddr,OpenschoolServer::netmask,OpenschoolServer::mailserver))
+			{
+				if( ! Popup::YesNo(_("The mailserver IP address is not in the same network. Is this correct?")) )
+				{
+					UI::SetFocus(`id(`mailserver));
+					continue;
+				}
+			}
+			if(!IsInNetwork(OpenschoolServer::ipaddr,OpenschoolServer::netmask,OpenschoolServer::printserver))
+			{
+				if( ! Popup::YesNo(_("The printserver IP address is not in the same network. Is this correct?")) )
+				{
+					UI::SetFocus(`id(`printserver));
+					continue;
+				}
+			}
+			if(!IsInNetwork(OpenschoolServer::ipaddr,OpenschoolServer::netmask,OpenschoolServer::proxy))
+			{
+				if( ! Popup::YesNo(_("The proxy IP address is not in the same network. Is this correct?")) )
+				{
+					UI::SetFocus(`id(`proxy));
+					continue;
+				}
+			}
+			if(!IsInNetwork(OpenschoolServer::ipaddr,OpenschoolServer::netmask,OpenschoolServer::backup))
+			{
+				if( ! Popup::YesNo(_("The backup IP address is not in the same network. Is this correct?")) )
+				{
+					UI::SetFocus(`id(`backup));
+					continue;
+				}
+			}
+			if(!IsInNetwork(OpenschoolServer::ipaddr,OpenschoolServer::netmask,OpenschoolServer::first_room_net))
+			{
+				Popup::Error(_("The first room network IP address is not in the same network."));
+				UI::SetFocus(`id(`first_room_net));
+				continue;
+			}
+			list l_server_net = splitstring(OpenschoolServer::ipaddr ,".");
+			if( OpenschoolServer::inetmask < 24 )
+			{
+				OpenschoolServer::server_net = l_server_net[0]:"192" + "." + l_server_net[1]:"168" + "." + l_server_net[2]:"0" + ".0/24";
+			}
+			else
+			{
+				OpenschoolServer::server_net = l_server_net[0]:"192" + "." + l_server_net[1]:"168" + "." + l_server_net[2]:"0" + ".0/26";
+			}
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_TYPE,OpenschoolServer::schooltype);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_DOMAIN,OpenschoolServer::domain);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_SERVER,OpenschoolServer::ipaddr);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_NETMASK,OpenschoolServer::netmask);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_MAILSERVER,OpenschoolServer::mailserver);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_PRINTSERVER,OpenschoolServer::printserver);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_PROXY,OpenschoolServer::proxy);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_BACKUP_SERVER,OpenschoolServer::backup);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_SERVER_NET,OpenschoolServer::server_net);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_ANON_DHCP_RANGE,OpenschoolServer::anon_dhcp);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_FIRST_ROOM_NET,OpenschoolServer::first_room_net);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_ROOM_NR,OpenschoolServer::nr_of_room);
+			SCR::Write(.sysconfig.schoolserver.SCHOOL_USE_DHCP,OpenschoolServer::use_dhcp ? "yes" : "no" );
+			SCR::Write(.sysconfig.schoolserver,nil);
+
+			OpenschoolServer::WriteNetwork();
+			break;
+
+		}
+		else {
+			y2error("unexpected retcode: %1", ret);
+			continue;
+		}
+
+	}
+	y2milestone("OSS --- Closing AddressDialog ---");
+
+	return ret;
+}
+
+/**
+ * Read settings dialog for the internet connection via network card
+ * and set up a unused network device
+ */
+any CardGatewayDialog() ``{
+
+	string caption  = _("Internet Connections Setup via Network Card.");
+	term launcher   = `VBox(`VSpacing(1));
+	list cards      = [];
+	foreach(integer key, (list<integer>)Map::Keys(LanItems::Items), {
+			if( key == OpenschoolServer::intdev )
+			{
+			continue;
+			}
+			string name = LanItems::Items[key,"hwinfo","name"]:"";
+			string dev  = LanItems::Items[key,"hwinfo","dev_name"]:"";
+			string mac  = LanItems::Items[key,"hwinfo","mac"]:"";
+			name        = dev + " : " + mac + " : " + name;
+			cards   = add ( cards , `item(`id(key) , name) );
+			});
+	term contents = `HBox(
+			`HSpacing(8),
+			`VBox(
+				`VSpacing(3),
+				`SelectionBox(`id(`sb), _("A&vailable Network Cards:"), cards),
+				`VSpacing(3),
+				`InputField (`id(`extip),   `opt(`hstretch), _("&External IP Address of the Openschool Server"), OpenschoolServer::extip),
+				`InputField (`id(`gateway), `opt(`hstretch), _("&IP Address of the Gateway"), OpenschoolServer::extgw),
+				`InputField (`id(`extnm),   `opt(`hstretch), _("&Netmask of the Transport Network"), OpenschoolServer::extnm)
+			     ),
+			`HSpacing(8)
+			);
+
+	Wizard::SetContentsButtons(caption,contents,HELPS["CardGatewayDialog"]:"",Label::BackButton(), Label::NextButton());
+	UI::SetFocus(`id(`extip));
+
+	any ret = nil;
+	while(true)
+	{
+		ret = UI::UserInput();
+		y2debug("ret=%1",ret);
+		if(ret == `abort || ret == `cancel)
+		{
+			if(Popup::ReallyAbort(true)) break;
+			else continue;
+		}
+		if(ret == `next)
+		{
+			integer selected = -1;
+			if(is(UI::QueryWidget(`id(`sb),`CurrentItem),integer))
+			{
+				OpenschoolServer::extdev  = (integer)UI::QueryWidget(`id(`sb),`CurrentItem);
+				OpenschoolServer::extip   = (string)UI::QueryWidget(`id(`extip),   `Value);
+				OpenschoolServer::extgw   = (string)UI::QueryWidget(`id(`gateway), `Value);
+				OpenschoolServer::extnm   = (string)UI::QueryWidget(`id(`extnm),   `Value);
+				if(!IP::Check4(OpenschoolServer::extip))
+				{
+					Popup::Error(_("The IP address is incorrect"));
+					UI::SetFocus(`id(`extip));
+					continue;
+				}
+				if(!IP::Check4(OpenschoolServer::extgw))
+				{
+					Popup::Error(_("The IP address is incorrect"));
+					UI::SetFocus(`id(`gateway));
+					continue;
+				}
+				if(!Netmask::Check4(OpenschoolServer::extnm))
+				{
+					Popup::Error(_("The subnet mask is incorrect"));
+					UI::SetFocus(`id(`extnm));
+					continue;
+				}
+				if(!IsInNetwork(OpenschoolServer::extip,OpenschoolServer::extnm,OpenschoolServer::extgw))
+				{
+					Popup::Error(_("The external IP address and the gateway are not in the same network."));
+					continue;
+				}
+				if(IsInNetwork(OpenschoolServer::ipaddr,OpenschoolServer::netmask,OpenschoolServer::extip))
+				{
+					string suggest = _("You can use for example the network 10.0.0.0 with network mask 255.255.255.0");
+					if( IsInNetwork(OpenschoolServer::ipaddr,OpenschoolServer::netmask,"10.0.0.1" ))
+					{
+						suggest = _("You can use for example the network 172.16.0.0 with network mask 255.255.255.0");
+					}
+					Popup::Error(_("The internal IP address and the external IP address must not be in the same network.") + "\n" + suggest );
+					continue;
+				}
+				string external  = LanItems::Items[OpenschoolServer::extdev,"hwinfo","dev_name"]:"";
+				map <string, any>  FW = SuSEFirewall::Export();
+				FW["FW_DEV_EXT"] = external;
+				SuSEFirewall::Import(FW);
+
+				if( NetworkInterfaces::Check( external ) )
+				{
+					NetworkInterfaces::Edit ( external );
+				}
+				else
+				{
+					Lan::Add();
+					NetworkInterfaces::Add ();
+					NetworkInterfaces::Name = external;
+				}
+				NetworkInterfaces::Current =  $[
+					"BOOTPROTO": "static",
+					"NAME"     : LanItems::Items[OpenschoolServer::extdev,"hwinfo","name"]:"",
+					"STARTMODE": "onboot",
+					"IPADDR"   : OpenschoolServer::extip,
+					"NETMASK"  : OpenschoolServer::extnm
+						];
+				Host::hosts[OpenschoolServer::extip]      = [ "extip."+OpenschoolServer::domain+" extip" ];
+				Host::modified   = true;
+				NetworkInterfaces::Commit();
+				LanItems::modified = true;
+				Lan::Write();
+
+				break;
+			}
+		}
+		else
+		{
+			break ;
+		}
+	}
+	y2milestone("OSS --- Closing CardGatewayDialog ---%1",ret);
+	return ret;
+
+}
+
+any GatewayDialog() ``{
+
+	/* GATEWAY dialog contents */
+	term contents = `HBox(
+			`HSpacing(3),
+			`VBox(
+				`VWeight(6, `VStretch() ),
+				`VWeight(20, `Left( `Label(`id(`msg), MESSAGES["GatewayDialogMessage"]:"" )) ),
+				`VSpacing(1),
+				/* Frame label */
+				`Frame(_("Internet Connection Type"), `HBox(
+						`HSpacing(4),
+						`VBox(
+							`VSpacing(1),
+							`Left(`RadioButton(`id(`network_button),`opt (`notify),
+									// label for radiobutton
+									_("Via Transport Net (Network Card)"), true )
+							     ),
+							`VSpacing(0.8),
+							`Left(`RadioButton(`id(`isdn_button),`opt (`notify),
+									// label for radiobutton
+									_("ISDN"), false )
+							     ),
+							`VSpacing(0.8),
+							`Left(`RadioButton(`id(`dsl_button),`opt (`notify),
+									// label for radiobutton
+									_("DSL"), false )
+							     ),
+							`VSpacing(0.8),
+							`Left(`RadioButton(`id(`modem_button),`opt (`notify),
+									// label for radiobutton
+									_("Modem"), false )
+							     ),
+							`VSpacing(0.8),
+							`HBox(
+									`Left(`RadioButton(`id(`gateway_button),`opt (`notify),
+											_("&Default Gateway (IP Address)"), false)),
+									`Left(`InputField(`id(`gate), `opt(`disabled), "",""))
+							     ),
+							`VSpacing(0.8),
+							`HBox(
+									`Left(`RadioButton(`id(`none_button),`opt (`notify),
+											_("No internet connection exists"), false))
+							     ),
+							`VSpacing(1)
+								),
+							`HSpacing(4)
+								)),
+							`VWeight(21, `VStretch())
+								),
+							`HSpacing(5)
+								);
+
+	contents = `RadioButtonGroup( `id( `options ), contents );
+	/* GATEWAY dialog caption */
+	Wizard::SetContentsButtons(_("Selection of the Internet Connection Type"), contents, HELPS["GatewayDialog"]:"",
+			//Label::BackButton(), Label::NextButton());
+		"", Label::NextButton());
+
+	UI::SetFocus(`id(`next));
+
+	any ret = nil;
+	while (true)
+	{
+
+		any hardware_button = UI::QueryWidget(`id(`options), `CurrentButton);
+
+		if(hardware_button == `gateway_button) {
+			list l_server_net = splitstring(OpenschoolServer::ipaddr ,".");
+			string gw         = l_server_net[0]:"192" + "." + l_server_net[1]:"168" + "." + l_server_net[2]:"0" + ".N";
+			UI::ChangeWidget(`id(`gate), `Enabled, true );
+			UI::ChangeWidget(`id(`gate), `Value, gw );
+			UI::SetFocus(`id(`gate));
+		}
+
+		ret = UI::UserInput();
+
+		if ( ret == `abort && Popup::ReallyAbort(true) )
+		{
+			// so we don't set up the firewall later...
+			OpenschoolServer::isgate = false;
+			break;
+		}
+
+		if (ret == `next)
+		{
+			// Inititalising the routing modul
+			Routing::Read();
+
+			if ( hardware_button == `isdn_button
+					|| hardware_button == `dsl_button
+					|| hardware_button == `modem_button
+					|| hardware_button == `network_button )
+			{
+				OpenschoolServer::gateway = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SERVER);
+				Popup::Message(MESSAGES["GatewayDialogNote"]:"");
+				Routing::Forward  = true;
+			}
+
+			if (hardware_button == `isdn_button)
+			{
+				ret   = WFM::CallFunction( "isdn", [] );
+				if ( ret == `next
+						|| ret == `finish )
+				{
+					// initialize Firewall
+					list<string> filelist = SCR::Dir(.isdncfg-net.section);
+					foreach(string file, filelist, ``{
+							string p = ".isdn.value.\"" + file + "\".FIREWALL";
+							SCR::Write(topath(p), "yes");
+							SCR::Write(.isdn, nil);
+							y2milestone("OSS Setting %1 to yes", topath(p) );
+							});
+				}
+				OpenschoolServer::isgate = true;
+				OpenschoolServer::isppp  = true;
+			}
+			else if (hardware_button == `dsl_button)
+			{
+				ret   = WFM::CallFunction( "dsl", [] );
+				//ret   = SelectDSLCard();
+				OpenschoolServer::isgate = true;
+				OpenschoolServer::isppp  = true;
+			}
+			else if (hardware_button == `modem_button)
+			{
+				ret   = WFM::CallFunction( "modem", [] );
+				OpenschoolServer::isgate = true;
+				OpenschoolServer::isppp  = true;
+			}
+			else if (hardware_button == `network_button)
+			{
+				ret = CardGatewayDialog();
+				if( ret == `next )
+				{
+					SCR::Execute(.target.bash, "sed -e \'s/#LOCALIP#/"+OpenschoolServer::extip+"/g\' /etc/rinetd.conf.ppp > /etc/rinetd.conf");
+					OpenschoolServer::isppp  = false;
+					OpenschoolServer::isgate = true;
+					Routing::Forward   = false;
+					Routing::Routes  = [ $[
+						"destination"       : "default",
+						"gateway"           : OpenschoolServer::extgw,
+						"netmask"           : "-",
+						"device"            : "-"
+							] ];
+				}
+				else
+				{
+					continue;
+				}
+			}
+			else if (hardware_button == `gateway_button)
+			{
+				OpenschoolServer::gateway = (string)UI::QueryWidget(`id(`gate),  `Value);
+				// testing if it is a real IP address
+				if(!IP::Check4((string)UI::QueryWidget(`id(`gate), `Value))) {
+					/* Popup text */
+					Popup::Error(_("The IP address for the gateway is incorrect"));
+					UI::SetFocus(`id(`gate));
+					continue;
+				}
+				// testing if gateway is in the school network
+				if( !IsInNetwork(OpenschoolServer::ipaddr,OpenschoolServer::netmask,OpenschoolServer::gateway) ) {
+					Popup::Error(_("The IP address for the gateway is not in the school network."));
+					UI::SetFocus(`id(`gate));
+					continue;
+				}
+				// so we don't set up the firewall later...
+				OpenschoolServer::isppp  = false;
+				OpenschoolServer::isgate = false;
+				Routing::Forward   = false;
+				Routing::Routes = [ $[
+					"destination"       : "default",
+					"gateway"           : OpenschoolServer::gateway,
+					"netmask"           : "-",
+					"device"            : "-"
+						]];
+
+			}
+			else if (hardware_button == `none_button)
+			{
+				// so we don't set up the firewall later...
+				Routing::Forward   = false;
+				OpenschoolServer::isgate = false;
+				OpenschoolServer::isppp  = false;
+				Routing::Routes = [];
+			}
+			if ( ret == `next || ret == `finish )
+			{
+				y2milestone("OSS --- Write Gateway Configuration %1 ", Routing::Routes );
+				Routing::Write();
+				//Setup firewall if necessary
+				if(OpenschoolServer::isgate) {
+					SCR::Write(.sysconfig.schoolserver.SCHOOL_ISGATE,  "yes");
+					// there is no ppp device we can start rinetd
+					if( OpenschoolServer::isppp ) {
+						SCR::Write(.sysconfig.schoolserver.SCHOOL_ISPPP,  "yes");
+						// activate dynamic IP patch if we are gateway
+						SCR::Write(.sysconfig.sysctl.IP_DYNIP, "yes" );
+						SCR::Write(.sysconfig.sysctl, nil );
+						// update /etc/sysconfig/network/config
+						SCR::Write(.sysconfig.network.config.MODIFY_RESOLV_CONF_DYNAMICALLY, "no" );
+						SCR::Write(.sysconfig.network.config.MODIFY_NAMED_CONF_DYNAMICALLY, "yes" );
+						SCR::Write(.sysconfig.network.config, nil );
+					} else {
+						SCR::Write(.sysconfig.schoolserver.SCHOOL_ISPPP,  "no");
+						Service::Enable("rinetd");
+						SCR::Write(.sysconfig.schoolserver.SCHOOL_SERVER_EXT_IP,OpenschoolServer::extip);
+						SCR::Write(.sysconfig.schoolserver.SCHOOL_SERVER_EXT_NETMASK,OpenschoolServer::extnm);
+						SCR::Write(.sysconfig.schoolserver.SCHOOL_SERVER_EXT_GW,OpenschoolServer::extgw);
+					}
+					// Setting up firewall
+					map <string, any>  FW = SuSEFirewall::Export();
+					FW["FW_PROTECT_FROM_INT"]   = "no";
+					FW["FW_SERVICE_AUTODETECT"] = "no";
+					FW["FW_ALLOW_PING_FW"]      = "no";
+					FW["FW_ROUTE"]              = "yes";
+					FW["FW_ZONE_DEFAULT"]       = "int";
+					FW["enable_firewall"]       = true;
+					FW["start_firewall"]        = true;
+					SuSEFirewall::Import(FW);
+					SCR::Write(.sysconfig.personal-firewall.REJECT_ALL_INCOMING_CONNECTIONS, "no");
+					SCR::Write(.sysconfig.personal-firewall, nil);
+					SCR::Execute(.target.bash,"echo 'FW_ZONE_DEFAULT=\"int\"' >> /etc/sysconfig/SuSEfirewall2");
+				} else {
+					SCR::Write(.sysconfig.schoolserver.SCHOOL_ISGATE,  "no");
+				}
+				SCR::Write(.sysconfig.schoolserver.SCHOOL_NET_GATEWAY, OpenschoolServer::gateway);
+				SCR::Write(.sysconfig.schoolserver, nil);
+			}
+			break;
+		}
+		else
+		{
+			if (ret == `back)
+			{
+				break;
+			}
+		}
+	}
+
+	return ret;
+
+}
+
+any ResetOpenschoolServerDialog() {
+	string msg = _("If You start this modul now all datas on the server will be cleaned.");
+	msg = msg + "\n" +_("Do You want to continue?");
+	if ( !Popup::YesNo(msg) ) {
+		return false;
+	} else {
+		// no we clean up all the things :-)
+		/* OpenschoolServer read dialog caption */
+		string caption = _("Reseting the Openschool Server Configuration");
+		// TODO FIXME Set the right number of stages
+		integer steps = 6;
+		integer sl = 500;
+		sleep(sl);
+		// TODO FIXME Names of real stages
+		// We do not set help text here, because it was set outside
+		Progress::New( caption, " ", steps, [
+				/* Progress stage 1/5 */
+				_("Clean the File System /home"),
+				/* Progress stage 2/5 */
+				_("Clean the LDAP Data Base"),
+				/* Progress stage 3/5 */
+				_("Clean the Mail System"),
+				/* Progress stage 4/5 */
+				_("Clean the SQL Data Base"),
+				/* Progress stage 5/5 */
+				_("Clean the CA Management")
+				], [
+				/* Progress step 1/5 */
+				_("Cleaning the file syste /home ..."),
+				/* Progress step 2/5 */
+				_("Cleaning the LDAP data base ..."),
+				/* Progress step 3/5 */
+				_("Cleaning the mail system ..."),
+				/* Progress step 4/5 */
+				_("Cleaning the SQL data base ..."),
+				/* Progress step 5/5 */
+				_("Cleaning the CA management ..."),
+				/* Progress finished */
+				_("Finished")
+					],
+				""
+					);
+
+
+		// cleaning up home directories
+		Progress::NextStage();
+		sleep(sl);
+		SCR::Execute(.target.bash, "rm /var/adm/oss/PreSetupDone;");
+		SCR::Execute(.target.bash, "rm -r /home/* /root/.ssh/");
+		SCR::Execute(.target.bash, "rm /etc/sysconfig/network/ifcfg-eth*");
+
+		// deleting eth devices
+		//SCR::Execute(.target.bash, "rm /etc/sysconfig/network/ifcfg-eth*");
+
+		// cleaning up ldap
+		Progress::NextStage();
+		sleep(sl);
+		SCR::Execute(.target.bash, "rcldap stop;  rm /var/lib/ldap/*;");
+
+		// cleaning up cyrus
+		Progress::NextStage();
+		sleep(sl);
+		SCR::Execute(.target.bash, "rccyrus stop;");
+		SCR::Execute(.target.bash, "for i in `find /var/lib/imap -type f`; do  rm $i; done;");
+		SCR::Execute(.target.bash, "rm -r /var/spool/imap/*");
+
+		// cleaning up sql
+		Progress::NextStage();
+		sleep(sl);
+		SCR::Execute(.target.bash, "rcmysql stop;  rm -r /var/lib/mysql/*; rm -f /root/.my.cnf");
+
+		// cleaning up CA managemant
+		Progress::NextStage();
+		sleep(sl);
+		SCR::Execute(.target.bash, "rm /var/lib/CAM/.cas/*;");
+		SCR::Execute(.target.bash, "rm /etc/ssl/servercerts/*;");
+		SCR::Execute(.target.bash, "rm /etc/ssl/certs/YaST-CA.pem;");
+		SCR::Execute(.target.bash, "rm -r /var/lib/CAM/YaST_Default_CA;");
+	}
+	return `next;
+}
+
+any Setup1Dialog() ``{
+
+	/* Openschool summary dialog caption */
+	string caption = _("Open School Server");
+	string valid_class_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-* ";
+	string valid_nr_chars = "0123456789";
+
+	term   class_settings = `VBox(
+			`InputField(`id(`TE_nclasses),`opt(`hstretch),  _("Classes in the School"), OpenschoolServer::nclasses),
+			`InputField(`id(`TE_aclasses),`opt(`hstretch),  _("Parallel Classes in the School"), OpenschoolServer::aclasses),
+			`Left(`CheckBox(`id(`no_ext_mail), `opt(`notify), _("Disable External Mail Transmission for Unprivileged User"), OpenschoolServer::no_ext_mail)),
+			`Left(`CheckBox(`id(`teacher_observ_home), `opt(`notify), _("Allow Privileged User to Observ the Home Directories"), OpenschoolServer::observ_home))
+			);
+	if( OpenschoolServer::schooltype == "primary" )
+	{
+		class_settings = `VBox(
+				`InputField(`id(`TE_nclasses),`opt(`hstretch),  _("Classes in the School"), OpenschoolServer::nclasses),
+				`InputField(`id(`TE_aclasses),`opt(`hstretch),  _("Parallel Classes in the School"), OpenschoolServer::aclasses)
+				);
+	}
+	if( OpenschoolServer::schooltype == "work" || OpenschoolServer::schooltype == "other" )
+	{
+		class_settings = `VBox(
+				`InputField(`id(`TE_nclasses),`opt(`hstretch),  _("Basic Groups"), OpenschoolServer::nclasses),
+                           `Left(`CheckBox(`id(`no_ext_mail), `opt(`notify), _("Disable External Mail Transmission for Unprivileged User"), OpenschoolServer::no_ext_mail)),
+                           `Left(`CheckBox(`id(`teacher_observ_home), `opt(`notify), _("Allow Privileged User to Observ the Home Directories"), OpenschoolServer::observ_home))
+                         );
+    }
+    term contents =
+        // main dialog:
+        `HBox(
+           `Frame(_("Part 1 of 3"),
+             `HBox(
+               `HSpacing(),
+               `VBox(
+                   `VSpacing(),
+                   `Frame("",class_settings),
+                   `VSpacing(),
+                   `Frame("",
+                     `VBox(
+                       `InputField(`id(`TE_workgroup),`opt(`hstretch), _("Windows Domain/Workgroup"), OpenschoolServer::workgroup),
+                       `InputField(`id(`TE_netbiosname),`opt(`hstretch), _("Windows netbios name of the School Server"), OpenschoolServer::netbiosname)
+                     )
+	           ),
+                   `VSpacing()
+                 ),
+               `HSpacing()
+             )
+           )
+         );
+
+    Wizard::SetContentsButtons(caption, contents, HELPS["setup1"]:"", "", Label::NextButton()); 
+
+    UI::ChangeWidget (`id (`TE_nclasses), `ValidChars, valid_class_chars);
+    UI::ChangeWidget (`id (`TE_aclasses), `ValidChars, valid_class_chars);
+
+    any ret = nil;
+    while(true) {
+
+        ret = UI::UserInput();
+
+	if(UI::WidgetExists(`id(`no_ext_mail)))
+	{
+          OpenschoolServer::no_ext_mail    = (boolean)UI::QueryWidget(`id(`no_ext_mail), `Value);
+	}
+	if(UI::WidgetExists(`id(`teacher_observ_home)))
+	{
+          OpenschoolServer::observ_home    = (boolean)UI::QueryWidget(`id(`teacher_observ_home), `Value);
+	}
+        OpenschoolServer::workgroup        = (string)UI::QueryWidget(`id(`TE_workgroup), `Value);
+        OpenschoolServer::nclasses         = toupper((string)UI::QueryWidget(`id(`TE_nclasses), `Value));
+	if(UI::WidgetExists(`id(`TE_aclasses)))
+	{
+          OpenschoolServer::aclasses         = toupper((string)UI::QueryWidget(`id(`TE_aclasses), `Value));
+	}
+        OpenschoolServer::netbiosname      = tolower((string)UI::QueryWidget(`id(`TE_netbiosname), `Value));
+
+        /* abort? */
+        if(ret == `abort || ret == `cancel) {
+            if(Popup::ReallyAbort(false)) break;
+            else continue;
+        }
+        else if(ret == `next) {
+	    string nb = tolower(OpenschoolServer::netbiosname);
+            list used = splitstring( OpenschoolServer::aliases_mailserver + " printserver proxy", " ");
+	    if( contains(used,nb) ){
+                Popup::Error(_("Windows netbios name will be used already: ") +  nb);
+                UI::SetFocus(`id(`TE_netbiosname));
+		continue;
+	    }
+	    if( size(OpenschoolServer::workgroup) > 15){
+                Popup::Error(_("Windows workgroup / domain name ist too long. ") + OpenschoolServer::workgroup);
+                UI::SetFocus(`id(`TE_workgroup));
+		continue;
+	    }
+            break;
+        }
+        else {
+            // y2error("unexpected retcode: %1", ret);
+            continue;
+        }
+    }
+
+    return ret;
+}
+
+any Setup2Dialog() ``{
+
+    /* Openschool summary dialog caption */
+    string caption = _("School Server");
+
+    term   questions   = `VBox(
+				`InputField(`id(`ldaporg),`opt(`hstretch), _("&Name of the School"), OpenschoolServer::ldaporg),
+				`VSpacing(),
+				`InputField(`id(`regcode),`opt(`hstretch), _("&Registration Code"), OpenschoolServer::regcode),
+				`VSpacing()
+			  );
+
+    if(OpenschoolServer::demo)
+    {
+	questions = `VBox(
+                                `InputField(`id(`ldaporg),`opt(`hstretch), _("&Name of the School"), OpenschoolServer::ldaporg),
+				`VSpacing(),
+				`InputField(`id(`regcode),`opt(`hstretch), `opt(`disabled), _("&Registration Code"), OpenschoolServer::regcode),
+                                `VSpacing()
+                          );
+    }
+
+    term contents = `HBox(`HWeight(10,`HStretch()),
+                       `HWeight(80,
+                         `Frame(_("Part 2 of 3"),
+                           `HBox(
+                               `HSpacing(),
+                               `VBox(
+				   questions,
+                                   `Frame(_("Choose Language Add-on"),
+                                         `HBox(
+                                           `VBox(
+                                                 `Left(`CheckBox(`id(`openschool_en), _("English"),   OpenschoolServer::openschool_en)),
+                                                 `Left(`CheckBox(`id(`openschool_de), _("German"),    OpenschoolServer::openschool_de)),
+                                                 `Left(`CheckBox(`id(`openschool_fr), _("French"),    OpenschoolServer::openschool_fr))
+                                           ),
+                                           `VBox(
+                                                 `Left(`CheckBox(`id(`openschool_sl), _("Slovenian"), OpenschoolServer::openschool_sl)),
+                                                 `Left(`CheckBox(`id(`openschool_es), _("Spanish"),   OpenschoolServer::openschool_es)),
+                                                 `Left(`CheckBox(`id(`openschool_it), _("Italian"),   OpenschoolServer::openschool_it))
+                                           ),
+                                           `VBox(
+                                                 `Left(`CheckBox(`id(`openschool_hu), _("Hungarian"), OpenschoolServer::openschool_hu)),
+                                                 `Left(`CheckBox(`id(`openschool_ro), _("Romanian"),  OpenschoolServer::openschool_ro)),
+                                                 `Left(`CheckBox(`id(`openschool_cz), _("Czech"),     OpenschoolServer::openschool_cz))
+                                           ),
+                                           `VBox(
+                                           )
+                                         )
+                                   ),
+                                   cselect,
+                                   `VSpacing()
+                               ),
+                               `HSpacing(),
+                               `HSpacing()
+                           )
+                         )
+                       ),
+                       `HWeight(10, `HStretch())
+        );
+
+    Wizard::SetContentsButtons(caption, contents, HELPS["setup2"]:"", Label::BackButton(), Label::NextButton());
+
+    any ret = nil;
+    while(true)
+    {
+
+        UI::SetFocus(`id(`ldaporg));
+        ret = UI::UserInput();
+
+        OpenschoolServer::openschool_de  =(boolean)UI::QueryWidget(`id(`openschool_de),  `Value);
+        OpenschoolServer::openschool_en  =(boolean)UI::QueryWidget(`id(`openschool_en),  `Value);
+        OpenschoolServer::openschool_es  =(boolean)UI::QueryWidget(`id(`openschool_es),  `Value);
+        OpenschoolServer::openschool_fr  =(boolean)UI::QueryWidget(`id(`openschool_fr),  `Value);
+        OpenschoolServer::openschool_hu  =(boolean)UI::QueryWidget(`id(`openschool_hu),  `Value);
+        OpenschoolServer::openschool_it  =(boolean)UI::QueryWidget(`id(`openschool_it),  `Value);
+        OpenschoolServer::openschool_ro  =(boolean)UI::QueryWidget(`id(`openschool_ro),  `Value);
+        OpenschoolServer::openschool_cz  =(boolean)UI::QueryWidget(`id(`openschool_cz),  `Value);
+        OpenschoolServer::openschool_sl  =(boolean)UI::QueryWidget(`id(`openschool_sl),  `Value);
+        OpenschoolServer::ldaporg        = (string)UI::QueryWidget(`id(`ldaporg),  `Value);
+        OpenschoolServer::ccode          = (string)UI::QueryWidget(`id(`ccode), `CurrentItem);
+        if(!OpenschoolServer::demo)
+	{
+	  OpenschoolServer::regcode      = toupper((string)UI::QueryWidget(`id(`regcode), `Value));
+	}
+
+        /* abort? */
+        if(ret == `abort || ret == `cancel)
+	{
+            if(Popup::ReallyAbort(false)) break;
+            else continue;
+        }
+        else if(ret == `next || ret == `back)
+	{
+            break;
+        }
+        else
+	{
+            y2error("unexpected retcode: %1", ret);
+            continue;
+        }
+    }
+
+    return ret;
+}
+
+any Setup3Dialog() ``{
+
+    /* Openschool summary dialog caption */
+    string caption = _("School Server");
+    term   pluss   = `Frame(_("Choose Add-On Application(s)"),
+			         `HBox(
+			           `HSpacing(),
+			           `HBox(
+				     `VSpacing(),
+			             `VBox(
+                                       `Left(`CheckBox(`id(`clax),	_("OSS Clax"),      OpenschoolServer::clax)),
+                                       `Left(`CheckBox(`id(`ox),	_("Open Xchange"),  OpenschoolServer::ox)),
+                                       `Left(`CheckBox(`id(`egroupware),_("eGroupware"),    OpenschoolServer::egroupware)),
+			//TODO	       `Left(`CheckBox(`id(`moodle),	_("Moodle"),        OpenschoolServer::moodle)),
+			//TODO	       `Left(`CheckBox(`id(`joomla),    _("Joomla"),        OpenschoolServer::joomla)),
+                                       `Left(`CheckBox(`id(`terminalserver), _("OSS as Terminalserver"), false))
+				     ),
+				     `VSpacing()
+			           ),
+			           `HSpacing()
+			         )
+			       );
+    if(OpenschoolServer::demo)
+    {
+          pluss   = `Frame(_("Choose Add-On Application(s)"),
+			         `HBox(
+			           `HSpacing(),
+			           `HBox(
+				     `VSpacing(),
+			             `VBox(
+                                       `Left(`CheckBox(`id(`clax),	_("OSS Clax"),      OpenschoolServer::clax)),
+                                       `Left(`CheckBox(`id(`ox),	`opt(`disabled), _("Open Xchange"), false)),
+                                       `Left(`CheckBox(`id(`egroupware),`opt(`disabled), _("eGroupware"),   false)),
+					//`Left(`CheckBox(`id(`moodle),	`opt(`disabled), _("Moodle"),        false)),
+					//`Left(`CheckBox(`id(`joomla), `opt(`disabled), _("Joomla"),        false)),
+                                       `Left(`CheckBox(`id(`terminalserver),    `opt(`disabled), _("OSS as Terminalserver"), false))
+				     ),
+				     `VSpacing()
+			           ),
+			           `HSpacing()
+			         )
+			       );
+    }
+    term contents = `HBox(`HWeight(10,`HStretch()),
+                       `HWeight(80,
+			 `Frame(_("Part 3 of 3"),
+                           `HBox(
+                             `HSpacing(),
+                             `VBox(
+			       `VSpacing(),
+			       pluss,
+			       `VSpacing()
+			     ),
+                             `HSpacing()
+			  )
+                       )
+		   ),
+                   `HWeight(10, `HStretch())
+        );
+
+
+    Wizard::SetContentsButtons(caption, contents, HELPS["setup3"]:"", Label::BackButton(), Label::FinishButton());
+
+    any ret = nil;
+    while(true)
+    {
+
+        ret = UI::UserInput();
+
+        OpenschoolServer::terminalserver=(boolean)UI::QueryWidget(`id(`terminalserver),     `Value);
+//TODO  if( ! OpenschoolServer::demo)
+//TODO  {
+//TODO  //TODO	OpenschoolServer::joomla      =(boolean)UI::QueryWidget(`id(`joomla),     `Value);
+//TODO  //TODO	OpenschoolServer::moodle      =(boolean)UI::QueryWidget(`id(`moodle),     `Value);
+//TODO  }
+        OpenschoolServer::clax        =(boolean)UI::QueryWidget(`id(`clax),       `Value);
+        OpenschoolServer::ox          =(boolean)UI::QueryWidget(`id(`ox),         `Value);
+        OpenschoolServer::egroupware  =(boolean)UI::QueryWidget(`id(`egroupware), `Value);
+        /* abort? */
+        if(ret == `abort || ret == `cancel)
+	{
+            if(Popup::ReallyAbort(false)) break;
+            else continue;
+        }
+        else if(ret == `next || ret == `back )
+	{
+            break;
+        }
+        else
+	{
+            y2error("unexpected retcode: %1", ret);
+            continue;
+        }
+    }
+
+    return ret;
+}
+
+/* EOF */
+}

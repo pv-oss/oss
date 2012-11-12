@@ -1,0 +1,35 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+
+export PACKAGE='openschool-base'
+
+#Clean up the BUILD enviroment
+rm /usr/src/packages/SOURCES/*
+rm /usr/src/packages/RPMS/*/$PACKAGE*
+rm /usr/src/packages/SRPMS/$PACKAGE*
+rm -r /usr/src/packages/BUILD/$PACKAGE*
+make dist
+
+mv package/$PACKAGE-*tar.bz2 /usr/src/packages/SOURCES/
+mv package/$PACKAGE.spec /usr/src/packages/SPECS/
+rpmbuild -ba /usr/src/packages/SPECS/$PACKAGE.spec
+
+if [ "$1" = "cd" ]
+then
+	echo "Now we move the packages to the CD's"
+	rm $CDROOT/suse/i586/$PACKAGE*
+	rm $CDSS/suse/i586/$PACKAGE*
+	rm $CDSROOT/suse/i586/$PACKAGE*
+	rm $CDSS/suse/src/$PACKAGE*
+	rm $CDSROOT/suse/src/$PACKAGE*
+
+	cp /usr/src/packages/RPMS/i586/$PACKAGE*rpm $CDROOT/suse/i586/
+	cp /usr/src/packages/RPMS/i586/$PACKAGE*rpm $CDSS/suse/i586/
+	cp /usr/src/packages/RPMS/i586/$PACKAGE*rpm $CDSROOT/suse/i586/
+	cp /usr/src/packages/SRPMS/$PACKAGE* $CDSS/suse/src/
+	cp /usr/src/packages/SRPMS/$PACKAGE* $CDSROOT/suse/src/
+fi
+RELEASE=`cat RELEASE`
+RELEASE=$((RELEASE+1))
+echo $RELEASE > RELEASE
+

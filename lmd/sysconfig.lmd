@@ -1,0 +1,80 @@
+## Path:		Network/Server
+## Description:		LinuxManagementDaemon (lmd) settings
+## Type:		string
+## Default:		"127.0.0.1"
+#
+#  On which address the lmd will be listening.
+#  The value "unix" means the "/var/run/lmd.sock" unix socket 
+#
+LMD_ADDRESS="127.0.0.1"
+
+## Type:		string
+## Default:		"1967"
+#
+#  On which port the lmd will be listening.
+#  If LMD_ADDRESS is set to "unix" this variable is ignored
+#
+LMD_PORT="1967"
+
+## Type:		string
+## Default:		"90"
+#
+#  LMD session time out in minutes 
+#
+LMD_SESSION_TIMEOUT="90"
+
+## Type:                string
+## Default:             "YYYY-MM-DD"
+#
+#  Date format used by OSSADMIN for different langugages.
+#  If ossadmin doesn't find the date format for a language then will use YYYY-MM-DD.
+#  New language formats must be added here in the following format:
+#	OSS_DATE_FORMAT_UPPERCASE_LANGUAGE="FORMAT[MM/DD/YYYY]" 
+#
+OSS_DATE_FORMAT_DE="DD.MM.YYYY"
+OSS_DATE_FORMAT_HU="YYYY-MM-DD"
+OSS_DATE_FORMAT_EN="DD-MM-YYYY"
+OSS_DATE_FORMAT_EN_US="MM/DD/YYYY"
+
+## Type:		string
+## Default:		"Template"
+#
+#  Comma separted list of disabled LMD modules.
+#
+LMD_DISABLED_MODULES="Template,ShellTemplate,NetworkDevices,NameServer,BackupWizard"
+
+## Type:	string
+## Default:	"Security,Network,Groups,User,Students,Proxy,System,OSS,Settings"
+#
+#  Order of the categories
+#
+LMD_CATEGORY_ORDER="Security,Network,Groups,User,Students,Proxy,System,OSS,Settings"
+
+## Type:	yesno
+## Default:	yes
+#
+# Do the web appliaction use icons
+#
+LMD_USE_MENU_ICONS="yes"
+
+## Type:	yesno
+## Default:	no
+#
+# Do the lmd archive the request
+#
+LMD_ARCHIVE_REQUESTS="no"
+
+## Type:	string
+## Default:	"Add*:*|Edit*:*|RoomAccesControl:set*"
+#
+# The lmd archives only these actions. This is a pattern match string. Format: Application:Action[|Application:Action]
+#
+LMD_APPLICATIONS_TO_ARCHIVE="Add*:.*|Edit*:.*|RoomAccessControl:set*"
+
+
+## Type:	string
+## Default:	"ClientControl:*|*:default"
+#
+# The lmd does not archive these actions. This is a pattern match string. Format: Application:Action[|Application:Action]
+#
+LMD_APPLICATIONS_NOT_TO_ARCHIVE="ClientControl:.*|.*:default"

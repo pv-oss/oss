@@ -1,0 +1,41 @@
+#
+#  Spec file for oss-radius (@VERSION@)
+#  Copyright (c) 2009 Peter Varkoly Fuerth, Germany.  All rights reserved.
+#
+Name:         oss-radius
+Summary:      FreeRadius configuration for the OSS
+Version:      @VERSION@
+Release:      @RELEASE@
+License:      GPL
+Vendor:       EXTIS GmbH, Uttenreuth, Germany
+Distribution: SLE11
+Packager:     peter@varkoly.de
+Group:        Productivity/
+Source:       %{name}.tar.bz2
+BuildArch:    noarch
+PreReq:       findutils freeradius-server openschool-base sed
+BuildRequires: -brp-check-suse rsync
+BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+
+%description
+For the OSS adapted freeradius configuration.
+IEEE 802.1x authentication. WPA2 via PEAP with MSCHAPv2
+
+%prep
+%setup -n %{name}
+
+%build
+
+%install
+make DESTDIR=%{buildroot} install
+
+%post
+/usr/share/oss/tools/oss-radius/setup-radius.sh
+
+%files
+%defattr(644,root,root,755)
+/usr/share/lmd/
+%defattr(640,root,root,750)
+/usr/share/oss/templates/oss-radius/
+%defattr(750,root,radiusd,750)
+/usr/share/oss/tools/oss-radius/

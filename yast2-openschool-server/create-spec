@@ -1,0 +1,274 @@
+#! /usr/bin/perl -w
+#####
+#create-spec [-h] < xxx.spec.in > package/xxx.spec
+#
+#Create a spec file for YaST2 package
+#
+#Available macros in the xxx.spec.in:
+#  @RPMNAME@		- read from file RPMNAME
+#  @VERSION@		- read from file VERSION
+#  @MAINTAINER@		- read from file MAINTAINER
+#
+#  @HEADER-COMMENT@	- writes the SuSE .spec comment
+#  @HEADER@		- writes the usual header except BuildArch:,
+#  @HEADER-DEVEL@	- writes the -devel subpackage header, similar to @HEADER@
+#  @HEADER-INSTSYS@	- writes the -instsys subpackage header, similar to @HEADER@
+#  @PREP@		- writes %prep with %setup
+#  @BUILD@		- writes %build with usual make
+#  @BUILD-QT@		- writes %build with usual make for qt stuff
+#  @BUILD-PO@		- writes %build with special make for translations
+#  @INSTALL@		- writes %install with usual make install and make check
+#  @INSTALL-PO@		- writes %install with special make install for translations
+#  @CLEAN@		- writes %clean with removing RPM_BUILD_ROOT
+#####
+# Authors: Jan Holesovsky <kendy@suse.cz>, 2001
+#          Arvin Schnell <arvin@suse.de>, 2002
+
+use strict;
+
+# Import the content of some files
+my $RPMNAME = `cat RPMNAME`;
+my $VERSION = `cat VERSION`;
+my $RELEASE = `cat RELEASE`;
+my $MAINTAINER = `cat MAINTAINER`;
+my $LICENSE = -f "YAST_LICENSE" ? "YaST License" : "GPL";
+
+my $PREFIX = "/usr";
+
+# Clean them and check them
+chomp $RPMNAME;
+chomp $VERSION;
+chomp $MAINTAINER;
+if ($VERSION eq "" || $RPMNAME eq "" || $MAINTAINER eq "")
+{
+    die "Start this only in YaST2 toplevel project directories!\n";
+}
+
+# Default values
+my $yast2dir = "$PREFIX/share/YaST2";
+my $execcompdir = "$PREFIX/lib/YaST2";
+
+my $provides_locale = "";
+my $LL = "";
+my $ISO639 = "";
+if ($RPMNAME =~ /^yast2-trans-(.*)/) {
+    $provides_locale = "Provides:\tlocale(yast2:$1)\n";
+    $LL = "$1";
+    $ISO639 = `echo -n $1 | sed -e 's/_.*//'`;
+}
+
+if ($#ARGV > 0)
+{
+    # Isn't the following too anti-perl? :-)
+    my $message = `sed -e '/^#####/,/^#####/!d' -e 's/^#*//' $0`;
+    die "$message";
+}
+
+# Definition of the macros
+my %macros =
+(
+    "\@RPMNAME\@" => "$RPMNAME",
+
+    "\@VERSION\@" => "$VERSION",
+
+    "\@MAINTAINER\@" => "$MAINTAINER",
+
+    "\@HEADER-COMMENT\@" =>
+"#
+# spec file for package $RPMNAME (Version $VERSION)
+#
+# norootforbuild",
+#",
+
+# The group tag is only a dummy entry. The correct one is inserted by
+# prepare_spec.
+
+    "\@HEADER\@" =>
+"Name:		$RPMNAME
+Version:	$VERSION
+Release:	$RELEASE
+License:	$LICENSE
+Group:		System/YaST
+BuildRoot:	%{_tmppath}/%{name}-%{version}-build
+Source0:	$RPMNAME.tar.bz2
+
+prefix:		/usr
+$provides_locale",
+
+# The group tag is only a dummy entry. The correct one is inserted by
+# prepare_spec.
+
+    "\@HEADER-DEVEL\@" =>
+"\%package devel
+Requires:	$RPMNAME = %version
+Group:		Development/Libraries",
+
+    "\@HEADER-INSTSYS\@" =>
+"\%package instsys
+Group:		SuSE internal",
+
+##### PREP #####
+
+    "\@PREP\@" =>
+"\%prep
+\%setup -n $RPMNAME",
+
+##### BUILD #####
+
+    "\@BUILD\@" =>
+"\%build
+%{prefix}/bin/y2tool y2autoconf
+%{prefix}/bin/y2tool y2automake
+autoreconf --force --install
+
+export CFLAGS=\"\$RPM_OPT_FLAGS -DNDEBUG\"
+export CXXFLAGS=\"\$RPM_OPT_FLAGS -DNDEBUG\"
+
+\%{?suse_update_config:\%{suse_update_config -f}}
+./configure --libdir=%{_libdir} --prefix=%{prefix} --mandir=%{_mandir}
+make %{?jobs:-j%jobs}",
+
+    "\@BUILD-QT\@" =>
+"\%build
+%{prefix}/bin/y2tool y2autoconf
+%{prefix}/bin/y2tool y2automake
+autoreconf --force --install
+
+export CFLAGS=\"\$RPM_OPT_FLAGS -DNDEBUG\"
+export CXXFLAGS=\"\$RPM_OPT_FLAGS -DNDEBUG\"
+
+\%{?suse_update_config:\%{suse_update_config -f}}
+./configure --libdir=%{_libdir} --prefix=%{prefix} --with-qt-dir=/usr/lib/qt3 --with-qt-libdir=/usr/lib/qt3/%{_lib} --mandir=%{_mandir}
+make %{?jobs:-j%jobs}",
+
+    "\@BUILD-PO\@" =>
+"\%build
+autoreconf --force --install
+\%{?suse_update_config:\%{suse_update_config -f}}
+./configure --libdir=%{_libdir} --prefix=%{prefix}
+\%if \%ul_version > 0
+for f in po/*.po ; do
+  cp \$f \$f.orig
+  awk -f \@ybindir\@/cleanuppo.awk \$f.orig >\$f
+done
+\%endif
+\%if \%sles_version == 8
+for f in po/*.po ; do
+  cp \$f \$f.orig
+  awk -f \@ybindir\@/cleanuppo.awk -v sles=8 \$f.orig >\$f
+done
+\%endif
+make %{?jobs:-j%jobs}",
+
+##### INSTALL #####
+
+    "\@INSTALL\@" =>
+"\%install
+make install DESTDIR=\"\$RPM_BUILD_ROOT\"
+[ -e \"%{prefix}/share/YaST2/data/devtools/NO_MAKE_CHECK\" ] || Y2DIR=\"\$RPM_BUILD_ROOT$yast2dir\" make check DESTDIR=\"\$RPM_BUILD_ROOT\"
+for f in `find \$RPM_BUILD_ROOT/\@desktopdir\@/ -name \"*.desktop\"` ; do
+    d=\${f##*/}
+    \%suse_update_desktop_file -d ycc_\${d\%.desktop} \${d\%.desktop}
+done
+",
+
+    "\@INSTALL-PO\@" =>
+"\%install
+make install DESTDIR=\"\$RPM_BUILD_ROOT\"",
+
+##### CLEAN #####
+
+    "\@CLEAN\@" =>
+"\%clean
+rm -rf \"\$RPM_BUILD_ROOT\""
+);
+
+
+# And some tiny macros. Must be separate since the big macros contain them.
+my %tiny_macros =
+(
+    # FIXME: kind of double definition of paths
+    # we should use configure to create a mapping of paths
+    # and use it here. (cannot use configure directly because
+    # makefile has ${prefix} and spec file has %{prefix}
+    # FIXME: $prefix unfunctional
+    #"\@yast2dir@" => "\\\${prefix}/share/YaST2",
+    "\@pkgconfigdir\@" => "%{_libdir}/pkgconfig",
+    "\@pkgconfigdatadir\@" => "%{prefix}/share/pkgconfig",
+
+    "\@ybindir\@" => "%{prefix}/lib/YaST2/bin",
+	"\@ystartupdir\@" => "%{prefix}/lib/YaST2",
+    "\@plugindir\@" => "%{_libdir}/YaST2/plugin",
+    "\@includedir\@" => "%{prefix}/include/YaST2",
+    "\@docdir\@" => "%{prefix}/share/doc/packages/$RPMNAME",
+    "\@logdir\@" => "/var/log/YaST2",
+    "\@vardir\@" => "/var/lib/YaST2",
+    "\@mandir\@" => "%{_mandir}",
+
+    "\@execcompdir\@" => "%{prefix}/lib/YaST2",
+    "\@agentdir\@" => "${execcompdir}/servers_non_y2",
+
+    "\@ydatadir\@" => "${yast2dir}/data",
+    "\@imagedir\@" => "${yast2dir}/images",
+    "\@themedir\@" => "${yast2dir}/theme",
+    "\@localedir\@" => "${yast2dir}/locale",
+    "\@clientdir\@" => "${yast2dir}/clients",
+    "\@moduledir\@" => "${yast2dir}/modules",
+    "\@yncludedir\@" => "${yast2dir}/include",
+    "\@schemadir\@" => "${yast2dir}/schema",
+    "\@scrconfdir\@" => "${yast2dir}/scrconf",
+    "\@desktopdir\@" => "%{prefix}/share/applications/YaST2",
+    '@fillupdir@' => '/var/adm/fillup-templates',
+
+    "\@LL\@" => "$LL",
+    "\@ISO639\@" => "$ISO639",
+
+);
+
+# The main program
+my $warn_defattr = 1;
+my $warn_doc     = 0;
+
+my $unknown_macro = 0;
+
+while (<STDIN>)
+{
+    if (! /^##.*/)
+    {
+	foreach my $macro_name ( keys %macros )
+	{
+	    s/$macro_name/$macros{$macro_name}/g;
+	}
+
+	foreach my $macro_name ( keys %tiny_macros )
+	{
+	    s/$macro_name/$tiny_macros{$macro_name}/g;
+	}
+
+	if (/^\@.+\@/)
+	{
+	    chomp;
+	    print STDERR "create-spec: ERROR: unknown macro $_\n";
+	    $unknown_macro = 1;
+	}
+
+	$warn_defattr = 0 if (/^\%defattr/);
+	$warn_doc     = 1 if (/\/doc\// && ! /^\%doc/);
+	print;
+    }
+}
+
+if ($warn_defattr)
+{
+    print STDERR "create-spec: WARNING: No \%defattr in the .spec file!\n";
+}
+if ($warn_doc)
+{
+    print STDERR "create-spec: WARNING: Do you use \%doc for documentation?\n";
+}
+
+if ($unknown_macro)
+{
+    print STDERR "create-spec: ERROR: unknown macro - update your yast2-devtools\n";
+    exit 1;
+}

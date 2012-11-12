@@ -1,0 +1,38 @@
+@HEADER-COMMENT@
+@HEADER-COMMENT@
+
+@HEADER@
+Vendor:       EXTIS GmbH, Uttenreuth, Germany
+BuildRequires:  perl-XML-Writer update-desktop-files yast2-devtools yast2-testsuite
+BuildRequires:  yast2-perl-bindings yast2-ldap-server yast2-users yast2-network
+BuildRequires:  perl-NetxAP yast2-mail
+Requires:	yast2 openschool-base yast2-users yast2-ldap yast2-network yast2-ca-management yast2-country yast2-mail
+
+BuildArchitectures:	noarch
+
+Summary:	Configuration of Open School Server
+
+%description
+-
+
+@PREP@
+
+@BUILD@
+
+@INSTALL@
+
+@CLEAN@
+
+%files
+%defattr(-,root,root)
+%dir @yncludedir@/openschool-server
+@yncludedir@/openschool-server/*
+@clientdir@/*openschool*ycp
+@clientdir@/create_cert.ycp
+@clientdir@/oss_update_ldap.ycp
+@moduledir@/OpenschoolServer*
+@scrconfdir@/*.scr
+%dir /usr/lib/rpm/gnupg
+/usr/lib/rpm/gnupg/gpg-pubkey-1878e87f-4278b884.asc
+/usr/lib/rpm/gnupg/gpg-pubkey-80e5483c-4263d710.asc
+%doc @docdir@

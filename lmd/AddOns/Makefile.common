@@ -1,0 +1,52 @@
+# Make file for lmd addon modules
+DESTDIR         = /
+LMDDIR          = $(DESTDIR)/usr/share/lmd
+TOOLS           = $(DESTDIR)/usr/share/oss/tools
+TEMPLATES       = $(DESTDIR)/usr/share/oss/templates
+REQPACKAGES     = $(shell cat REQPACKAGES)
+VERSION         = $(shell test -e ../../VERSION && cp ../../VERSION VERSION ; cat VERSION)
+RELEASE         = $(shell cat RELEASE)
+NRELEASE        = $(shell echo $(RELEASE) + 1 | bc )
+HERE            = $(shell pwd)
+PACKAGE         = $(shell basename $(HERE))
+
+common-install:
+	if [ -e alibs ]; then \
+		mkdir -p $(LMDDIR)/alibs; \
+		install -m 755 alibs/* $(LMDDIR)/alibs; \
+	fi
+	if [ -e templates ]; then \
+		mkdir -p $(TEMPLATES); \
+		install -m 755 templates/* $(TEMPLATES); \
+	fi
+	if [ -e tools ]; then \
+		mkdir -p $(TOOLS); \
+		install -m 755 tools/* $(TOOLS); \
+	fi
+	if [ -e sql ]; then \
+		mkdir -p $(LMDDIR)/sql; \
+		install -m 644 sql/* $(LMDDIR)/sql; \
+	fi
+	if [ -e bin ]; then \
+		mkdir -p $(LMDDIR)/bin; \
+		install -m 755 bin/* $(DESTDIR)/usr/bin; \
+	fi
+	if [ -e lang ]; then \
+		mkdir -p $(LMDDIR)/lang; \
+		install -m 644 lang/* $(DESTDIR)/usr/sbin; \
+	fi
+
+common-dist:
+	cd ..;\
+	svn up $(PACKAGE); \
+	svn ci $(PACKAGE); \
+	tar chvjf "$(PACKAGE).tar.bz2" $(PACKAGE) Makefile.common --exclude=".svn"; \
+	sed "s/@VERSION@/$(VERSION)/" $(PACKAGE)/spec.in > $(PACKAGE).spec; \
+	if [ -d /data1/OSC/home\:openschoolserver/$(PACKAGE) ]; then \
+		cd /data1/OSC/home\:openschoolserver/$(PACKAGE); osc up; cd $(HERE); \
+		mv "../$(PACKAGE).tar.bz2" "../$(PACKAGE).spec" /data1/OSC/home\:openschoolserver/$(PACKAGE); \
+		cd /data1/OSC/home\:openschoolserver/$(PACKAGE); \
+		osc vc; \
+		osc ci -m "New Build Version"; \
+	fi
+

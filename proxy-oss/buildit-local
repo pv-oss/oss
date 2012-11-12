@@ -1,0 +1,60 @@
+#!/bin/bash
+PACKAGE="blacklist-openschool"
+VERSION=`cat VERSION`
+PRODNAME=`cat PRODNAME`
+RELEASE=`cat RELEASE`
+SUBDIRS="etc usr var"
+
+#Clean up the BUILD enviroment
+rm /usr/src/packages/SOURCES/*
+rm /usr/src/packages/RPMS/*/$PACKAGE*
+rm /usr/src/packages/SRPMS/$PACKAGE*
+rm -r /usr/src/packages/BUILD/$PACKAGE*
+
+#Prepare speck file
+sed "s/@VERSION@/$VERSION/"    $PACKAGE.spec.template > $PACKAGE.spec  
+sed -i "s/@PRODNAME@/$PRODNAME/"  $PACKAGE.spec
+sed -i "s/@RELEASE@/$RELEASE/"    $PACKAGE.spec
+sed -i "s/@PACKAGE@/$PACKAGE/"    $PACKAGE.spec
+
+#Build the tar-bal
+if [ -e $PACKAGE ] ;  then rm -rf $PACKAGE ; fi
+mkdir $PACKAGE
+if [ ! -e var/lib/squidGuard/db/shallalist.tar.gz ]
+then
+   wget http://www.shallalist.de/Downloads/shallalist.tar.gz
+   mv shallalist.tar.gz var/lib/squidGuard/db/shallalist.tar.gz
+fi
+rsync -a $SUBDIRS $PACKAGE
+chown -R root:root $PACKAGE
+find $PACKAGE \( -not -regex "^.*\/CVS.*" -a -not -regex "^.*\.svn\/.*" \) -xtype f > files 
+tar jcpf $PACKAGE-$VERSION.tar.bz2 -T files 
+rm files  
+
+# it's better to decide for each file at the moment:
+tar cjf $PACKAGE-$VERSION.tar.bz2 -T .files
+
+exit
+#Move the files to the right place
+mv $PACKAGE-*tar.bz2 /usr/src/packages/SOURCES/
+mv $PACKAGE.spec /usr/src/packages/SPECS/
+rpmbuild -ba /usr/src/packages/SPECS/$PACKAGE.spec
+
+if [ "$1" = "cd" ]
+then
+        echo "Now we move the packages to the CD's"
+        rm $CDROOT/suse/noarch/$PACKAGE*
+        rm $CDSS/suse/noarch/$PACKAGE*
+        rm $CDSROOT/suse/noarch/$PACKAGE*
+        rm $CDSS/suse/src/$PACKAGE*
+        rm $CDSROOT/suse/src/$PACKAGE*
+
+        cp /usr/src/packages/RPMS/noarch/$PACKAGE*rpm $CDROOT/suse/noarch/
+        cp /usr/src/packages/RPMS/noarch/$PACKAGE*rpm $CDSS/suse/noarch/
+        cp /usr/src/packages/RPMS/noarch/$PACKAGE*rpm $CDSROOT/suse/noarch/
+        cp /usr/src/packages/SRPMS/$PACKAGE* $CDSS/suse/src/
+        cp /usr/src/packages/SRPMS/$PACKAGE* $CDSROOT/suse/src/
+fi
+RELEASE=$((RELEASE+1))
+echo $RELEASE > RELEASE
+

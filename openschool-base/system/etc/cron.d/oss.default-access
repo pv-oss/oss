@@ -1,0 +1,6 @@
+# Setting the access status for the rooms
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+-* * * * *   root /usr/sbin/oss_set_default_access.pl
+-58  5 * * * root /sbin/chkconfig -c SuSEfirewall2_setup && /sbin/SuSEfirewall2 start
+-58  5 * * * root /sbin/chkconfig -c SuSEfirewall2_setup || /sbin/SuSEfirewall2 stop
+

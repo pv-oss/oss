@@ -1,0 +1,30 @@
+/**
+ * File:
+ *   cfg_schoolserver.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/schoolserver
+ *   using the ini-agent
+ * Access:
+ *   read/write
+ * Authors:
+ *   Peter Varkoly	<varkoly@suse.de>
+ * See:
+ *   yast2-agent-ini/ini.html
+ *   libscr
+ * Example:
+ *   Read(.sysconfig.schoolserver.SOMETHING)
+ *   ("no")
+ **
+ *   Write(.sysconfig.schoolserver.SOMETHING, "yes")
+ *   (true)
+ *
+ * $Id: cfg_schoolserver.scr,v 2.0.0.1 2005/01/21 13:08:38 pv Exp $
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/schoolserver</tt>
+ * in an easy manner.
+ */
+.sysconfig.schoolserver
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/schoolserver")
+)

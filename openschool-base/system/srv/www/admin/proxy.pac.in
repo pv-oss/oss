@@ -1,0 +1,22 @@
+function FindProxyForURL(url, host)
+{
+  if(isPlainHostName(host)){
+    return "DIRECT";
+  }else if(dnsDomainIs(host,"admin.#DOMAIN#")){
+    return "DIRECT";
+  }else if(dnsDomainIs(host,"schoolserver.#DOMAIN#")){
+    return "DIRECT";
+  }else if(dnsDomainIs(host,"schulserver.#DOMAIN#")){
+    return "DIRECT";
+  }else if(host.substring(0,4)=="127."){
+    return "DIRECT";
+  }else if(url.substring(0,5)=="http:"){
+    return "PROXY proxy.#DOMAIN#:8080; DIRECT";
+  }else if(url.substring(0,6)=="https:"){
+    return "PROXY proxy.#DOMAIN#:8080; DIRECT";
+  }else if(url.substring(0,4)=="ftp:"){
+    return "PROXY proxy.#DOMAIN#:8080; DIRECT";
+  }else{
+    return "DIRECT";
+  }
+}

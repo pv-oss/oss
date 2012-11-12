@@ -1,0 +1,139 @@
+[global]
+   #add machine script = /sbin/yast /usr/share/YaST2/data/add_machine.ycp %m$
+   add machine script = 
+   bind interfaces only = yes
+   domain logons = yes
+   domain master = yes
+   encrypt passwords = yes
+   interfaces = 127.0.0.1, #IPADDR#
+   ldap admin dn = #BINDDN#
+   ldap group suffix = ou=group
+   ldap idmap suffix = ou=Idmap
+   ldap machine suffix = ou=Computers
+   ldap passwd sync = yes
+   ldap suffix = #LDAPBASE#
+   ldap user suffix = ou=people
+   load printers = no
+   local master = yes
+   #logon drive = Z:
+   logon path = \\%L\profiles\%U\%a
+   logon script = %U.bat
+   map to guest = Bad User
+   netbios name = #PDC-SERVER#
+   os level = 255
+   passdb backend = ldapsam:ldap://localhost
+   preferred master = yes
+   printcap name = 
+   security = user
+   server string = @PROD_NAME@
+   socket options = SO_KEEPALIVE
+   smb ports = 139
+   time server = yes
+   username map = /etc/samba/smbusers
+   wins support = yes
+   workgroup = #WORKGROUP#
+   kernel change notify = no
+   unix extensions = no
+
+[itool]
+   comment = Imaging Tool
+   path = /srv/itool
+   root preexec = /usr/share/oss/tools/remove_pxe_autostart.pl %u %I %a
+   inherit permissions = Yes
+   valid users = @teachers, @sysadmins, @workstations, root
+   write list = @sysadmins,root
+   force group = sysadmins
+   browseable = no
+   guest ok = no
+   writable = yes
+
+[netlogon]
+   root preexec  = /usr/share/oss/tools/make_logon_script.pl %u %I %a %m
+   comment = Network Logon Service
+   path = /var/lib/samba/netlogon/%a
+   browseable = no
+   guest ok = yes
+   write list = root
+   writable = no
+[homes]
+   root preexec  = /usr/share/oss/tools/make_sso.pl %u %I %a %m
+   root postexec = /usr/share/oss/tools/remove_sso.pl %u %I %a
+   browseable = no
+   comment = Home Directories
+   guest ok = no
+   inherit permissions = Yes
+   printable = no
+   read only = No
+   valid users = %S
+   veto files =  /+*/Desktop/
+   hide files = /.*/
+   hide dot files = yes
+[profiles]
+   browseable = no
+   comment = Network Profiles Service
+   create mask = 0600
+   directory mask = 0700
+   guest ok = no
+   path = /home/profile
+   printable = no
+   read only = No
+   store dos attributes = Yes
+[groups]
+   root preexec  = /usr/share/oss/tools/make_sso.pl %u %I %a %m
+   root postexec = /usr/share/oss/tools/remove_sso.pl %u %I %a
+   browseable = yes
+   comment = All groups
+   guest ok = no
+   inherit permissions = Yes
+   path = /home/groups
+   printable = no
+   read only = No
+[all]
+   comment = Folder for all
+   path = /home/all
+   inherit permissions = Yes
+   browseable = yes
+   guest ok = no
+   writable = yes
+[allteachers]
+   comment = Folder for all teacher
+   path = /home/groups/TEACHERS
+   browseable = yes
+   inherit permissions = Yes
+   valid users = @teachers
+   force group = teachers
+   guest ok = no
+   writable = yes
+[alladmins]
+   comment = Folder for administration personal
+   path = /home/groups/ADMINISTRATION
+   browseable = yes
+   inherit permissions = Yes
+   valid users = @administration
+   force group = administration
+   guest ok = no
+   writable = yes
+[software]
+   comment = Folder for software
+   path = /home/software
+   inherit permissions = Yes
+   browseable = yes
+   guest ok = no
+   writable = yes
+[archiv]
+   browseable = yes
+   comment = Folder for Arhived Users
+   valid users = @teachers
+   guest ok = no
+   path = /home/archiv
+   writable = yes
+[users]
+   browseable = yes
+   comment = All users
+   guest ok = no
+   inherit permissions = Yes
+   path = /home
+   printable = no
+   read only = No
+   valid users = @sysadmins, @teachers, root
+   veto files = /aquota.user/

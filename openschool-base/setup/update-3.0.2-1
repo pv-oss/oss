@@ -1,0 +1,87 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+# Update from 3.0.X to 3.0.2
+if [ -e /var/adm/oss/update-3.0.2-1 ]
+then
+	echo "Patch 3.0.2-1 already installed"
+	exit 0
+fi
+
+NEW=$(ldapsearch -x ckey=SCHOOL_ALLOW_MULTIPLE_LOGIN ckey | grep configurationKey)
+if [ "$NEW" ]
+then
+	mkdir -p /var/adm/oss/
+	touch /var/adm/oss/update-3.0.2-1
+	touch /var/adm/oss/update-3.0.2-2
+	touch /var/adm/oss/update-3.0.2-3
+	exit
+fi
+
+. /etc/sysconfig/ldap
+. /etc/sysconfig/schoolserver
+DATE=$( /usr/share/oss/tools/oss_date.sh )
+ldapbase=`echo $BASE_CONFIG_DN | sed s/ou=ldapconfig,//`
+ldappasswd=$( oss_get_admin_pw )
+
+#Add Administrator with root rights
+echo "dn: uid=Administrator,ou=people,$ldapbase
+uid: Administrator
+objectClass: account
+objectClass: posixAccount
+uidNumber: 0
+gidNumber: 0
+cn: Domain Administrator
+homeDirectory: /root
+" | oss_ldapadd
+#Set Administrators smb password inital to installations password
+echo "$ldappasswd
+$ldappasswd" | pdbedit -a -t -u Administrator
+#Add Administrator to SYSADMINS
+echo "dn: cn=SYSADMINS,ou=group,$ldapbase
+add: member
+member: uid=Administrator,ou=people,$ldapbase
+" | oss_ldapmodify
+#Add Administrator to DOMAINUSERS
+echo "dn: cn=DOMAINUSERS,ou=group,$ldapbase
+add: member
+member: uid=Administrator,ou=people,$ldapbase
+" | oss_ldapmodify
+#Add user register for registering domain join
+useradd -r -s /bin/true -d /tmp register &> /dev/null
+echo "register
+register" | pdbedit -t -a register
+net rpc rights grant register SeMachineAccountPrivilege -U Administrator%$ldappasswd
+#SCHOOL_ALLOWED_MULTIPLE_LOGIN -> SCHOOL_ALLOW_MULTIPLE_LOGIN
+#SCHOOL_STUDENT_ALLOWED_MULTIPLE_LOGIN -> SCHOOL_ALLOW_STUDENTS_MULTIPLE_LOGIN
+ldapmodrdn -x -r -D "$BIND_DN" -w "$ldappasswd" "configurationKey=SCHOOL_ALLOWED_MULTIPLE_LOGIN,ou=sysconfig,$ldapbase" "configurationKey=SCHOOL_ALLOW_MULTIPLE_LOGIN"
+ldapmodrdn -x -r -D "$BIND_DN" -w "$ldappasswd" "configurationKey=SCHOOL_STUDENT_ALLOWED_MULTIPLE_LOGIN,ou=sysconfig,$ldapbase" "configurationKey=SCHOOL_ALLOW_STUDENTS_MULTIPLE_LOGIN"
+
+IT=$(oss_ldapsearch ckey=SCHOOL_IS_TERMINALSERVER cvalue | grep configurationValue: | sed 's/configurationValue: //')
+oss_ldapdelete "configurationKey=SCHOOL_IS_TERMINALSERVER,ou=sysconfig,$ldapbase"
+ldapmodrdn -x -r -D "$BIND_DN" -w "$ldappasswd" "configurationKey=SCHOOL_IS_TERMINAL_SERVER,ou=sysconfig,$ldapbase" "configurationKey=SCHOOL_IS_TERMINALSERVER"
+
+if [ "$IT" ]
+then	
+	echo "dn: configurationKey=SCHOOL_IS_TERMINALSERVER,ou=sysconfig,$ldapbase
+replace: configurationValue
+configurationValue: $IT" | oss_ldapmodify
+fi
+
+oss_ldapsearch -LLL cKey=SCHOOL_NAME configurationValueRO | sed 's/configurationValueRO.*/replace: configurationValueRO\nconfigurationValueRO: no/'  | oss_ldapmodify
+
+echo "dn: ou=Aliases,ou=Mailserver,$ldapbase
+objectClass: organizationalUnit
+ou: Aliases" | oss_ldapadd
+
+oss_ldapsearch -LLL cKey=SCHOOL_MONITOR_SERVICES > /tmp/SERVICES
+SERVICES=$( /usr/sbin/oss_correct_ldif.pl /tmp/SERVICES | grep configurationValue: | sed 's/configurationValue: //' | sed s/sessiond,// )
+echo "dn: configurationKey=SCHOOL_MONITOR_SERVICES,ou=sysconfig,$ldapbase
+replace: configurationValue
+configurationValue: $SERVICES" | oss_ldapmodify
+
+#We have to reregister our product
+test -e /var/adm/oss/registered && rm /var/adm/oss/registered
+
+#Mark this patch as installed
+mkdir -p /var/adm/oss
+touch /var/adm/oss/update-3.0.2-1

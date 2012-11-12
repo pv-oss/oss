@@ -1,0 +1,2 @@
+# Insert /var/log/cups/page_log data in database ( in PrintingLog table )
+-0 23 * * * root /usr/share/oss/tools/insert_pagelog_in_database.pl

@@ -1,0 +1,5 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+
+/usr/bin/zypper --no-gpg-checks -n ref &> /dev/null
+/usr/bin/zypper --no-gpg-checks -n lu 2> /dev/null | grep -v 'Abort' | grep -v 'Warning' > /var/adm/OSS-Updates

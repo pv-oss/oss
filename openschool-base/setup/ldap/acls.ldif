@@ -1,0 +1,72 @@
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+dn: olcDatabase={1}hdb,cn=config
+delete: olcDbIndex
+-
+delete: olcAccess
+-
+add: olcDbIndex
+olcDbIndex: ARecord eq
+olcDbIndex: activatedIP eq
+olcDbIndex: allowedDomain eq
+olcDbIndex: cn eq,sub
+olcDbIndex: configurationKey eq,sub
+olcDbIndex: configurationValue eq,sub
+olcDbIndex: description eq
+olcDbIndex: dhcpHWAddress eq
+olcDbIndex: dhcpRange eq
+olcDbIndex: dhcpStatements eq
+olcDbIndex: displayName eq,sub
+olcDbIndex: gidNumber eq
+olcDbIndex: givenName eq,sub
+olcDbIndex: groupType eq
+olcDbIndex: internetDisabled eq
+olcDbIndex: mailEnabled eq
+olcDbIndex: mail eq
+olcDbIndex: member eq
+olcDbIndex: memberOf eq
+olcDbIndex: memberUid eq
+olcDbIndex: objectclass eq
+olcDbIndex: ou eq
+olcDbIndex: OXEnabled eq
+olcDbIndex: relativeDomainName eq
+olcDbIndex: role eq,sub
+olcDbIndex: sambaDomainName eq
+olcDbIndex: sambaGroupType eq
+olcDbIndex: sambaPrimaryGroupSID eq
+olcDbIndex: sambaSID eq
+olcDbIndex: sambaSIDList eq
+olcDbIndex: serviceAccesControl sub
+olcDbIndex: sn eq,sub
+olcDbIndex: suseDeliveryToFolder eq
+olcDbIndex: suseDeliveryToMember eq
+olcDbIndex: SUSEMailAcceptAddress eq
+olcDbIndex: SuSEMailClient eq
+olcDbIndex: SuSEMailDomainMasquerading eq
+olcDbIndex: suseMailDomainType eq
+olcDbIndex: SuSEMailTransportDestination eq
+olcDbIndex: suseTLSPerSitePeer eq
+olcDbIndex: uid eq,sub
+olcDbIndex: uidNumber eq
+olcDbIndex: zoneName eq
+-
+add: olcAccess
+olcAccess: to dn.subtree="#LDAPBASE#" by group="cn=SYSADMINS,ou=group,#LDAPBASE#" write by * read break
+olcAccess: to attrs=configurationValue by dn.exact="cn=ossradius,ou=daemonadmins,#LDAPBASE#" write by * read break
+olcAccess: to attrs=sambaNTPassword,sambaLMPassword by dn.exact="cn=ossradius,ou=daemonadmins,#LDAPBASE#" read  by * auth break
+olcAccess: to dn.subtree="ou=group,#LDAPBASE#" by group="cn=TEACHERS,ou=group,#LDAPBASE#" write break by * read
+olcAccess: to dn.subtree="cn=config1,cn=schooladmin,ou=DHCP,#LDAPBASE#" by group="cn=TEACHERS,ou=group,#LDAPBASE#" write break by * read
+olcAccess: to dn.subtree="ou=whiteLists,#LDAPBASE#" by group="cn=TEACHERS,ou=group,#LDAPBASE#" write break by * read
+olcAccess: to filter=(&(objectClass=schoolAccount)(role=students)) attrs=sambaLMPassword,sambaNTPassword,sambaPwdLastSet,sambaPwdMustChange,userpassword,shadowlastchange,authData by group="cn=TEACHERS,ou=group,#LDAPBASE#" write by self write by * auth
+olcAccess: to filter=(&(objectClass=schoolAccount)(role=students)) attrs=internetdisabled,oxenabled,mailenabled,logindisabled,sambaAcctFlags,shadowExpire by group="cn=TEACHERS,ou=group,#LDAPBASE#" write by * read
+olcAccess: to dn.regex="ou=addr,uid=(.*),ou=people,#LDAPBASE#" by dn.exact,expand="uid=$1,ou=people,#LDAPBASE#" write by * none
+olcAccess: to dn.regex="o=oss,uid=(.*),ou=people,#LDAPBASE#" by dn.exact,expand="uid=$1,ou=people,#LDAPBASE#" write by * none
+olcAccess: to filter=(&(objectClass=schoolAccount)(!(role=students))(!(role=workstations))) by self write by * break
+olcAccess: to filter=(objectClass=schoolWorkstation) attrs=authData by group="cn=TEACHERS,ou=group,#LDAPBASE#" read by * auth
+olcAccess: to filter=(&(objectClass=*)(writerdn=*)) by dnattr=writerdn write by * -w break
+olcAccess: to attrs=birthday by self read by * none
+olcAccess: to attrs=authData,userPassword by self write by * auth
+olcAccess: to attrs=userPKCS12 by self read by * none
+olcAccess: to attrs=sambaNTPassword,sambaLMPassword by self write by * none
+olcAccess: to attrs=OXGroupID by self write by group="cn=TEACHERS,ou=group,#LDAPBASE#" write by * read
+olcAccess: to filter=(objectClass=schoolAccount) by self write by * read
+olcAccess: to * by * +r

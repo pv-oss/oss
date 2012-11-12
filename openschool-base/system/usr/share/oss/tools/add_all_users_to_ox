@@ -1,0 +1,39 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+
+if [ "$1" = "--help" -o  "$1" = "-h" ]
+then
+	echo 'Usage: /usr/share/oss/tools/add_all_users_to_ox [OPTION]'
+	echo 'With this script we add all the users from the OSS server to the openxchange.'
+	echo
+	echo 'Options :'
+	echo 'Mandatory parameters :'
+	echo "		No need for mandatory parameters. (There's no need for parameters for running this script.)"
+	echo 'Optional parameters :'
+	echo '		-h,   --help         Display this help.'
+	echo '		-d,   --description  Display the descriptiont.'
+        exit
+fi
+
+if [ "$1" = "--description" -o  "$1" = "-d" ]
+then
+	echo 'NAME:'
+	echo '	add_all_users_to_ox'
+	echo 'DESCRIPTION:'
+	echo '	With this script we add all the users from the OSS server to the openxchange.'
+	echo 'PARAMETERS:'
+	echo '	MANDATORY:'
+	echo "		                    : No need for mandatory parameters. (There's no need for parameters for running this script.)"
+	echo '	OPTIONAL:'
+	echo '		-h,   --help        : Display this help.(type=boolean)'
+	echo '		-d,   --description : Display the descriptiont.(type=boolean)'
+	exit
+fi
+
+for i in `ldapsearch -x '(&(objectclass=schoolaccount)(!(role=workstations)))' uid | grep uid: | gawk '{ print $2 }'`
+do
+   echo $i
+   /srv/www/oss/openxchange/sbin/addusersql_ox --username=$i --lang=DE
+done
+
+

@@ -1,0 +1,241 @@
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+# extended LDIF
+#
+# LDAPv3
+# base <ou=DHCP,dc=superschool,dc=org> with scope sub
+# filter: (objectclass=*)
+# requesting: ALL
+#
+
+# DHCP, superschool.org
+dn: ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: organizationalUnit
+ou: DHCP
+
+# admin, DHCP, superschool.org
+dn: cn=admin,ou=DHCP,dc=superschool,dc=org
+cn: admin
+dhcpServiceDN: cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpServer
+objectClass: dhcpOptions
+
+# config1, admin, DHCP, superschool.org
+dn: cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+cn: config1
+dhcpOption: domain-name "superschool.org"
+dhcpOption: domain-name-servers 192.168.0.12
+dhcpOption: routers 192.168.0.2
+dhcpOption: time-servers 192.168.0.12
+dhcpOption: lpr-servers 192.168.0.14
+dhcpOption: netbios-name-servers 192.168.0.12
+dhcpOption: option-150 code 150 = text
+dhcpOption: space PXE
+dhcpOption: wpad-curl code 252 = text
+dhcpOption: wpad-curl "http://admin.superschool.org/proxy.pac"
+dhcpPrimaryDN: cn=admin,ou=DHCP,dc=superschool,dc=org
+dhcpStatements: ddns-update-style none
+dhcpStatements: default-lease-time 86400
+objectClass: dhcpService
+objectClass: dhcpOptions
+objectClass: top
+
+# 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+cn: 192.168.0.0
+dhcpNetMask: 16
+dhcpStatements: default-lease-time 432000
+objectClass: dhcpSubnet
+objectClass: dhcpOptions
+objectClass: top
+
+# Pool1, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Pool1,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+cn: Pool1
+dhcpRange: dynamic-bootp 192.168.1.1 192.168.1.25
+objectClass: dhcpPool
+objectClass: dhcpOptions
+objectClass: top
+dhcpStatements: filename "pxegrub"
+dhcpStatements: option option-150 "(nd)/menu.lst"
+dhcpStatements: next-server 192.168.0.12
+dhcpStatements: allow unknown clients
+dhcpStatements: deny  known clients
+
+# Room0, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room0,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room0
+dhcpNetMask: 26
+dhcpRange: 192.168.2.0
+serviceAccesControl: DEFAULT all:DENY internet:ALLOW printing:ALLOW mailing:AL
+ LOW samba:ALLOW
+serviceAccesControl: 06:00 DEFAULT
+serviceAccesControl: 08:10  all: internet:ALLOW mailing:ALLOW printing:ALLOW s
+ amba:ALLOW
+description: TEST
+
+# Room1, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room1,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room1
+dhcpNetMask: 26
+dhcpRange: 192.168.2.64
+serviceAccesControl: DEFAULT all:DENY internet:ALLOW printing:ALLOW mailing:AL
+ LOW samba:ALLOW
+serviceAccesControl: 06:00 DEFAULT
+description: Raum2
+
+# Room2, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room2,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room2
+dhcpNetMask: 26
+dhcpRange: 192.168.2.128
+
+# Room3, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room3,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room3
+dhcpNetMask: 26
+dhcpRange: 192.168.2.192
+
+# Room4, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room4,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room4
+dhcpNetMask: 26
+dhcpRange: 192.168.3.0
+
+# Room5, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room5,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room5
+dhcpNetMask: 26
+dhcpRange: 192.168.3.64
+
+# Room6, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room6,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room6
+dhcpNetMask: 26
+dhcpRange: 192.168.3.128
+
+# Room7, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room7,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room7
+dhcpNetMask: 26
+dhcpRange: 192.168.3.192
+
+# Room8, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room8,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room8
+dhcpNetMask: 26
+dhcpRange: 192.168.4.0
+
+# Room9, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room9,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room9
+dhcpNetMask: 26
+dhcpRange: 192.168.4.64
+
+# Room10, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room10,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room10
+dhcpNetMask: 26
+dhcpRange: 192.168.4.128
+
+# Room11, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room11,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room11
+dhcpNetMask: 26
+dhcpRange: 192.168.4.192
+
+# Room12, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room12,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room12
+dhcpNetMask: 26
+dhcpRange: 192.168.5.0
+
+# Room13, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room13,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room13
+dhcpNetMask: 26
+dhcpRange: 192.168.5.64
+
+# Room14, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room14,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room14
+dhcpNetMask: 26
+dhcpRange: 192.168.5.128
+
+# Room15, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room15,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,dc=superschool,dc=org
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room15
+dhcpNetMask: 26
+dhcpRange: 192.168.5.192
+
+# search result
+search: 2
+result: 0 Success
+
+# numResponses: 22
+# numEntries: 21

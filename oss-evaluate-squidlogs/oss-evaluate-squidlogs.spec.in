@@ -1,0 +1,43 @@
+#
+#  Spec file for oss-evaluate-squidlogs (@VERSION@)
+#  Copyright (c) 2009 Peter Varkoly Fuerth, Germany.  All rights reserved.
+#
+Name:         oss-evaluate-squidlogs
+Summary:      Module for evaluate squid logs
+Version:      @VERSION@
+Release:      @RELEASE@
+License:      GPL
+Vendor:       EXTIS GmbH, Uttenreuth, Germany
+Distribution: SLE11
+Packager:     peter@varkoly.de
+Group:        Productivity/
+Source:       %{name}.tar.bz2
+BuildArch:    noarch
+BuildRequires: unzip openschool-base lmd
+BuildRequires: -brp-check-suse
+Requires:     filesystem lmd
+BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+
+%description
+Module for evaluate squid logs
+
+Authors:
+--------
+        peter@varkoly.de
+
+%prep
+%setup -n %{name}
+
+%build
+# just here to be complete
+
+%install
+make DESTDIR=%{buildroot} install
+
+%files
+%defattr(644,root,root)
+/usr/share/lmd/alibs/OSSEvaluateSquidlogs.pm
+/usr/share/lmd/lang/DE_OSSEvaluateSquidlogs.ini
+%defattr(750,root,root)
+/usr/sbin/oss_evaluate_squid_logs.pl
+/usr/share/oss/tools/make_squid_log_tmp.pl

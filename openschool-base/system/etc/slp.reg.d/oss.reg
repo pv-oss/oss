@@ -1,0 +1,29 @@
+#############################################################################
+#
+# OpenSLP registration file
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+# register the services of OSS
+#
+#############################################################################
+
+# Register the samba server, if it is running
+service:ossadmin:https://admin,en,65535
+tcp-port=443
+description=Admin Web Console for OSS
+
+service:ossportal:https://schoolserver,en,65535
+tcp-port=443
+description=Portal Site for OSS
+
+service:osslmd:lmd://admin:1967,en,65535
+tcp-port=1967
+description=LMD Daemon for OSS
+
+service:ldap:ldap://ldap,en,65535
+tcp-port=389
+description=LDAP Server for OSS
+
+service:ldaps:ldaps://ldap,en,65535
+tcp-port=636
+description=LDAP Server for OSS
+

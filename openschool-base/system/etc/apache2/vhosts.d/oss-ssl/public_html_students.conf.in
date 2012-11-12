@@ -1,0 +1,20 @@
+#for https://schoolserver/~<uid>
+<IfModule mod_userdir.c>
+        <Directory /home/students/*/public_html>
+
+                AllowOverride FileInfo AuthConfig Limit Indexes
+                Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+
+                <Limit GET POST OPTIONS PROPFIND>
+                        Order allow,deny
+                        Allow from all
+                </Limit>
+
+                <LimitExcept GET POST OPTIONS PROPFIND>
+                        Order deny,allow
+                        Deny from all
+                </LimitExcept>
+
+        </Directory>
+</IfModule>
+

@@ -1,0 +1,28 @@
+1. Installation
+
+   make install
+
+2. Start
+   
+   rclmd start
+
+   rclmd status
+
+   rclmd stop
+
+3. How to use it
+
+   Start apache.
+
+   http://localhost/cgi-bin/dispatch.pl
+
+4. Debuging
+
+   lmd.pl --debug
+
+5. Styling
+
+   * Edit lmd.css file
+   * You can place for each application an png image in images. 
+     In this case this will be placed on the main menu
+

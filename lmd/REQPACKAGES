@@ -1,0 +1,7 @@
+mysql-client
+mysql
+perl
+perl-DBI
+perl-IO-Socket-SSL
+perl-XML-Parser
+perl-XML-Writer

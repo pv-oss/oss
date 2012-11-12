@@ -1,0 +1,106 @@
+#
+# Spec file for LinuxManagemenDaemon (@VERSION@)
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+# Copyright (c) 2009 Peter Varkoly Fuerth, Germany.  All rights reserved.
+#
+Name:	      lmd
+Summary:      Perl based Linux Management Daemon
+Version:      @VERSION@
+Release:      @RELEASE@
+License:      Commercial
+Vendor:       EXTIS GmbH, Uttenreuth, Germany
+Distribution: SLE11
+Packager:     peter@varkoly.de
+Group:        Productivity/
+Source:       %{name}.tar.bz2
+BuildArch:    noarch
+BuildRequires: unzip openschool-base
+BuildRequires: -brp-check-suse
+%if 0%{?sles_version} == 11
+BuildRequires: java-1_6_0-ibm
+%else
+BuildRequires: java
+%endif
+Requires:     filesystem mysql-client mysql perl perl-DBI perl-IO-Socket-SSL perl-XML-Parser perl-XML-Writer openschool-base wol php-gd perl-Crypt-OpenSSL-RSA
+PreReq:       openschool-base %insserv_prereq
+PreReq:       %fillup_prereq
+BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+
+%description
+Perl based Linux Management Daemon for remote management.
+This package provides an easy to use interface for enhancing
+the functionlaty of the daemon by perl-modules or by arbitrary 
+executable programms.
+
+Authors:
+--------
+        peter@varkoly.de
+
+%package web
+Summary:	Java based web agent for the LMD
+Group:		Productivity/
+BuildRequires:	tomcat6 apache2 apache2-mod_jk syslog-ng
+Requires:	tomcat6 apache2 apache2-mod_jk syslog-ng
+Requires:       java     >= 1.6.0
+Requires:	lmd >= %{version}
+
+%description web
+Java based Web Agent for the Linux Management Daemon (LMD).
+
+%prep
+%setup -n %{name}
+
+%build
+# just here to be complete
+
+%install
+make DESTDIR=%{buildroot} install
+
+%preun
+%stop_on_removal
+
+%post
+grep -q "/var/adm/oss/must-restart" /etc/init.d/boot.local || echo "test -e /var/adm/oss/must-restart && rm /var/adm/oss/must-restart" >> /etc/init.d/boot.local
+if [ -e /etc/sysconfig/schoolserver ]; then
+   export HOME=/root;
+   export USER=root;
+   /bin/bash /usr/share/lmd/sql/create-sql.sh
+fi
+if [ -e /etc/cron.d/oss-virus-protection ]
+then
+        mv /etc/cron.d/oss-virus-protection /etc/cron.d/oss.virus-protection
+        echo "" >> /etc/cron.d/oss.virus-protection
+fi
+%{fillup_and_insserv -Y} 
+%restart_on_update lmd
+
+%post web
+if [ -e /srv/tomcat6/webapps/ossadmin ]; then
+	rm -r /srv/tomcat6/webapps/ossadmin
+fi
+%restart_on_update tomcat6
+
+%postun
+%restart_on_update
+%insserv_cleanup
+ 
+%files
+%defattr(-,root,root)
+/usr/share/lmd
+/var/adm/fillup-templates/sysconfig.lmd
+/usr/sbin/rclmd
+%defattr(755,root,root)
+/etc/init.d/lmd
+/usr/sbin/lmd.pl
+/usr/share/oss/tools/enhance_translation.pl
+
+%files web
+%defattr(-,root,root)
+%config /etc/apache2/vhosts.d/admin-ssl/jk.conf
+%config /etc/apache2/vhosts.d/oss-ssl/jk.conf
+%defattr(-,tomcat,root)
+/srv/tomcat6/webapps/ossadmin.war
+%defattr(755,root,root)
+/srv/www/cgi-bin/*
+
+%changelog

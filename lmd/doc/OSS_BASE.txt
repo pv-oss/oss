@@ -1,0 +1,7 @@
+<request name="get_school_configuration" application="OSS_BASE" result="0">
+<par1>SCHOOL_NAME</par1>
+</request>
+
+<reply name="OSS_BASE" action="get_school_configuration" result="0">
+<value>E.T.A. Hoffmann Gymnasium</value>
+</reply>

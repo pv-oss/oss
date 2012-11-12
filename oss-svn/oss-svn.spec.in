@@ -1,0 +1,38 @@
+#
+#  Spec file for oss-svn (@VERSION@)
+#  Copyright (c) 2010 Peter Varkoly Fuerth, Germany.  All rights reserved.
+#
+Name:         oss-svn
+Summary:      SVN Server Configuration for the OSS
+Version:      @VERSION@
+Release:      @RELEASE@
+License:      GPL
+Vendor:       EXTIS GmbH, Uttenreuth, Germany
+Distribution: SLE11
+Packager:     peter@varkoly.de
+Group:        Productivity/
+Source:       %{name}.tar.bz2
+BuildArch:    noarch
+PreReq:       subversion-server openschool-base
+BuildRequires: -brp-check-suse
+BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+
+%description
+SVN server sonfiguration for the OSS.
+You can assign groups a svn access.
+
+%prep
+%setup -n %{name}
+
+%build
+
+%install
+make DESTDIR=%{buildroot} install
+
+%post
+/usr/share/oss/setup/setup-svn.sh
+%files
+%defattr(750,root,root,-)
+/usr/share/oss/setup/setup-svn.sh
+/usr/share/oss/plugins/*/oss-svn.sh
+

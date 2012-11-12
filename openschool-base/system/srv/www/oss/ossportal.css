@@ -1,0 +1,46 @@
+@CHARSET "UTF-8";
+
+body {background-color: #98B1D0; font-family: sans-serif;}
+
+DIV#header { background-color: #1A498d; color: #98B1D0; text-align: center; }
+
+DIV.header {
+	background-color: #98B1D0; 
+	background-repeat:no-repeat; 
+	background-position:center;
+	background-image: url("img/blue_middle.jpg"); 
+	color: #98B1D0;
+	text-align: center;
+    padding-top: 5px;
+	height: 90px;
+}
+
+span#osslight {background-color: #98B1D0; }
+span#ossdark {background-color: #1A498D;}
+
+H1 {font-size: x-large;  }
+
+div.application_listing {
+	position: absolute;
+	top: 120px;
+	left: 220px;
+}
+div.application {
+	margin-top: 10px;
+}
+img.application_logo { clear: both; float: left; width: 120px; border: 0; vertical-align: middle; margin: 5px;}
+h2.application_title {color: #1A498D; font-size: large; }
+div.application_title {color: #1A498D; font-size: large; font-weight: bold; }
+
+div.intro {background-color: #1A498D; position: absolute; top: 130px; left:0px; width: 200px; padding:5px;}
+div.intro_text {color: #98B1D0; }
+img.intro {text-align: center;}
+
+
+img { border: 0;}  
+
+div.application a:link { color:black; text-decoration:none; border-style:none; }
+div.application a:visited {color:black; text-decoration:none; border-style:none; }
+div.application a:hover {color:black; text-decoration:none; border-style:none; }
+div.application a:active {color:black; text-decoration:none; border-style:none; }
+div.application a:focus {color:black;  text-decoration:none; border-style:none; }

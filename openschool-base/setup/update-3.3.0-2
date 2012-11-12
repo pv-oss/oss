@@ -1,0 +1,39 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+
+if [ -e /var/adm/oss/update-3.3.0-2 ]
+then
+echo "Patch 3.3.0-2 already installed"
+        exit 0
+fi
+
+. /etc/sysconfig/ldap
+. /etc/sysconfig/schoolserver
+DATE=$( /usr/share/oss/tools/oss_date.sh )
+SCHOOL_LDAPBASE=`echo $BASE_CONFIG_DN | sed s/ou=ldapconfig,//`
+
+perl -e 'use strict;
+use Config::IniFiles;
+
+my $m = new Config::IniFiles( -file => "/etc/samba/printserver.conf" );
+$m->ReadConfig;
+if( ! $m->val("global","cache directory") )
+{
+        $m->newval("global","cache directory","/var/lib/samba/printserver");
+}
+if( ! $m->val("global","wide links") )
+{
+        $m->newval("global","state directory","/var/lib/samba/printserver");
+}
+
+$m->RewriteConfig;
+'
+/etc/init.d/smb-printserver stop
+/etc/init.d/nmb-printserver stop
+sleep 2
+/etc/init.d/nmb-printserver start
+/etc/init.d/smb-printserver start
+#Mark this patch as installed
+mkdir -p /var/adm/oss
+touch /var/adm/oss/update-3.3.0-2
+

@@ -1,0 +1,42 @@
+MAIL_CMD        = "/usr/lib/sendmail -t"
+#
+# Standard mail fields
+#
+FROM            = "admin@#DOMAIN#"
+SUBJECT         = "Your account quota has exceeded!"
+CC_TO           = "admin@#DOMAIN#"
+#
+# These variables are used in the default signatures,
+# provided SIGNATURE or GROUP_SIGNATURE is not specified (see below)
+#
+SUPPORT         = "admin@#DOMAIN#"
+PHONE           = "123 456 789"
+#
+# Text in the beginning of the mail (if not specified, default text is used)
+#
+# The expressions %i, %h, %d, and %% are substituted for user/group name,
+# host name, domain name, and '%' respectively. For backward compatibility
+# %s behaves as %i but is deprecated.
+MESSAGE         = Hello user %i, I've noticed you use too much space\
+ on my disk in %h.%d.|Delete your files on the following filesystems:|
+
+#
+# Text in the end of the mail.
+# If not specified, default text using SUPPORT and PHONE is created.
+#
+SIGNATURE       = See you!|                     Your admin of %h|
+
+#
+# Text in the end of the mail to the group.
+# If not specified, default text using SUPPORT and PHONE is created.
+#
+GROUP_SIGNATURE = See you!|                     Your admin|
+
+
+#LDAP_MAIL = true
+#LDAP_HOST = #LDAPSERVER#
+#LDAP_PORT = 389
+#LDAP_BASEDN = ou=people,#LDAPBASE#
+#LDAP_SEARCH_ATTRIBUTE = uid
+#LDAP_MAIL_ATTRIBUTE = suseMailAcceptAddress
+#LDAP_DEFAULT_MAIL_DOMAIN = #DOMAIN#

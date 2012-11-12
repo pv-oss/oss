@@ -1,0 +1,245 @@
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+# DNS, extis.schule.de
+dn: ou=DNS,#LDAPBASE#
+objectClass: top
+objectClass: organizationalUnit
+ou: DNS
+
+# #DOMAIN#, DNS, #DOMAIN#
+dn: zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+mXRecord: 10 mailserver
+nSRecord: dns
+relativeDomainName: @
+sOARecord: @ admin 1 172800 14400 3628800 604800
+objectClass: dNSZone
+objectClass: MailDomain
+MailDomainType: main
+zoneName: #DOMAIN#
+
+# PDC, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=#NETBIOSNAME#,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: #NETBIOSNAME#
+zoneName: #DOMAIN#
+
+# admin, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=admin,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: admin
+zoneName: #DOMAIN#
+
+# admin, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=schooladmin,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: schooladmin
+zoneName: #DOMAIN#
+
+# dns, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=dns,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dns
+zoneName: #DOMAIN#
+
+# install, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=install,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: install
+zoneName: #DOMAIN#
+
+# ldap, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=ldap,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: ldap
+zoneName: #DOMAIN#
+
+# nfs, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=nfs,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: nfs
+zoneName: #DOMAIN#
+
+# timeserver, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=timeserver,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: timeserver
+zoneName: #DOMAIN#
+
+# samba, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=samba,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #IPADDRESS#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: samba
+zoneName: #DOMAIN#
+
+# schoolserver, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=schoolserver,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #MAILSERVER#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: schoolserver
+zoneName: #DOMAIN#
+
+# schulserver, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=schulserver,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #MAILSERVER#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: schulserver
+zoneName: #DOMAIN#
+
+# suliszerver, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=suliszerver,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #MAILSERVER#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: suliszerver
+zoneName: #DOMAIN#
+
+# mailserver, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=mailserver,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #MAILSERVER#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: mailserver
+zoneName: #DOMAIN#
+
+# mailszerver, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=mailszerver,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #MAILSERVER#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: mailszerver
+zoneName: #DOMAIN#
+
+# printserver, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=printserver,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #PRINTSERVER#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: printserver
+zoneName: #DOMAIN#
+
+# proxy, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=proxy,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #PROXY#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: proxy
+zoneName: #DOMAIN#
+
+# backup, #DOMAIN#, DNS, #DOMAIN#
+dn: relativeDomainName=backup,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+aRecord: #BACKUP#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: backup
+zoneName: #DOMAIN#
+
+dn: relativeDomainName=_ldap._tcp.dc._msdcs.#WORKGROUP#,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+sRVRecord: 0 100 389 #NETBIOSNAME#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: _ldap._tcp.dc._msdcs.#WORKGROUP#
+zoneName: #DOMAIN#
+
+dn: relativeDomainName=_ldap._tcp.dc._msdcs.#DOMAIN#,zoneName=#DOMAIN#,ou=DNS,#LDAPBASE#
+sRVRecord: 0 100 389 #NETBIOSNAME#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: _ldap._tcp.dc._msdcs.#DOMAIN#
+zoneName: #DOMAIN#
+
+# #REVZONE#.IN-ADDR.ARPA, DNS, #DOMAIN#
+dn: zoneName=#REVZONE#.IN-ADDR.ARPA,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+mXRecord: 10 mailserver.#DOMAIN#.
+nSRecord: dns.#DOMAIN#.
+objectClass: dNSZone
+relativeDomainName: @
+sOARecord: @ admin 1 172800 14400 3628800 604800
+zoneName: #REVZONE#.IN-ADDR.ARPA
+
+# 12.0, #REVZONE#.IN-ADDR.ARPA, DNS, #DOMAIN#
+dn: relativeDomainName=#REVIPADDRESS#,zoneName=#REVZONE#.IN-ADDR.ARPA,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: admin.#DOMAIN#.
+relativeDomainName: #REVIPADDRESS#
+zoneName: #REVZONE#.IN-ADDR.ARPA
+
+# 13.0, #REVZONE#.IN-ADDR.ARPA, DNS, #DOMAIN#
+dn: relativeDomainName=#REVMAILSERVER#,zoneName=#REVZONE#.IN-ADDR.ARPA,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: mailserver.#DOMAIN#.
+relativeDomainName: #REVMAILSERVER#
+zoneName: #REVZONE#.IN-ADDR.ARPA
+
+# 14.0, #REVZONE#.IN-ADDR.ARPA, DNS, #DOMAIN#
+dn: relativeDomainName=#REVPRINTSERVER#,zoneName=#REVZONE#.IN-ADDR.ARPA,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: printserver.#DOMAIN#.
+relativeDomainName: #REVPRINTSERVER#
+zoneName: #REVZONE#.IN-ADDR.ARPA
+
+# 15.0, #REVZONE#.IN-ADDR.ARPA, DNS, #DOMAIN#
+dn: relativeDomainName=#REVPROXY#,zoneName=#REVZONE#.IN-ADDR.ARPA,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: proxy.#DOMAIN#.
+relativeDomainName: #REVPROXY#
+zoneName: #REVZONE#.IN-ADDR.ARPA
+
+# 15.0, #REVZONE#.IN-ADDR.ARPA, DNS, #DOMAIN#
+dn: relativeDomainName=#REVBACKUP#,zoneName=#REVZONE#.IN-ADDR.ARPA,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: backup.#DOMAIN#.
+relativeDomainName: #REVBACKUP#
+zoneName: #REVZONE#.IN-ADDR.ARPA
+

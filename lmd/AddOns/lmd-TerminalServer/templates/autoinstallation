@@ -1,0 +1,69 @@
+default         menu.c32
+KBDMAP          german.kbd
+timeout         1200
+prompt          0
+allowoptions    1
+noescape        0
+
+menu master passwd $4$OIhVhxhQ$76LQnGfeA3tm9GsRrC2FUDrDZXk$
+menu title OpenSchoolServer V2.5 PXE Boot Enviroment
+
+LABEL Festplatte
+        LOCALBOOT 0
+
+LABEL Starte Linux X Terminal
+        KERNEL xterm/vmlinuz
+        APPEND initrd=xterm/initrd root=/dev/ram ramdisk_size=32768
+
+LABEL Backup Server installieren
+        KERNEL linux
+        APPEND initrd=initrd autoyast=ftp://install/xml/backup.xml install=ftp://install/akt/CD1/
+
+LABEL Linux Autoinstallation
+        KERNEL linux
+        APPEND initrd=initrd autoyast=ftp://install/xml/std.xml install=ftp://install/akt/CD1/
+
+LABEL Linux Autoinstallation + Windows Partition
+        KERNEL linux
+        APPEND initrd=initrd autoyast=ftp://install/xml/std+win.xml install=ftp://install/akt/CD1/
+
+LABEL Linux Autoinstallation mit vorhandener Windows Partition
+        KERNEL linux
+        APPEND initrd=initrd autoyast=ftp://install/xml/windows_exists.xml install=ftp://install/akt/CD1/
+
+LABEL Linux manuelle Installation
+        KERNEL linux
+        APPEND initrd=initrd install=ftp://install/akt/CD1/
+
+LABEL Linux ThinClient Autoinstallation
+        KERNEL linux
+        APPEND initrd=initrd autoyast=ftp://install/xml/thinclient.xml install=ftp://install/akt/CD1/
+
+LABEL Linux Terminalserver Autoinstallation
+        KERNEL linux
+        APPEND initrd=initrd autoyast=ftp://install/xml/terminalserver.xml install=ftp://install/akt/CD1/
+
+LABEL 64bit Linux Autoinstallation
+        KERNEL linux64
+        APPEND initrd=initrd64 autoyast=ftp://install/xml/std.xml install=ftp://install/akt/CD1/
+
+LABEL 64bit Linux Autoinstallation + Windows Partition
+        KERNEL linux64
+        APPEND initrd=initrd64 autoyast=ftp://install/xml/std+win.xml install=ftp://install/akt/CD1/
+
+LABEL 64bit Linux Autoinstallation mit vorhandener Windows Partition
+        KERNEL linux64
+        APPEND initrd=initrd64 autoyast=ftp://install/xml/windows_exists.xml install=ftp://install/akt/CD1/
+# ssh=1 sshpassword=12345 netsetup=dhcp
+
+LABEL 64bit Linux manuelle Installation
+        KERNEL linux64
+        APPEND initrd=initrd64 install=ftp://install/akt/CD1/
+
+LABEL 64bit Linux ThinClient Autoinstallation
+        KERNEL linux64
+        APPEND initrd=initrd64 autoyast=ftp://install/xml/thinclient.xml install=ftp://install/akt/CD1/
+
+LABEL 64bit Linux Terminalserver Autoinstallation
+        KERNEL linux64
+        APPEND initrd=initrd64 autoyast=ftp://install/xml/terminalserver.xml install=ftp://install/akt/CD1/

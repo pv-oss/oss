@@ -1,0 +1,28 @@
+<?php  
+  // Standard inclusions     
+  include("pChart/pData.class");  
+  include("pChart/pChart.class");  
+   
+  // Dataset definition   
+  $DataSet = new pData;  
+  $DataSet->AddPoint(array(#used#,#free#),"Serie1");  
+  $DataSet->AddPoint(array("#used_space_label# : #used_space#","#free_space_label# : #free_space#"),"Serie2");  
+  $DataSet->AddAllSeries();  
+  $DataSet->SetAbsciseLabelSerie("Serie2");  
+   
+  // Initialise the graph  
+  $Test = new pChart(380,200);  
+  $Test->drawFilledRoundedRectangle(0,0,380,380,5,250,250,250);  
+  $Test->drawRoundedRectangle(5,5,375,195,5,250,250,250);
+  $Test->setColorPalette(1,124,190,65);
+  $Test->setColorPalette(0,49,133,202);
+ 
+  // Draw the pie chart  
+  $Test->setFontProperties("Fonts/tahoma.ttf",8);  
+  $Test->drawPieGraph($DataSet->GetData(),$DataSet->GetDataDescription(),150,90,110,PIE_PERCENTAGE,TRUE,50,20,5);  
+  $Test->drawPieLegend(250,15,$DataSet->GetData(),$DataSet->GetDataDescription(),250,250,250);
+  $Test->setFontProperties("Fonts/tahoma.ttf",10);
+  $Test->drawTitle(50,12,"#sda_name# #mounted# : \"#disk_name#\"",10,50,50,285);
+ 
+  $Test->Render("/usr/share/lmd/tools/pchart/#png_name#.png");  
+?> 

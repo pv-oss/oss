@@ -1,0 +1,900 @@
+# OSS Translation.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the yast2-openschool-server package.
+# Peter Varkoly <peter@varkoly.de>, 2011.
+#
+"Project-Id-Version: yast2-openschool-server 3.2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-15 13:16+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: UTF-8\n"
+
+#. openschoolserver read dialog caption
+#: src/OpenschoolServer.ycp:543 src/OpenschoolServer.ycp:639
+msgid "Initializing Open School Server Configuration"
+msgstr ""
+
+#. progress stage 1/1
+#. progress stage 1/2
+#: src/OpenschoolServer.ycp:579 src/OpenschoolServer.ycp:655
+msgid "Read the Open School Server Configuration"
+msgstr ""
+
+#. progress step 1/1
+#. progress step 1/2
+#: src/OpenschoolServer.ycp:582 src/OpenschoolServer.ycp:660
+msgid "Reading the Open School Server configuration..."
+msgstr ""
+
+#. progress finished
+#. Progress finished
+#: src/OpenschoolServer.ycp:584 src/OpenschoolServer.ycp:664
+#: src/OpenschoolServer.ycp:903 src/dialogs.ycp:1072
+msgid "Finished"
+msgstr ""
+
+#. progress stage 2/2
+#. progress stage 1/10
+#: src/OpenschoolServer.ycp:657 src/OpenschoolServer.ycp:886
+msgid "Calculate Settings"
+msgstr ""
+
+#. progress step 2/2
+#. progress step 1/10
+#: src/OpenschoolServer.ycp:662 src/OpenschoolServer.ycp:895
+msgid "Calculating settings ..."
+msgstr ""
+
+#: src/OpenschoolServer.ycp:829
+msgid "Administrator Password"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:831
+msgid "Cancel"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:832
+msgid "OK"
+msgstr ""
+
+#. OpenschoolServer read dialog caption
+#: src/OpenschoolServer.ycp:868
+msgid "Saving the Open School Server configuration"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:887
+msgid "Configure the LDAP Server"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:888
+msgid "Set up Mail Server"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:889
+msgid "Set up Certificates"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:890 src/OpenschoolServer.ycp:899
+msgid "Set up the System"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:891
+msgid "Set up the AddOns"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:892
+msgid "Set up AutoYaST"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:896
+msgid "Enchance the LDAP server"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:897
+msgid "Setting up mail server"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:898
+msgid "Creating certificates"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:900
+msgid "Setting up the AddOns"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:901
+msgid "Setting up AutoYaST"
+msgstr ""
+
+#: src/OpenschoolServer.ycp:922
+msgid "Cannot setup ldap server settings."
+msgstr ""
+
+#: src/OpenschoolServer.ycp:930
+msgid "Cannot write mail server settings."
+msgstr ""
+
+#: src/OpenschoolServer.ycp:938
+msgid "Cannot write certificates."
+msgstr ""
+
+#: src/OpenschoolServer.ycp:953
+msgid "Cannot write AddOn settings."
+msgstr ""
+
+#: src/OpenschoolServer.ycp:967
+msgid ""
+"The installation of the OSS was finished.\n"
+"Your system was configured with the settings read from the backup.\n"
+"To recover all datas please connect the backup medium and login as <b>root</b>\n"
+"after the system was started."
+msgstr ""
+
+#. TODO FIXME: your code here...
+#. Configuration summary text for autoyast
+#: src/OpenschoolServer.ycp:1022
+msgid "Configuration summary ..."
+msgstr ""
+
+#. OpenschoolServer summary dialog caption
+#. Initialization dialog caption
+#: src/complex.ycp:74 src/wizards.ycp:230
+msgid "OpenschoolServer Configuration"
+msgstr ""
+
+#. Frame label
+#: src/complex.ycp:82
+msgid "OpenschoolServer to Configure"
+msgstr ""
+
+#. OpenschoolServer overview dialog caption
+#: src/complex.ycp:134
+msgid "OpenschoolServer Overview"
+msgstr ""
+
+#. Table header
+#: src/complex.ycp:141
+msgid "Number"
+msgstr ""
+
+#. Rich text title for OpenschoolServer in proposals
+#: src/complex.ycp:141 src/openschool-network_proposal.ycp:65
+#: src/openschool-server_proposal.ycp:65
+msgid "OpenschoolServer"
+msgstr ""
+
+#. Read dialog caption
+#: src/dialogs.ycp:47
+msgid "Reading Network Settings"
+msgstr ""
+
+#. Read dialog contents
+#: src/dialogs.ycp:51
+msgid "Reading network settings ..."
+msgstr ""
+
+#: src/dialogs.ycp:98
+msgid "Do you want to read a backup of the OSS?"
+msgstr ""
+
+#: src/dialogs.ycp:102
+msgid "Please insert the USB-stick with the configuration file!"
+msgstr ""
+
+#: src/dialogs.ycp:111
+msgid "No configuration file was found."
+msgstr ""
+
+#: src/dialogs.ycp:111
+msgid "Do you want to try it again?"
+msgstr ""
+
+#: src/dialogs.ycp:129
+msgid "Primary school"
+msgstr ""
+
+#: src/dialogs.ycp:131 src/dialogs.ycp:164
+msgid "Secondary school"
+msgstr ""
+
+#: src/dialogs.ycp:133
+msgid "Gymnasium"
+msgstr ""
+
+#: src/dialogs.ycp:135 src/dialogs.ycp:153 src/dialogs.ycp:172
+msgid "Other institute"
+msgstr ""
+
+#. Frame label
+#: src/dialogs.ycp:184
+msgid "Select the type of your school"
+msgstr ""
+
+#. GATEWAY dialog caption
+#: src/dialogs.ycp:196
+msgid "Selection of the School Type"
+msgstr ""
+
+#: src/dialogs.ycp:214
+msgid "You have to choose the type of your school"
+msgstr ""
+
+#: src/dialogs.ycp:247
+msgid "Local Network -- Card Selection"
+msgstr ""
+
+#. SelectionBox label
+#: src/dialogs.ycp:262 src/dialogs.ycp:674
+msgid "A&vailable Network Cards:"
+msgstr ""
+
+#. Address dialog caption
+#: src/dialogs.ycp:301
+msgid "Local Network -- Network Address Setup"
+msgstr ""
+
+#: src/dialogs.ycp:315
+msgid "Required Settings"
+msgstr ""
+
+#: src/dialogs.ycp:317
+msgid "&Domain name for the School Server."
+msgstr ""
+
+#: src/dialogs.ycp:318
+msgid "Available Networks:"
+msgstr ""
+
+#. Frame label
+#: src/dialogs.ycp:328
+msgid "Basic Network Settings (Usually No Changes Required)"
+msgstr ""
+
+#: src/dialogs.ycp:332
+msgid "&IP Address"
+msgstr ""
+
+#: src/dialogs.ycp:333
+msgid "Mail Server IP Address"
+msgstr ""
+
+#: src/dialogs.ycp:334
+msgid "Print Server IP Address"
+msgstr ""
+
+#: src/dialogs.ycp:335
+msgid "Proxy Server IP Address"
+msgstr ""
+
+#: src/dialogs.ycp:336
+msgid "Backup Server IP Address"
+msgstr ""
+
+#: src/dialogs.ycp:339
+msgid "&Subnet Mask"
+msgstr ""
+
+#: src/dialogs.ycp:340
+msgid "&Anon_DHCP Range"
+msgstr ""
+
+#: src/dialogs.ycp:341
+msgid "&First Classroom Network"
+msgstr ""
+
+#: src/dialogs.ycp:342
+msgid "Number of Classroom (approx.)"
+msgstr ""
+
+#: src/dialogs.ycp:343
+msgid "Number of Workstations in a Room"
+msgstr ""
+
+#: src/dialogs.ycp:346
+msgid "Enable DHCP Server"
+msgstr ""
+
+#: src/dialogs.ycp:477
+#, ycp-format
+msgid "'%1' is an invalid Domain Name. Use something like school.edu."
+msgstr ""
+
+#: src/dialogs.ycp:483
+#, ycp-format
+msgid "'%1' is an invalid Domain Name. You must not use 'local' as top domain."
+msgstr ""
+
+#: src/dialogs.ycp:502
+msgid "The netmask may be maximal 20 bits long (255.255.240.0)"
+msgstr ""
+
+#. Popup text
+#: src/dialogs.ycp:509 src/dialogs.ycp:719
+msgid "The subnet mask is incorrect"
+msgstr ""
+
+#: src/dialogs.ycp:518 src/dialogs.ycp:524 src/dialogs.ycp:530
+#: src/dialogs.ycp:536 src/dialogs.ycp:542 src/dialogs.ycp:548
+#: src/dialogs.ycp:555 src/dialogs.ycp:707 src/dialogs.ycp:713
+msgid "The IP address is incorrect"
+msgstr ""
+
+#. Backup may be on mailserver or proxy too
+#: src/dialogs.ycp:568
+msgid "The IP addresses must be different"
+msgstr ""
+
+#: src/dialogs.ycp:575
+msgid "The mailserver IP address is not in the same network. Is this correct?"
+msgstr ""
+
+#: src/dialogs.ycp:583
+msgid "The printserver IP address is not in the same network. Is this correct?"
+msgstr ""
+
+#: src/dialogs.ycp:591
+msgid "The proxy IP address is not in the same network. Is this correct?"
+msgstr ""
+
+#: src/dialogs.ycp:599
+msgid "The backup IP address is not in the same network. Is this correct?"
+msgstr ""
+
+#: src/dialogs.ycp:607
+msgid "The first room network IP address is not in the same network."
+msgstr ""
+
+#: src/dialogs.ycp:656
+msgid "Internet Connections Setup via Network Card."
+msgstr ""
+
+#: src/dialogs.ycp:676
+msgid "&External IP Address of the Openschool Server"
+msgstr ""
+
+#: src/dialogs.ycp:677
+msgid "&IP Address of the Gateway"
+msgstr ""
+
+#: src/dialogs.ycp:678
+msgid "&Netmask of the Transport Network"
+msgstr ""
+
+#: src/dialogs.ycp:725
+msgid "The external IP address and the gateway are not in the same network."
+msgstr ""
+
+#: src/dialogs.ycp:730
+msgid "You can use for example the network 10.0.0.0 with network mask 255.255.255.0"
+msgstr ""
+
+#: src/dialogs.ycp:733
+msgid "You can use for example the network 172.16.0.0 with network mask 255.255.255.0"
+msgstr ""
+
+#: src/dialogs.ycp:735
+msgid "The internal IP address and the external IP address must not be in the same network."
+msgstr ""
+
+#: src/dialogs.ycp:781
+msgid ""
+"In this frame, select the Internet connection type.\n"
+"Select the hardware to use, or set the default Internet gateway\n"
+"in your school network."
+msgstr ""
+
+#. Frame label
+#: src/dialogs.ycp:793
+msgid "Internet Connection Type"
+msgstr ""
+
+#. label for radiobutton
+#: src/dialogs.ycp:799
+msgid "Via Transport Net (Network Card)"
+msgstr ""
+
+#. label for radiobutton
+#: src/dialogs.ycp:804
+msgid "ISDN"
+msgstr ""
+
+#. label for radiobutton
+#: src/dialogs.ycp:809
+msgid "DSL"
+msgstr ""
+
+#. label for radiobutton
+#: src/dialogs.ycp:814
+msgid "Modem"
+msgstr ""
+
+#: src/dialogs.ycp:819
+msgid "&Default Gateway (IP Address)"
+msgstr ""
+
+#: src/dialogs.ycp:825
+msgid "No internet connection exists"
+msgstr ""
+
+#. GATEWAY dialog caption
+#: src/dialogs.ycp:838
+msgid "Selection of the Internet Connection Type"
+msgstr ""
+
+#: src/dialogs.ycp:878
+msgid ""
+"Note\n"
+"\n"
+"A firewall will be started automatically for the external interface.\n"
+"Remember that the server contains critical data. For maximum\n"
+"security, we recommend use of a separate firewall, especially\n"
+"if the host is directly connected to the Internet\n"
+msgstr ""
+
+#. Popup text
+#: src/dialogs.ycp:946
+msgid "The IP address for the gateway is incorrect"
+msgstr ""
+
+#: src/dialogs.ycp:952
+msgid "The IP address for the gateway is not in the school network."
+msgstr ""
+
+#: src/dialogs.ycp:1035
+msgid "If You start this modul now all datas on the server will be cleaned."
+msgstr ""
+
+#: src/dialogs.ycp:1036
+msgid "Do You want to continue?"
+msgstr ""
+
+#. no we clean up all the things :-)
+#. OpenschoolServer read dialog caption
+#: src/dialogs.ycp:1042
+msgid "Reseting the Openschool Server Configuration"
+msgstr ""
+
+#. Progress stage 1/5
+#: src/dialogs.ycp:1051
+msgid "Clean the File System /home"
+msgstr ""
+
+#. Progress stage 2/5
+#: src/dialogs.ycp:1053
+msgid "Clean the LDAP Data Base"
+msgstr ""
+
+#. Progress stage 3/5
+#: src/dialogs.ycp:1055
+msgid "Clean the Mail System"
+msgstr ""
+
+#. Progress stage 4/5
+#: src/dialogs.ycp:1057
+msgid "Clean the SQL Data Base"
+msgstr ""
+
+#. Progress stage 5/5
+#: src/dialogs.ycp:1059
+msgid "Clean the CA Management"
+msgstr ""
+
+#. Progress step 1/5
+#: src/dialogs.ycp:1062
+msgid "Cleaning the file syste /home ..."
+msgstr ""
+
+#. Progress step 2/5
+#: src/dialogs.ycp:1064
+msgid "Cleaning the LDAP data base ..."
+msgstr ""
+
+#. Progress step 3/5
+#: src/dialogs.ycp:1066
+msgid "Cleaning the mail system ..."
+msgstr ""
+
+#. Progress step 4/5
+#: src/dialogs.ycp:1068
+msgid "Cleaning the SQL data base ..."
+msgstr ""
+
+#. Progress step 5/5
+#: src/dialogs.ycp:1070
+msgid "Cleaning the CA management ..."
+msgstr ""
+
+#. Openschool summary dialog caption
+#: src/dialogs.ycp:1119
+msgid "Open School Server"
+msgstr ""
+
+#: src/dialogs.ycp:1124 src/dialogs.ycp:1132
+msgid "Classes in the School"
+msgstr ""
+
+#: src/dialogs.ycp:1125 src/dialogs.ycp:1133
+msgid "Parallel Classes in the School"
+msgstr ""
+
+#: src/dialogs.ycp:1126
+msgid "Disable External Mail Transmission for Students"
+msgstr ""
+
+#: src/dialogs.ycp:1127
+msgid "Allow Teachers to Observ the Students Home Directories"
+msgstr ""
+
+#: src/dialogs.ycp:1139
+msgid "Basic Groups"
+msgstr ""
+
+#: src/dialogs.ycp:1140
+msgid "Disable External Mail Transmission for Unprivileged User"
+msgstr ""
+
+#: src/dialogs.ycp:1141
+msgid "Allow Privileged User to Observ the Home Directories"
+msgstr ""
+
+#: src/dialogs.ycp:1147
+msgid "Part 1 of 3"
+msgstr ""
+
+#: src/dialogs.ycp:1156
+msgid "Windows Domain/Workgroup"
+msgstr ""
+
+#: src/dialogs.ycp:1157
+msgid "Windows netbios name of the School Server"
+msgstr ""
+
+#: src/dialogs.ycp:1202
+msgid "Windows netbios name will be used already: "
+msgstr ""
+
+#: src/dialogs.ycp:1207
+msgid "Windows workgroup / domain name ist too long. "
+msgstr ""
+
+#. Openschool summary dialog caption
+#: src/dialogs.ycp:1225 src/dialogs.ycp:1329
+msgid "School Server"
+msgstr ""
+
+#: src/dialogs.ycp:1228 src/dialogs.ycp:1237
+msgid "&Name of the School"
+msgstr ""
+
+#: src/dialogs.ycp:1230 src/dialogs.ycp:1239
+msgid "&Registration Code"
+msgstr ""
+
+#: src/dialogs.ycp:1246
+msgid "Part 2 of 3"
+msgstr ""
+
+#: src/dialogs.ycp:1251
+msgid "Choose Language Add-on"
+msgstr ""
+
+#: src/dialogs.ycp:1254
+msgid "English"
+msgstr ""
+
+#: src/dialogs.ycp:1255
+msgid "German"
+msgstr ""
+
+#: src/dialogs.ycp:1258
+msgid "Spanish"
+msgstr ""
+
+#: src/dialogs.ycp:1259
+msgid "Italian"
+msgstr ""
+
+#: src/dialogs.ycp:1262
+msgid "Hungarian"
+msgstr ""
+
+#: src/dialogs.ycp:1263
+msgid "Romanian"
+msgstr ""
+
+#: src/dialogs.ycp:1266
+msgid "French"
+msgstr ""
+
+#: src/dialogs.ycp:1267
+msgid "Czech"
+msgstr ""
+
+#: src/dialogs.ycp:1330 src/dialogs.ycp:1351
+msgid "Choose Add-On Application(s)"
+msgstr ""
+
+#: src/dialogs.ycp:1336 src/dialogs.ycp:1357
+msgid "Open Xchange"
+msgstr ""
+
+#: src/dialogs.ycp:1337 src/dialogs.ycp:1358
+msgid "eGroupware"
+msgstr ""
+
+#. TODO
+#: src/dialogs.ycp:1339 src/dialogs.ycp:1359
+msgid "Moodle"
+msgstr ""
+
+#: src/dialogs.ycp:1340 src/dialogs.ycp:1360
+msgid "Joomla"
+msgstr ""
+
+#: src/dialogs.ycp:1341 src/dialogs.ycp:1361
+msgid "OSS as Terminalserver"
+msgstr ""
+
+#: src/dialogs.ycp:1372
+msgid "Part 3 of 3"
+msgstr ""
+
+#. OSS Type Dialog
+#: src/helps.ycp:19
+msgid "<p><b><big>Field of Application</big></b><br></p>"
+msgstr ""
+
+#: src/helps.ycp:20
+msgid "<p>The setup programm will configure your OSS corresponding to your field of application.</p>"
+msgstr ""
+
+#: src/helps.ycp:21
+msgid "<p>This concerns in the first place the SAMBA-, proxy- and DHCP-server configuration.</p>"
+msgstr ""
+
+#: src/helps.ycp:22
+msgid "<p>Normaly the OSS delivers a strickt network setup with all network services."
+msgstr ""
+
+#: src/helps.ycp:23
+msgid "If you want to integrate the OSS in existing network structure please select <b>Other Institute</b>."
+msgstr ""
+
+#. CardDialog dialog help 1/4
+#: src/helps.ycp:26
+msgid "<p><b><big>Local Network Setup</big></b><br></p>"
+msgstr ""
+
+#. CardDialog dialog help 2/4
+#: src/helps.ycp:28
+msgid ""
+"<p>Select which card to use for the connection to the local network. It will then be configured automatically.</p>\n"
+"\n"
+msgstr ""
+
+#. CardDialog dialog help 3/4
+#: src/helps.ycp:31
+msgid ""
+"<p>If your system has another card installed for the connection to\n"
+"the Internet, configure it later in the installed system.</p>\n"
+msgstr ""
+
+#. CardDialog dialog help 4/4
+#. DSL card dialog help 2/2
+#: src/helps.ycp:35 src/helps.ycp:63
+msgid ""
+"<p>Not all hardware can be detected automatically.\n"
+"If your hardware is not shown here, configure it\n"
+"manually. Select <b>Other (not detected)</b>.</p>\n"
+msgstr ""
+
+#. AddressDialog dialog help 1/8
+#: src/helps.ycp:41
+msgid "<p><b>This dialog allows you to configure your local network.</b></p>"
+msgstr ""
+
+#. AddressDialog dialog help 2/8
+#: src/helps.ycp:43
+msgid "<p>Generally, you only have to set your domain name and choose a network.</p>"
+msgstr ""
+
+#. AddressDialog dialog help 3/8
+#: src/helps.ycp:45
+msgid "<p>You can choose between three preconfigured networks.</p>"
+msgstr ""
+
+#. AddressDialog dialog help 4/8
+#: src/helps.ycp:47
+msgid "<p>The OSS needs 4 IP addresses to control the access to the different services.</p>"
+msgstr ""
+
+#. AddressDialog dialog help 5/8
+#: src/helps.ycp:49
+msgid "<p>The <b>Anon_DHCP</b> range is the range of IP addresses from which new, unregistered computers obtain an IP address.</p>"
+msgstr ""
+
+#. AddressDialog dialog help 6/8
+#: src/helps.ycp:51
+msgid "<p>62 IP adresses will be reserved for each room. <b>First Room Network</b> defines the first network address for the rooms.</p>"
+msgstr ""
+
+#. AddressDialog dialog help 7/8
+#: src/helps.ycp:53
+msgid "<p>The name server will be configured automatically by selecting the network.</p>"
+msgstr ""
+
+#. AddressDialog dialog help 8/8
+#: src/helps.ycp:55
+msgid "<p>Contact your <b>network administrator</b> for more information about the network configuration.</p>"
+msgstr ""
+
+#. DSL card dialog help 1/2
+#: src/helps.ycp:58
+msgid ""
+"<p>Select which card to use for the connection to the DSL modem.\n"
+"Subsequently, it will be configured in the next step</p>\n"
+msgstr ""
+
+#. GatewayDialog dialog help 1/4
+#: src/helps.ycp:70
+msgid "<p>Either you have a gateway in your school network or the Open School Server will be your internet gateway.</p>"
+msgstr ""
+
+#. GatewayDialog dialog help 2/4
+#: src/helps.ycp:72
+msgid "<p>In the first case, enter the IP address of the <i>Default Gateway</i>.</p>"
+msgstr ""
+
+#. GatewayDialog dialog help 3/4
+#: src/helps.ycp:74
+msgid "<p>In the second case, configure your hardware device (network card, DSL, ISDN, or modem) for the Internet connection on the Open School Server.</p>"
+msgstr ""
+
+#. GatewayDialog dialog help 4/4
+#: src/helps.ycp:76
+msgid "<p>Information on security and the configuration of various Internet connection types is available in the <i>Administration Manual</i>.</p>"
+msgstr ""
+
+#. Read dialog help 1/2
+#: src/helps.ycp:80
+msgid ""
+"<p><b><big>Initializing Open School Server configuration</big></b><br>\n"
+"Please wait...<br></p>"
+msgstr ""
+
+#. Read dialog help 2/2
+#: src/helps.ycp:84
+msgid ""
+"<p><b><big>Aborting initialization:</big></b><br>\n"
+"Safely abort the configuration utility by pressing <b>Abort</b> now.</p>"
+msgstr ""
+
+#. Write dialog help 1/2
+#: src/helps.ycp:88
+msgid ""
+"<p><b><big>Saving Open School Server configuration</big></b><br>\n"
+"Please wait...<br></p>"
+msgstr ""
+
+#. Write dialog help 2/2
+#: src/helps.ycp:92
+msgid ""
+"<p><b><big>Aborting saving:</big></b><br>\n"
+"Abort saving by pressing <b>Abort</b>.\n"
+"An additional dialog informs you whether it is safe to do so.\n"
+"</p>"
+msgstr ""
+
+#. Setup1 dialog help 1/2
+#: src/helps.ycp:99
+msgid ""
+"<p>\n"
+"To complete the setup of your <b>Open School Server</b>,\n"
+"provide some additional information.\n"
+"</p>"
+msgstr ""
+
+#: src/helps.ycp:103
+msgid ""
+"<p>If your school uses special class names that cannot be generated\n"
+"on the basis of the promotion to the next grade, clear the field\n"
+"<b>Classes in the School</b> and enter the name of your classes\n"
+"into the field <b>Parallel Classes in the School</b></p>"
+msgstr ""
+
+#: src/helps.ycp:107
+msgid ""
+"<p>If you select <b>Allow Teachers to Observ the Students Home Directories</b>\n"
+" the teachers will get rights to read and write into the home directories of\n"
+" the students.</p>"
+msgstr ""
+
+#. Setup2 dialog help 1/4
+#: src/helps.ycp:112
+msgid ""
+"<p>\n"
+"In this step, enter the name of your school and select\n"
+"a country from the list.\n"
+"</p>"
+msgstr ""
+
+#. Setup2 dialog help 2/4
+#: src/helps.ycp:118
+msgid ""
+"<p>\n"
+"The name of your school will be used in many different parts of your server,\n"
+"for example, in the global address book.\n"
+"</p>"
+msgstr ""
+
+#. Setup2 dialog help 3/4
+#: src/helps.ycp:124
+msgid ""
+"<p>\n"
+"The registration code is needed for the support. You can insert it later too.\n"
+"</p>"
+msgstr ""
+
+#. Setup2 dialog help 4/4
+#: src/helps.ycp:129
+msgid ""
+"<p>\n"
+"The country code is a two-letter code pursuant ISO 3166. It will be needed later to\n"
+"create certificates.\n"
+"</p>"
+msgstr ""
+
+#. Setup3 dialog help 1/4
+#: src/helps.ycp:135
+msgid ""
+"<p>\n"
+"Here You can choose the groupware solution you want to install and configure.\n"
+"</p>"
+msgstr ""
+
+#. Setup3 dialog help 2/4
+#: src/helps.ycp:140
+msgid ""
+"<p>\n"
+"<b>eGroupware</b> is an open source groupware software written in PHP.\n"
+"</p>"
+msgstr ""
+
+#. Setup3 dialog help 3/4
+#: src/helps.ycp:145
+msgid ""
+"<p>\n"
+"<b>OpenExchange</b> is an open source groupware software written in java.\n"
+"</p>"
+msgstr ""
+
+#: src/helps.ycp:149
+msgid ""
+"<p><b>Note!</b></p> \n"
+"<p>The groupware solutions on this CD are publicly available Open Source\n"
+"packages. The installation packages are preconfigured in order to work\n"
+"with the Open School Server. Your Open School support contract does not\n"
+"include support for the groupware solutions beyond the installation\n"
+"support. Please consult the Open Source community of your selected\n"
+"groupware solution for further support.</p>"
+msgstr ""
+
+#: src/helps.ycp:159
+msgid "&Select Your Country"
+msgstr ""
+
+#. Menu title for OpenschoolServer in proposals
+#: src/openschool-network_proposal.ycp:67
+#: src/openschool-server_proposal.ycp:67
+msgid "&OpenschoolServer"
+msgstr ""
+
+#. Initialization dialog contents
+#: src/wizards.ycp:232
+msgid "Initializing..."
+msgstr ""

@@ -1,0 +1,209 @@
+--- alibs/EditUser.pm	2011-12-03 06:31:16.505961889 +0100
++++ EditUser.pm	2012-01-20 11:05:10.662079377 +0100
+@@ -38,6 +38,7 @@
+                 "profil_rw",
+                 "search",
+                 "searchAgain",
++                "searchUsersFiles",
+                 "setChanges",
+                 "setPassword",
+                 "setProfil",
+@@ -91,6 +92,7 @@
+                 { variable     => [ "admin",                    [ type => "boolean" ] ] },
+                 { variable     => [ "alias",                    [ type => "boolean" ] ] },
+                 { variable     => [ "mustchange",               [ type => "boolean" ] ] },
++                { variable     => [ "sso",                      [ type => "boolean" ] ] },
+                 { variable     => [ "birthday",                 [ type => "date",   ] ] },
+                 { variable     => [ "mail",                     [ type => "popup" ] ] },
+                 { variable     => [ "domains",                  [ type => "popup",  label=>'' ] ] },
+@@ -104,9 +106,7 @@
+                 { variable     => [ "newgroup",			[ type => "list", size=>"5", multiple=>"true" ] ] },
+                 { variable     => [ "group",			[ type => "list", help => 'Select Entry to delete', size=>"5", multiple=>"true" ] ] },
+                 { variable     => [ "susemailforwardaddress",   [ type => "list", help => 'Select Entry to delete', size=>"5", multiple=>"true" ] ] },
+-                { variable     => [ "susemailacceptaddress",    [ type => "list", help => 'Select Entry to delete', size=>"5", multiple=>"true"] ] },
+-		{ variable     => [ "webdav_access",            [ type => "boolean" ] ] },
+-		{ variable     => [ "userpassword",             [ type => "password" ] ] },
++                { variable     => [ "susemailacceptaddress",    [ type => "list", help => 'Select Entry to delete', size=>"5", multiple=>"true"] ] }
+ #                { variable     => [ "susemailforwardaddress",   [ type => "list", label => "susemailforwardaddress", help => 'Select Entry to delete', size=>"5", multiple=>"true" ] ] },
+ #                { variable     => [ "susemailacceptaddress",    [ type => "list", label => "susemailacceptaddress",  help => 'Select Entry to delete', size=>"5", multiple=>"true"] ] }
+ 	];
+@@ -117,21 +117,26 @@
+ 	my $this   = shift;
+ 	my $reply  = shift;
+ 	my $name    	= $reply->{name} || '*'; 
+-	my @ret    = ( { subtitle    => 'Search User' } );
+ 	my ( $roles, $classes, $workgroups ) = $this->get_school_groups_to_search();
+-	if( $this->{LDAP_BASE} ne main::GetSessionValue('sdn') )
+-	{
+-	       push @ret, { label => main::__( 'Selected School: '). $this->get_attribute(main::GetSessionValue('sdn'),'o') };
+-	}
+-	push @ret, { name	      => $name };
+-	if( !$this->{ManageStudents} )
++
++	if( $this->{ManageStudents} )
+ 	{
+-		push @ret, { role        => $roles};
++		return [
++			{ subtitle    => 'Search User' },
++			{ name	      => $name },
++			{ class       => $classes },
++			{ workgroup   => $workgroups },
++			{ rightaction => "search" }
++		];
+ 	}
+-	push @ret, { class       => $classes };
+-	push @ret, { workgroup   => $workgroups };
+-	push @ret, { rightaction => "search" };
+-	return \@ret;
++	return [
++		{ subtitle    => 'Search User' },
++		{ name	      => $name },
++		{ role        => $roles},
++		{ class       => $classes },
++		{ workgroup   => $workgroups },
++		{ rightaction => "search" }
++	];
+ 
+ }
+ 
+@@ -157,11 +162,6 @@
+ 	{
+ 		push @users , [ $dn, $user->{$dn}->{uid}->[0].' '.$user->{$dn}->{cn}->[0].' ('.$user->{$dn}->{description}->[0].')' ];
+ 	}
+-	push @users , '---DEFAULTS---';
+-	foreach my $dn ( sort keys %{$user} )
+-	{
+-		push @users , $dn;
+-	}
+ 
+ 	if( $this->{ManageStudents} )
+ 	{
+@@ -173,6 +173,7 @@
+ 			{ rightaction   => "setProfil" },
+ 			{ rightaction   => "showUser" },
+ 			{ rightaction   => "exportUser" },
++			{ rightaction   => "searchUsersFiles" },
+ 			{ rightaction   => "searchAgain" }
+ 		];
+ 	}
+@@ -185,6 +186,7 @@
+ 		{ rightaction   => "setProfil" },
+ 		{ rightaction   => "deleteUser" },
+ 		{ rightaction   => "exportUser" },
++		{ rightaction   => "searchUsersFiles" },
+ 		{ rightaction   => "searchAgain" }
+ 	];
+ }
+@@ -205,6 +207,29 @@
+ 	};
+ }
+ 
++sub searchUsersFiles
++{
++	my $this   = shift;
++	my $reply  = shift;
++	my @users  = split /\n/, $reply->{users}; 
++	return noUser() if( ! scalar @users );
++	my $myuid  = main::GetSessionValue('username');
++
++	my $list   = "";
++        foreach my $dn ( @users )
++	{
++		$list .= $this->get_attribute($dn,'cn').',';
++		my $uid= $this->get_attribute($dn,'uid'); 
++		cmd_pipe('at now', "/usr/share/oss/tools/find_files_of_user.sh $uid $myuid");
++	}
++	return [
++		{ subtitle    => 'Searching the files for following users was started:' },
++		{ notranslate_label       => $list },
++		{ label       => "The reports will be written in SearchUsersFiles in Your home directory." },
++		{ name => 'action', value => "cancel", attributes => [ label => 'back' ] }
++	];
++}
++
+ sub changeQuota
+ {
+ 	my $this   = shift;
+@@ -266,6 +291,7 @@
+ 		{ label        => $list },
+ 		{ userpassword => "" },
+ 		{ mustchange   => 1 },
++		{ sso          => 0 },
+ 		{ action       => "cancel" },
+ 		{ name => 'action', value => "setPassword", attributes => [ label => 'apply' ] }
+ 	];
+@@ -279,7 +305,7 @@
+ 	my @users  = @{thaw($freeze )} if( defined $freeze );
+         foreach my $dn ( @users )
+ 	{
+-		if( ! $this->set_password($dn,$reply->{userpassword},$reply->{mustchange},0,'smd5') )
++		if( ! $this->set_password($dn,$reply->{userpassword},$reply->{mustchange},$reply->{sso},'smd5') )
+ 		{
+ 			return {
+ 			     TYPE    => 'ERROR',
+@@ -321,7 +347,12 @@
+ 		my $val = undef;
+ 		if( defined $user->{$attr} )
+ 		{
+-			if( $attr =~ /^susemail.*address$/ )
++			if( $attr eq 'mail' )
++			{
++				my @tmp = ( @{$user->{susemailacceptaddress}} , '---DEFAULTS---' , $user->{$attr}->[0] );
++				$val = \@tmp ;
++			}
++			elsif( $attr =~ /^susemail.*address$/ )
+ 			{
+ 				$val =  $user->{$attr};
+ 			}
+@@ -355,16 +386,6 @@
+ 				$val = join '', @{$user->{$attr}};
+ 			}
+ 		}
+-                if( $attr eq 'mail' )
+-                {
+-			next if ( ! defined $user->{susemailacceptaddress} );
+-                        my @tmp = ( @{$user->{susemailacceptaddress}} );
+-                        if ( defined $user->{$attr}->[0] )
+-                        {
+-                                push @tmp , '---DEFAULTS---' , $user->{$attr}->[0];
+-                        }
+-                        $val = \@tmp ;
+-                }
+ 		if( $attr eq 'rasaccess' )
+ 		{
+ 			my @rasaccess = ( @{$this->get_wlan_workstations} , '---DEFAULTS---' );
+@@ -395,8 +416,6 @@
+ 			push @ret, { newgroup => \@newgr };
+ 		}
+ 	}
+-	my $webdav_access_value = $this->get_vendor_object($dn,'EXTIS','WebDavAccess');
+-	push @ret, { webdav_access => "$webdav_access_value->[0]" };
+ 	push @ret, { dn           => $dn };
+ 	push @ret, { action       => "cancel" };
+ 	push @ret, { name => 'action', value => "setChanges", attributes => [ label => 'apply' ]  };
+@@ -421,7 +440,6 @@
+ 		     MESSAGE_NOTRANSLATE => $this->{ERROR}->{text}
+ 		}
+ 	}
+-
+ 	$this->editUser( { users => $reply->{dn}} );
+ }
+ 
+@@ -437,7 +455,7 @@
+ 	my @list   = ('state');
+         foreach my $dn ( @users )
+ 	{
+-		my $u = $this->get_attributes($dn,[ 'cn','mailenabled','logindisabled','internetdisabled','oxenabled'] );
++		my $u = $this->get_attributes($dn,[ 'cn','mailenabled','logindisabled','internetdisabled','oxenabled','sambauserworkstations'] );
+ # This is an activ site:
+ #		my @m = ( grep { !/do_not_change/} @mailEnabledChange, $u->{mailenabled}->[0] );
+ #		my @l = ( grep { !/do_not_change/} @disabledChange,    $u->{logindisabled}->[0] );
+@@ -591,7 +609,7 @@
+ 		{ action           => "cancel" },
+ 		{ action           => "profil_ro" },
+ 		{ action           => "profil_rw" },
+-		{ name => 'action', value => "setProfilRealy", attributes => [ label => 'send_profile' ] }
++		{ name => 'action', value => "setProfilRealy", attributes => [ label => 'apply' ] }
+ 	];
+ }
+ 

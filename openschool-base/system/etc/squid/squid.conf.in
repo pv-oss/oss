@@ -1,0 +1,95 @@
+#globals
+cache_mgr sysadmin@#DOMAIN#
+http_port #PROXY#:8080
+cache_dir ufs /var/cache/squid 1000 16 256
+cache_access_log /var/log/squid/access.log
+cache_log /var/log/squid/cache.log
+ftp_list_width 45
+ftp_user Squid@#DOMAIN#
+visible_hostname admin.#DOMAIN#
+append_domain .#DOMAIN#
+redirect_program /usr/sbin/squidGuard -c /etc/squid/squidguard.conf -l #LDAPBASE# 
+redirect_children 10
+auth_param basic children 5
+auth_param basic credentialsttl 10 minutes
+auth_param basic program /usr/sbin/squid_ldap_auth -v 3 -b ou=people,#LDAPBASE# -f (&(!(internetDisabled=yes))(!(gidNumber=503))(uid=%s)) -u uid #LDAPSERVER#
+external_acl_type checkip ttl=120 %SRC /usr/share/oss/tools/oss_check_ip.pl
+refresh_pattern ^ftp:		 43200	 20%	 43200 reload-into-ims
+refresh_pattern ^gopher:	 43200	 0%	 43200 reload-into-ims
+refresh_pattern -i \.gif         43200   100%    43200 reload-into-ims
+refresh_pattern -i \.jpg         43200   100%    43200 reload-into-ims
+refresh_pattern -i \.tif         43200   100%    43200 reload-into-ims
+refresh_pattern -i \.bmp         43200   100%    43200 reload-into-ims
+refresh_pattern -i \.png         43200   100%    43200 reload-into-ims
+refresh_pattern .		 20160	 50%	 43200
+quick_abort_min 0 KB
+quick_abort_max 0 KB
+quick_abort_pct 100
+negative_ttl 5 second
+negative_dns_ttl 5 second
+connect_timeout 90 second
+request_timeout 2 minute
+half_closed_clients off
+cache_effective_user squid
+cache_effective_group nogroup
+logfile_rotate 0
+forwarded_for off
+buffered_logs on
+log_icp_queries off
+nonhierarchical_direct off
+cachemgr_passwd disable all
+#acls
+acl SSO external checkip
+acl localhost src "/etc/squid/acl_localhost"
+acl all src "/etc/squid/acl_all"
+acl server_net src "/etc/squid/acl_server_net"
+acl safe_ports port "/etc/squid/acl_safe_ports"
+acl connect method "/etc/squid/acl_connect"
+acl ssl_ports port "/etc/squid/acl_ssl_ports"
+acl password proxy_auth "/etc/squid/acl_password"
+acl no_caching dstdomain   "/etc/squid/acl_no_caching"
+acl no_auth    dstdomain   "/etc/squid/acl_no_auth"
+acl downloads urlpath_regex -i \.exe \.zip \.rar \.com \.mp3
+acl identhosts ident REQUIRED
+acl FAS_FTP proto 21
+acl FAS_HTTPS proto 443 563
+#other_access_lists
+cache deny all
+icp_access allow all
+miss_access allow all
+always_direct allow FAS_HTTPS
+always_direct allow FAS_FTP
+no_cache      deny  no_caching
+ident_lookup_access allow all
+#access_lists
+http_access deny !safe_ports
+http_access deny connect !ssl_ports
+http_access allow server_net
+http_access allow no_auth
+http_access allow SSO
+http_access allow identhosts
+http_access allow password
+http_access deny all
+#delay_pools
+# You want to use delay_pools, if you want to limit the bandwith
+# for some clients or for special downloadable files.
+# We've tried to give you an example for a DSL-Connection:
+# - first enable the acl 'downloads' on top of this file
+# - then enable the delay_pool-parameters down here
+# - after that restart squid
+# - now all clients could get normal websites as far as bevore
+#   but the children should read a page bevore the move to the next
+#   -- otherwise the download takes a little longer
+# - some file-endings (defined in the acl 'downloads')
+#   are limited to a bandwith wich is like a ISDN-connection
+#
+#delay_pools 2
+#delay_class 1 2
+#delay_class 2 1
+#delay_parameters 1 -1/-1 102400/512000
+#delay_parameters 2 128000/128000
+#delay_access 1 allow all
+#delay_access 1 deny downloads
+#delay_access 2 allow downloads
+#delay_access 2 deny all
+

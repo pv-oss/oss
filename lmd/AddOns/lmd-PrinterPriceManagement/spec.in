@@ -1,0 +1,52 @@
+#
+# This file and all modifications and additions to the pristine
+# package are under the same license as the package itself.
+#
+
+# norootforbuild
+
+Name:           lmd-PrinterPriceManagement
+Version:        @VERSION@
+Release:	1
+Summary:	Printer Price Management for the OSS lmd daemon
+Group:		Productivity/
+License:	GPL
+Url:		www.openschoolserver.net
+PreReq:		lmd
+BuildRequires:  lmd
+Source:		lmd-PrinterPriceManagement.tar.bz2
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+AutoReqProv:    on
+
+%description
+Printer Price Management for the OSS lmd daemon
+
+Authors:
+--------
+    Peter Varkoly 
+
+%prep
+%setup -n %name
+
+%build
+%configure
+make %{?jobs:-j%jobs}
+
+%install
+%makeinstall
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+%postun
+
+%files
+%defattr(644root,root)
+/usr/share/lmd/alibs/*
+/usr/share/lmd/sql/*
+#%doc ChangeLog README COPYING
+
+%changelog
+* Sun Jul 04 2010 peter@varkoly.de
+

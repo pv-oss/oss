@@ -1,0 +1,7 @@
+REM for sysadmins
+net time \\#PDC-SERVER# /SET /YES
+net use p: \\#PDC-SERVER#\all 
+net use g: \\#PDC-SERVER#\groups 
+net use s: \\#PDC-SERVER#\software
+net use u: \\#PDC-SERVER#\users
+net use n: \\#PDC-SERVER#\netlogon

@@ -1,0 +1,95 @@
+#
+# VirtualHost template:
+# Almost any Apache directive may go into a VirtualHost container.
+# The first VirtualHost section is used for requests without a known
+# server name.
+#
+<VirtualHost *:80>
+    ServerAdmin admin@DOMAIN
+    ServerName  www.DOMAIN 
+
+    # DocumentRoot: The directory out of which you will serve your
+    # documents. By default, all requests are taken from this directory, but
+    # symbolic links and aliases may be used to point to other locations.
+    DocumentRoot DOCROOT
+
+    # if not specified, the global error log is used
+    ErrorLog /var/log/apache2/DOMAIN-error_log
+    CustomLog /var/log/apache2/DOMAIN-access_log combined
+
+    # don't loose time with IP address lookups
+    HostnameLookups Off
+
+    # needed for named virtual hosts
+    UseCanonicalName Off
+
+    # configures the footer on server-generated documents
+    ServerSignature On
+
+
+    # Optionally, include *.conf files from /etc/apache2/conf.d/
+    #
+    # For example, to allow execution of PHP scripts:
+    #
+    # Include /etc/apache2/conf.d/mod_php4.conf
+    #
+    # or, to include all configuration snippets added by packages:
+    # Include /etc/apache2/conf.d/*.conf
+
+
+    # ScriptAlias: This controls which directories contain server scripts.
+    # ScriptAliases are essentially the same as Aliases, except that
+    # documents in the realname directory are treated as applications and
+    # run by the server when requested rather than as documents sent to the client.
+    # The same rules about trailing "/" apply to ScriptAlias directives as to
+    # Alias.
+    #
+    ScriptAlias /cgi-bin/ "DOCROOT/cgi-bin/"
+
+    # "/srv/www/cgi-bin" should be changed to whatever your ScriptAliased
+    # CGI directory exists, if you have one, and where ScriptAlias points to.
+    #
+    <Directory "DOCROOT/cgi-bin">
+	AllowOverride None
+	Options +ExecCGI -Includes
+	Order allow,deny
+	Allow from all
+    </Directory>
+
+
+    #
+    # This should be changed to whatever you set DocumentRoot to.
+    #
+    <Directory "DOCROOT">
+    
+	#
+	# Possible values for the Options directive are "None", "All",
+	# or any combination of:
+	#   Indexes Includes FollowSymLinks SymLinksifOwnerMatch ExecCGI MultiViews
+	#
+	# Note that "MultiViews" must be named *explicitly* --- "Options All"
+	# doesn't give it to you.
+	#
+	# The Options directive is both complicated and important.  Please see
+	# http://httpd.apache.org/docs-2.0/mod/core.html#options
+	# for more information.
+	#
+	Options Indexes FollowSymLinks
+    
+	#
+	# AllowOverride controls what directives may be placed in .htaccess files.
+	# It can be "All", "None", or any combination of the keywords:
+	#   Options FileInfo AuthConfig Limit
+	#
+	AllowOverride None
+    
+	#
+	# Controls who can get stuff from this server.
+	#
+	Order allow,deny
+	Allow from all
+    
+    </Directory>
+
+</VirtualHost>
+

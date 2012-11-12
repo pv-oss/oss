@@ -1,0 +1,22 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+# Update from 3.0.X to 3.0.2
+if [ -e /var/adm/oss/update-3.0.2-3 ]
+then
+	echo "Patch 3.0.2-3 already installed"
+	exit 0
+fi
+
+. /etc/sysconfig/schoolserver
+
+#Add new room for SERVER_NET
+oss_ldapsearch -LLL cn=Room-1 objectclass cn dhcpnetmask  dhcprange description > /tmp/Room-2
+sed -i s/Room-1/Room-2/ /tmp/Room-2
+sed -i s/ANON_DHCP/SERVER_NET/ /tmp/Room-2
+SERVER_NET=$( echo $SCHOOL_SERVER_NET | sed s#/24## )
+sed -i "s/dhcpRange: .*/dhcpRange: $SERVER_NET/" /tmp/Room-2
+oss_ldapadd < /tmp/Room-2
+
+#Mark this patch as installed
+mkdir -p /var/adm/oss
+touch /var/adm/oss/update-3.0.2-3

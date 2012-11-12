@@ -1,0 +1,51 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+
+if [ "$1" = "--help" -o  "$1" = "-h" ]
+then
+	echo 'Usage: /usr/share/oss/tools/make_support [OPTION]'
+	echo 'With this script is done the email sending to the Support module.'
+	echo
+	echo 'Options :'
+	echo 'Mandatory parameters :'
+	echo "		No need for mandatory parameters. (There's no need for parameters for running this script.)"
+	echo 'Optional parameters :'
+	echo '		-h,   --help         Display this help.'
+	echo '		-d,   --description  Display the descriptiont.'
+	exit
+fi
+
+if [ "$1" = "--description" -o  "$1" = "-d" ]
+then
+	echo 'NAME:'
+	echo '	make_support'
+	echo 'DESCRIPTION:'
+	echo '	With this script is done the email sending to the Support module.'
+	echo 'PARAMETERS:'
+	echo '	MANDATORY:'
+	echo "		                    : No need for mandatory parameters. (There's no need for parameters for running this script.)"
+	echo '	OPTIONAL:'
+	echo '		-h,   --help        : Display this help.(type=boolean)'
+	echo '		-d,   --description : Display the descriptiont.(type=boolean)'
+	exit
+fi
+
+. /tmp/SUPPORT
+ATTACH=""
+if [ "$SITAR" = "yes" ]
+then 
+  rm -f /tmp/SUPPORT.html*
+  sitar --format=html --outfile=/tmp/SUPPORT.html
+  gzip /tmp/SUPPORT.html
+  slapcat -b cn=config | gzip > /tmp/LDAPCONFIG.gz
+  ATTACH=" -a /tmp/SUPPORT.html.gz -a /tmp/LDAPCONFIG.gz"
+fi
+if [ "$SLAPCAT" = "yes" ]
+then
+  slapcat | gzip > /tmp/SLAPCAT.gz
+  ATTACH="$ATTACH -a /tmp/SLAPCAT.gz"
+fi
+  
+dos2unix /tmp/SUPPORT-BODY
+cat /tmp/SUPPORT /tmp/SUPPORT-BODY|mail -s "OSS-SUPPORT: $SUBJECT" -r "$MAILFROM" $ATTACH "$MAILTO"
+rm -f /tmp/SUPPORT*

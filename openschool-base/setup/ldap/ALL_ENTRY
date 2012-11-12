@@ -1,0 +1,5212 @@
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+# extended LDIF
+#
+# LDAPv3
+# base <> with scope sub
+# filter: (objectclass=*)
+# requesting: ALL
+#
+
+# superschool.org
+dn: #LDAPBASE#
+dc: superschool
+o: superschool
+objectClass: organization
+objectClass: dcObject
+
+# ldapconfig, superschool.org
+dn: ou=ldapconfig,#LDAPBASE#
+objectClass: top
+objectClass: organizationalUnit
+ou: ldapconfig
+
+# group, superschool.org
+dn: ou=group,#LDAPBASE#
+objectClass: top
+objectClass: organizationalUnit
+ou: group
+
+# people, superschool.org
+dn: ou=people,#LDAPBASE#
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+# grouptemplate, ldapconfig, superschool.org
+dn: cn=grouptemplate,ou=ldapconfig,#LDAPBASE#
+cn: grouptemplate
+objectClass: top
+objectClass: suseObjectTemplate
+objectClass: suseGroupTemplate
+suseNamingAttribute: cn
+susePlugin: UsersPluginLDAPAll
+susePlugin: UsersPluginSambaGroups
+susePlugin: UsersPluginOpenSchoolGroups
+
+# usertemplate, ldapconfig, superschool.org
+dn: cn=usertemplate,ou=ldapconfig,#LDAPBASE#
+cn: usertemplate
+objectClass: top
+objectClass: suseObjectTemplate
+objectClass: suseUserTemplate
+suseDefaultValue: homedirectory=/home/%uid
+suseDefaultValue: loginshell=/bin/bash
+suseNamingAttribute: uid
+susePlugin: UsersPluginLDAPAll
+susePlugin: UsersPluginSamba
+susePlugin: UsersPluginOpenSchool
+susePlugin: UsersPluginMail
+
+# groupconfiguration, ldapconfig, superschool.org
+dn: cn=groupconfiguration,ou=ldapconfig,#LDAPBASE#
+cn: groupconfiguration
+objectClass: top
+objectClass: suseModuleConfiguration
+objectClass: suseGroupConfiguration
+suseDefaultBase: ou=group,#LDAPBASE#
+suseDefaultTemplate: cn=grouptemplate,ou=ldapconfig,#LDAPBASE#
+suseMaxUniqueId: 60000
+suseMinUniqueId: 1000
+suseNextUniqueId: 1000
+suseSearchFilter: objectclass=posixgroup
+
+# userconfiguration, ldapconfig, superschool.org
+dn: cn=userconfiguration,ou=ldapconfig,#LDAPBASE#
+cn: userconfiguration
+objectClass: top
+objectClass: suseModuleConfiguration
+objectClass: suseUserConfiguration
+suseDefaultBase: ou=people,#LDAPBASE#
+suseDefaultTemplate: cn=usertemplate,ou=ldapconfig,#LDAPBASE#
+suseMaxPasswordLength: 8
+suseMinPasswordLength: 5
+susePasswordHash: CRYPT
+suseSearchFilter: objectclass=posixaccount
+suseSkelDir: /etc/skel
+suseMaxUniqueId: 200000
+suseMinUniqueId: 2000
+suseNextUniqueId: 2000
+
+# DNS, superschool.org
+dn: ou=DNS,#LDAPBASE#
+objectClass: top
+objectClass: organizationalUnit
+ou: DNS
+
+# defaultDNS, ldapconfig, superschool.org
+dn: cn=defaultDNS,ou=ldapconfig,#LDAPBASE#
+cn: defaultDNS
+objectClass: top
+objectClass: suseDnsConfiguration
+suseDefaultBase: ou=DNS,#LDAPBASE#
+
+# superschool.org, DNS, superschool.org
+dn: zoneName=superschool.org,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+mXRecord: 10 mailserver
+nSRecord: dns
+relativeDomainName: @
+sOARecord: @ admin 2005012000 172800 14400 3628800 604800
+objectClass: dNSZone
+objectClass: suseMailDomain
+suseMailDomainMasquerading: yes
+suseMailDomainType: main
+zoneName: superschool.org
+
+# PDC, superschool.org, DNS, superschool.org
+dn: relativeDomainName=PDC,zoneName=superschool.org,ou=DNS,dc=superschool,dc=o
+ rg
+aRecord: 192.168.0.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: PDC
+zoneName: superschool.org
+
+# admin, superschool.org, DNS, superschool.org
+dn: relativeDomainName=admin,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.0.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: admin
+zoneName: superschool.org
+
+# dhcp1, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp1,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.1
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp1
+zoneName: superschool.org
+
+# dhcp10, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp10,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.10
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp10
+zoneName: superschool.org
+
+# dhcp11, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp11,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.11
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp11
+zoneName: superschool.org
+
+# dhcp12, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp12,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp12
+zoneName: superschool.org
+
+# dhcp13, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp13,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.13
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp13
+zoneName: superschool.org
+
+# dhcp14, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp14,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.14
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp14
+zoneName: superschool.org
+
+# dhcp15, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp15,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.15
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp15
+zoneName: superschool.org
+
+# dhcp16, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp16,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.16
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp16
+zoneName: superschool.org
+
+# dhcp17, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp17,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.17
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp17
+zoneName: superschool.org
+
+# dhcp18, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp18,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.18
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp18
+zoneName: superschool.org
+
+# dhcp19, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp19,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.19
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp19
+zoneName: superschool.org
+
+# dhcp2, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp2,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.2
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp2
+zoneName: superschool.org
+
+# dhcp20, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp20,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.20
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp20
+zoneName: superschool.org
+
+# dhcp21, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp21,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.21
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp21
+zoneName: superschool.org
+
+# dhcp22, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp22,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.22
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp22
+zoneName: superschool.org
+
+# dhcp23, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp23,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.23
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp23
+zoneName: superschool.org
+
+# dhcp24, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp24,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.24
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp24
+zoneName: superschool.org
+
+# dhcp25, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp25,zoneName=superschool.org,ou=DNS,dc=superschool,d
+ c=org
+aRecord: 192.168.1.25
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp25
+zoneName: superschool.org
+
+# dhcp3, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp3,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.3
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp3
+zoneName: superschool.org
+
+# dhcp4, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp4,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.4
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp4
+zoneName: superschool.org
+
+# dhcp5, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp5,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.5
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp5
+zoneName: superschool.org
+
+# dhcp6, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp6,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.6
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp6
+zoneName: superschool.org
+
+# dhcp7, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp7,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.7
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp7
+zoneName: superschool.org
+
+# dhcp8, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp8,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.8
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp8
+zoneName: superschool.org
+
+# dhcp9, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dhcp9,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.1.9
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dhcp9
+zoneName: superschool.org
+
+# dns, superschool.org, DNS, superschool.org
+dn: relativeDomainName=dns,zoneName=superschool.org,ou=DNS,dc=superschool,dc=o
+ rg
+aRecord: 192.168.0.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: dns
+zoneName: superschool.org
+
+# install, superschool.org, DNS, superschool.org
+dn: relativeDomainName=install,zoneName=superschool.org,ou=DNS,dc=superschool,
+ dc=org
+aRecord: 192.168.0.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: install
+zoneName: superschool.org
+
+# ldap, superschool.org, DNS, superschool.org
+dn: relativeDomainName=ldap,zoneName=superschool.org,ou=DNS,dc=superschool,dc=
+ org
+aRecord: 192.168.0.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: ldap
+zoneName: superschool.org
+
+# mailserver, superschool.org, DNS, superschool.org
+dn: relativeDomainName=mailserver,zoneName=superschool.org,ou=DNS,dc=superscho
+ ol,dc=org
+aRecord: 192.168.0.13
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: mailserver
+zoneName: superschool.org
+
+# mailszerver, superschool.org, DNS, superschool.org
+dn: relativeDomainName=mailszerver,zoneName=superschool.org,ou=DNS,dc=supersch
+ ool,dc=org
+aRecord: 192.168.0.13
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: mailszerver
+zoneName: superschool.org
+
+# nfs, superschool.org, DNS, superschool.org
+dn: relativeDomainName=nfs,zoneName=superschool.org,ou=DNS,dc=superschool,dc=o
+ rg
+aRecord: 192.168.0.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: nfs
+zoneName: superschool.org
+
+# printserver, superschool.org, DNS, superschool.org
+dn: relativeDomainName=printserver,zoneName=superschool.org,ou=DNS,dc=supersch
+ ool,dc=org
+aRecord: 192.168.0.14
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: printserver
+zoneName: superschool.org
+
+# proxy, superschool.org, DNS, superschool.org
+dn: relativeDomainName=proxy,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.0.15
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: proxy
+zoneName: superschool.org
+
+# samba, superschool.org, DNS, superschool.org
+dn: relativeDomainName=samba,zoneName=superschool.org,ou=DNS,dc=superschool,dc
+ =org
+aRecord: 192.168.0.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: samba
+zoneName: superschool.org
+
+# schoolserver, superschool.org, DNS, superschool.org
+dn: relativeDomainName=schoolserver,zoneName=superschool.org,ou=DNS,dc=supersc
+ hool,dc=org
+aRecord: 192.168.0.13
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: schoolserver
+zoneName: superschool.org
+
+# schulserver, superschool.org, DNS, superschool.org
+dn: relativeDomainName=schulserver,zoneName=superschool.org,ou=DNS,dc=supersch
+ ool,dc=org
+aRecord: 192.168.0.13
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: schulserver
+zoneName: superschool.org
+
+# suliszerver, superschool.org, DNS, superschool.org
+dn: relativeDomainName=suliszerver,zoneName=superschool.org,ou=DNS,dc=supersch
+ ool,dc=org
+aRecord: 192.168.0.13
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: suliszerver
+zoneName: superschool.org
+
+# timeserver, superschool.org, DNS, superschool.org
+dn: relativeDomainName=timeserver,zoneName=superschool.org,ou=DNS,dc=superscho
+ ol,dc=org
+aRecord: 192.168.0.12
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+relativeDomainName: timeserver
+zoneName: superschool.org
+
+# 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: zoneName=168.192.IN-ADDR.ARPA,ou=DNS,#LDAPBASE#
+dNSClass: IN
+dNSTTL: 604800
+mXRecord: 10 mailserver.superschool.org.
+nSRecord: dns.superschool.org.
+objectClass: dNSZone
+relativeDomainName: @
+sOARecord: @ admin 2005012000 172800 14400 3628800 604800
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 1.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=1.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp1.superschool.org.
+relativeDomainName: 1.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 10.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=10.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp10.superschool.org.
+relativeDomainName: 10.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 11.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=11.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp11.superschool.org.
+relativeDomainName: 11.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 12.0, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=12.0,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dns.superschool.org.
+pTRRecord: samba.superschool.org.
+pTRRecord: nfs.superschool.org.
+pTRRecord: install.superschool.org.
+pTRRecord: timeserver.superschool.org.
+pTRRecord: ldap.superschool.org.
+pTRRecord: PDC.superschool.org.
+relativeDomainName: 12.0
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 12.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=12.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp12.superschool.org.
+relativeDomainName: 12.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 13.0, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=13.0,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: mailserver.superschool.org.
+pTRRecord: mailszerver.superschool.org.
+pTRRecord: schoolserver.superschool.org.
+pTRRecord: suliszerver.superschool.org.
+pTRRecord: schulserver.superschool.org.
+relativeDomainName: 13.0
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 13.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=13.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp13.superschool.org.
+relativeDomainName: 13.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 14.0, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=14.0,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: printserver.superschool.org.
+relativeDomainName: 14.0
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 14.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=14.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp14.superschool.org.
+relativeDomainName: 14.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 15.0, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=15.0,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: proxy.superschool.org.
+relativeDomainName: 15.0
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 15.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=15.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp15.superschool.org.
+relativeDomainName: 15.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 16.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=16.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp16.superschool.org.
+relativeDomainName: 16.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 17.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=17.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp17.superschool.org.
+relativeDomainName: 17.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 18.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=18.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp18.superschool.org.
+relativeDomainName: 18.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 19.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=19.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp19.superschool.org.
+relativeDomainName: 19.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 2.0, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=2.0,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: gateway.superschool.org.
+relativeDomainName: 2.0
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 2.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=2.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp2.superschool.org.
+relativeDomainName: 2.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 20.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=20.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp20.superschool.org.
+relativeDomainName: 20.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 21.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=21.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp21.superschool.org.
+relativeDomainName: 21.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 22.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=22.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp22.superschool.org.
+relativeDomainName: 22.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 23.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=23.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp23.superschool.org.
+relativeDomainName: 23.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 24.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=24.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp24.superschool.org.
+relativeDomainName: 24.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 25.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=25.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschoo
+ l,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp25.superschool.org.
+relativeDomainName: 25.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 3.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=3.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp3.superschool.org.
+relativeDomainName: 3.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 4.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=4.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp4.superschool.org.
+relativeDomainName: 4.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 5.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=5.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp5.superschool.org.
+relativeDomainName: 5.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 6.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=6.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp6.superschool.org.
+relativeDomainName: 6.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 7.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=7.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp7.superschool.org.
+relativeDomainName: 7.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 8.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=8.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp8.superschool.org.
+relativeDomainName: 8.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# 9.1, 168.192.IN-ADDR.ARPA, DNS, superschool.org
+dn: relativeDomainName=9.1,zoneName=168.192.IN-ADDR.ARPA,ou=DNS,dc=superschool
+ ,dc=org
+dNSClass: IN
+dNSTTL: 604800
+objectClass: dNSZone
+pTRRecord: dhcp9.superschool.org.
+relativeDomainName: 9.1
+zoneName: 168.192.IN-ADDR.ARPA
+
+# Mailserver, ldapconfig, superschool.org
+dn: cn=Mailserver,ou=ldapconfig,#LDAPBASE#
+cn: Mailserver
+objectClass: suseMailConfiguration
+suseDefaultBase: ou=Mailserver,#LDAPBASE#
+suseImapAdmin: cyrus
+suseImapDefaultQuota: 10000
+suseImapServer: localhost
+suseImapUseSsl: FALSE
+
+# Mailserver, superschool.org
+dn: ou=Mailserver,#LDAPBASE#
+objectClass: organizationalUnit
+ou: Mailserver
+
+# Computers, superschool.org
+dn: ou=Computers,#LDAPBASE#
+objectClass: top
+objectClass: organizationalUnit
+ou: Computers
+
+# Idmap, superschool.org
+dn: ou=Idmap,#LDAPBASE#
+objectClass: top
+objectClass: organizationalUnit
+ou: Idmap
+
+# SUPERSCHOOL, superschool.org
+dn: sambaDomainName=SUPERSCHOOL,#LDAPBASE#
+sambaDomainName: SUPERSCHOOL
+sambaSID: S-1-5-21-3888977888-660310903-2018252091
+sambaAlgorithmicRidBase: 1000
+objectClass: sambaDomain
+
+# root, people, superschool.org
+dn: uid=root,ou=people,#LDAPBASE#
+uid: root
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-1000
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-1001
+displayName: root
+sambaPwdCanChange: 1106231982
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 121D64A6D2213B54B79AE2610DD89D4C
+sambaNTPassword: 525A497F36AB9AD4577C5B8E9EE1B620
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106231982
+sambaAcctFlags: [U          ]
+objectClass: sambaSamAccount
+objectClass: account
+
+# sysadmins, group, superschool.org
+dn: cn=sysadmins,ou=group,#LDAPBASE#
+cn: sysadmins
+displayName: sysadmins
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-2001
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r sysadmins -a cyrus -m sysadmins"
+gidNumber: 500
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=bigboss,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolPrimaryGroup
+objectClass: phpgwAccount
+
+# students, group, superschool.org
+dn: cn=students,ou=group,#LDAPBASE#
+cn: students
+displayName: students
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-2003
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r students -a cyrus -m students"
+gidNumber: 501
+description:: U2Now7xsZXI=
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=paustobi,ou=people,#LDAPBASE#
+member: uid=lippguid,ou=people,#LDAPBASE#
+member: uid=lopejose,ou=people,#LDAPBASE#
+member: uid=hieguli,ou=people,#LDAPBASE#
+member: uid=madldami,ou=people,#LDAPBASE#
+member: uid=fiedcari,ou=people,#LDAPBASE#
+member: uid=grohstef,ou=people,#LDAPBASE#
+member: uid=heitlari,ou=people,#LDAPBASE#
+member: uid=helbsore,ou=people,#LDAPBASE#
+member: uid=karpfabi,ou=people,#LDAPBASE#
+member: uid=lawpoh,ou=people,#LDAPBASE#
+member: uid=erkephil,ou=people,#LDAPBASE#
+member: uid=rutktim,ou=people,#LDAPBASE#
+member: uid=vogttobi,ou=people,#LDAPBASE#
+member: uid=blicstef,ou=people,#LDAPBASE#
+member: uid=branbjor,ou=people,#LDAPBASE#
+member: uid=wolfthor,ou=people,#LDAPBASE#
+member: uid=vonchri,ou=people,#LDAPBASE#
+member: uid=overseba,ou=people,#LDAPBASE#
+member: uid=schnchri,ou=people,#LDAPBASE#
+member: uid=okurfaru,ou=people,#LDAPBASE#
+member: uid=dreyklau,ou=people,#LDAPBASE#
+member: uid=erhamark,ou=people,#LDAPBASE#
+member: uid=ruminadi,ou=people,#LDAPBASE#
+member: uid=pochrolf,ou=people,#LDAPBASE#
+member: uid=krogfran,ou=people,#LDAPBASE#
+member: uid=canggokh,ou=people,#LDAPBASE#
+member: uid=zeugvolk,ou=people,#LDAPBASE#
+member: uid=wlotpatr,ou=people,#LDAPBASE#
+member: uid=hollmarc,ou=people,#LDAPBASE#
+member: uid=randnils,ou=people,#LDAPBASE#
+member: uid=schudenn,ou=people,#LDAPBASE#
+member: uid=jabupeta,ou=people,#LDAPBASE#
+member: uid=teutkevi,ou=people,#LDAPBASE#
+member: uid=schmjoha,ou=people,#LDAPBASE#
+member: uid=brauanto,ou=people,#LDAPBASE#
+member: uid=zimmmart,ou=people,#LDAPBASE#
+member: uid=freystef,ou=people,#LDAPBASE#
+member: uid=lutgtobi,ou=people,#LDAPBASE#
+member: uid=belorusl,ou=people,#LDAPBASE#
+member: uid=kundkolj,ou=people,#LDAPBASE#
+member: uid=sauedomi,ou=people,#LDAPBASE#
+member: uid=ceylali,ou=people,#LDAPBASE#
+member: uid=steiivon,ou=people,#LDAPBASE#
+member: uid=senddani,ou=people,#LDAPBASE#
+member: uid=piecpete,ou=people,#LDAPBASE#
+member: uid=ossejens,ou=people,#LDAPBASE#
+member: uid=kluvkath,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolPrimaryGroup
+objectClass: phpgwAccount
+
+# teachers, group, superschool.org
+dn: cn=teachers,ou=group,#LDAPBASE#
+cn: teachers
+displayName: teachers
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-2005
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r teachers -a cyrus -m teachers"
+gidNumber: 502
+description: Lehrer
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=bigboss,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolPrimaryGroup
+objectClass: phpgwAccount
+
+# workstations, group, superschool.org
+dn: cn=workstations,ou=group,#LDAPBASE#
+cn: workstations
+displayName: workstations
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-2007
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r workstations -a cyrus -m workstations"
+gidNumber: 503
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=test-pc01,ou=people,#LDAPBASE#
+member: uid=raum2-pc01,ou=people,#LDAPBASE#
+member: uid=test-pc02,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolPrimaryGroup
+objectClass: phpgwAccount
+
+# administration, group, superschool.org
+dn: cn=administration,ou=group,#LDAPBASE#
+cn: administration
+displayName: administration
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-2009
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r administration -a cyrus -m administration"
+gidNumber: 504
+description: Verwaltung
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolPrimaryGroup
+objectClass: phpgwAccount
+
+# admin, people, superschool.org
+dn: uid=admin,ou=people,#LDAPBASE#
+sn: admin
+preferredLanguage: DE
+uid: admin
+o: Super School
+c: DE
+gidNumber: 500
+OXGroupID: 500
+OXGroupID: 1000
+OXGroupID: 1001
+OXGroupID: 1002
+OXGroupID: 1003
+OXGroupID: 1004
+OXGroupID: 1005
+OXGroupID: 1006
+OXGroupID: 1007
+OXGroupID: 1008
+OXGroupID: 1009
+OXGroupID: 1010
+OXGroupID: 1011
+OXGroupID: 1012
+OXGroupID: 1013
+OXGroupID: 1014
+OXGroupID: 1015
+OXGroupID: 1016
+OXGroupID: 1017
+OXGroupID: 1018
+OXGroupID: 1019
+OXGroupID: 1020
+OXGroupID: 1021
+OXGroupID: 1022
+OXGroupID: 1023
+OXGroupID: 1024
+OXGroupID: 1025
+OXGroupID: 1026
+OXGroupID: 1027
+OXGroupID: 1028
+OXGroupID: 505
+OXGroupID: 1031
+OXGroupID: 1032
+homeDirectory: /home/sysadmins/admin
+loginShell: /bin/bash
+cn: admin
+uidNumber: 2000
+userPassword:: e2NyeXB0fUpZN010R2dtZlVzdjY=
+shadowLastChange: 12803
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: ok
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+phpgwAccountLastLogin: 1106302019
+phpgwAccountLastLoginFrom: 192.168.0.13
+imapServer: localhost
+smtpServer: localhost
+
+# addr, admin, people, superschool.org
+dn: ou=addr,uid=admin,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# 5A, group, superschool.org
+dn: cn=5A,ou=group,#LDAPBASE#
+cn: 5A
+displayName: 5A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3001
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 5A -a cyrus -m 5A"
+gidNumber: 1000
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 5B, group, superschool.org
+dn: cn=5B,ou=group,#LDAPBASE#
+cn: 5B
+displayName: 5B
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3003
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 5B -a cyrus -m 5B"
+gidNumber: 1001
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=bigboss,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 5C, group, superschool.org
+dn: cn=5C,ou=group,#LDAPBASE#
+cn: 5C
+displayName: 5C
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3005
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 5C -a cyrus -m 5C"
+gidNumber: 1002
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 5D, group, superschool.org
+dn: cn=5D,ou=group,#LDAPBASE#
+cn: 5D
+displayName: 5D
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3007
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 5D -a cyrus -m 5D"
+gidNumber: 1003
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 6A, group, superschool.org
+dn: cn=6A,ou=group,#LDAPBASE#
+cn: 6A
+displayName: 6A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3009
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 6A -a cyrus -m 6A"
+gidNumber: 1004
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 6B, group, superschool.org
+dn: cn=6B,ou=group,#LDAPBASE#
+cn: 6B
+displayName: 6B
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3011
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 6B -a cyrus -m 6B"
+gidNumber: 1005
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=bigboss,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 6C, group, superschool.org
+dn: cn=6C,ou=group,#LDAPBASE#
+cn: 6C
+displayName: 6C
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3013
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 6C -a cyrus -m 6C"
+gidNumber: 1006
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 6D, group, superschool.org
+dn: cn=6D,ou=group,#LDAPBASE#
+cn: 6D
+displayName: 6D
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3015
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 6D -a cyrus -m 6D"
+gidNumber: 1007
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 7A, group, superschool.org
+dn: cn=7A,ou=group,#LDAPBASE#
+cn: 7A
+displayName: 7A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3017
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 7A -a cyrus -m 7A"
+gidNumber: 1008
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 7B, group, superschool.org
+dn: cn=7B,ou=group,#LDAPBASE#
+cn: 7B
+displayName: 7B
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3019
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 7B -a cyrus -m 7B"
+gidNumber: 1009
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=bigboss,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 7C, group, superschool.org
+dn: cn=7C,ou=group,#LDAPBASE#
+cn: 7C
+displayName: 7C
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3021
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 7C -a cyrus -m 7C"
+gidNumber: 1010
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 7D, group, superschool.org
+dn: cn=7D,ou=group,#LDAPBASE#
+cn: 7D
+displayName: 7D
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3023
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 7D -a cyrus -m 7D"
+gidNumber: 1011
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 8A, group, superschool.org
+dn: cn=8A,ou=group,#LDAPBASE#
+cn: 8A
+displayName: 8A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3025
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 8A -a cyrus -m 8A"
+gidNumber: 1012
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 8B, group, superschool.org
+dn: cn=8B,ou=group,#LDAPBASE#
+cn: 8B
+displayName: 8B
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3027
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 8B -a cyrus -m 8B"
+gidNumber: 1013
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 8C, group, superschool.org
+dn: cn=8C,ou=group,#LDAPBASE#
+cn: 8C
+displayName: 8C
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3029
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 8C -a cyrus -m 8C"
+gidNumber: 1014
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 8D, group, superschool.org
+dn: cn=8D,ou=group,#LDAPBASE#
+cn: 8D
+displayName: 8D
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3031
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 8D -a cyrus -m 8D"
+gidNumber: 1015
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 9A, group, superschool.org
+dn: cn=9A,ou=group,#LDAPBASE#
+cn: 9A
+displayName: 9A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3033
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 9A -a cyrus -m 9A"
+gidNumber: 1016
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 9B, group, superschool.org
+dn: cn=9B,ou=group,#LDAPBASE#
+cn: 9B
+displayName: 9B
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3035
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 9B -a cyrus -m 9B"
+gidNumber: 1017
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 9C, group, superschool.org
+dn: cn=9C,ou=group,#LDAPBASE#
+cn: 9C
+displayName: 9C
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3037
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 9C -a cyrus -m 9C"
+gidNumber: 1018
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 9D, group, superschool.org
+dn: cn=9D,ou=group,#LDAPBASE#
+cn: 9D
+displayName: 9D
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3039
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 9D -a cyrus -m 9D"
+gidNumber: 1019
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=bigboss,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 10A, group, superschool.org
+dn: cn=10A,ou=group,#LDAPBASE#
+cn: 10A
+displayName: 10A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3041
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 10A -a cyrus -m 10A"
+gidNumber: 1020
+description: Klasse
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=belorusl,ou=people,#LDAPBASE#
+member: uid=blicstef,ou=people,#LDAPBASE#
+member: uid=branbjor,ou=people,#LDAPBASE#
+member: uid=brauanto,ou=people,#LDAPBASE#
+member: uid=canggokh,ou=people,#LDAPBASE#
+member: uid=ceylali,ou=people,#LDAPBASE#
+member: uid=dreyklau,ou=people,#LDAPBASE#
+member: uid=erkephil,ou=people,#LDAPBASE#
+member: uid=fiedcari,ou=people,#LDAPBASE#
+
+# 10B, group, superschool.org
+dn: cn=10B,ou=group,#LDAPBASE#
+cn: 10B
+displayName: 10B
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3043
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 10B -a cyrus -m 10B"
+gidNumber: 1021
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 10C, group, superschool.org
+dn: cn=10C,ou=group,#LDAPBASE#
+cn: 10C
+displayName: 10C
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3045
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 10C -a cyrus -m 10C"
+gidNumber: 1022
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 10D, group, superschool.org
+dn: cn=10D,ou=group,#LDAPBASE#
+cn: 10D
+displayName: 10D
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3047
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 10D -a cyrus -m 10D"
+gidNumber: 1023
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 11A, group, superschool.org
+dn: cn=11A,ou=group,#LDAPBASE#
+cn: 11A
+displayName: 11A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3049
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 11A -a cyrus -m 11A"
+gidNumber: 1024
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 11B, group, superschool.org
+dn: cn=11B,ou=group,#LDAPBASE#
+cn: 11B
+displayName: 11B
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3051
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 11B -a cyrus -m 11B"
+gidNumber: 1025
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 11C, group, superschool.org
+dn: cn=11C,ou=group,#LDAPBASE#
+cn: 11C
+displayName: 11C
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3053
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 11C -a cyrus -m 11C"
+gidNumber: 1026
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 11D, group, superschool.org
+dn: cn=11D,ou=group,#LDAPBASE#
+cn: 11D
+displayName: 11D
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3055
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 11D -a cyrus -m 11D"
+gidNumber: 1027
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# 12, group, superschool.org
+dn: cn=12,ou=group,#LDAPBASE#
+cn: 12
+displayName: 12
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3057
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r 12 -a cyrus -m 12"
+gidNumber: 1028
+description: Klasse
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=bigboss,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# DHCP, superschool.org
+dn: ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: organizationalUnit
+ou: DHCP
+
+# admin, DHCP, superschool.org
+dn: cn=admin,ou=DHCP,#LDAPBASE#
+cn: admin
+dhcpServiceDN: cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpServer
+objectClass: dhcpOptions
+
+# config1, admin, DHCP, superschool.org
+dn: cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+cn: config1
+dhcpOption: domain-name "superschool.org"
+dhcpOption: domain-name-servers 192.168.0.12
+dhcpOption: routers 192.168.0.2
+dhcpOption: time-servers 192.168.0.12
+dhcpOption: lpr-servers 192.168.0.14
+dhcpOption: netbios-name-servers 192.168.0.12
+dhcpOption: option-150 code 150 = text
+dhcpOption: space PXE
+dhcpOption: wpad-curl code 252 = text
+dhcpOption: wpad-curl "http://admin.superschool.org/proxy.pac"
+dhcpPrimaryDN: cn=admin,ou=DHCP,#LDAPBASE#
+dhcpStatements: ddns-update-style none
+dhcpStatements: default-lease-time 86400
+objectClass: dhcpService
+objectClass: dhcpOptions
+objectClass: top
+
+# 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+cn: 192.168.0.0
+dhcpNetMask: 16
+dhcpStatements: default-lease-time 432000
+objectClass: dhcpSubnet
+objectClass: dhcpOptions
+objectClass: top
+
+# Pool1, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Pool1,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+cn: Pool1
+dhcpRange: dynamic-bootp 192.168.1.1 192.168.1.25
+objectClass: dhcpPool
+objectClass: dhcpOptions
+objectClass: top
+dhcpStatements: filename "pxegrub"
+dhcpStatements: option option-150 "(nd)/menu.lst"
+dhcpStatements: next-server 192.168.0.12
+dhcpStatements: allow unknown clients
+dhcpStatements: deny  known clients
+
+# Room0, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room0,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room0
+dhcpNetMask: 26
+dhcpRange: 192.168.2.0
+serviceAccesControl: DEFAULT all:DENY internet:ALLOW printing:ALLOW mailing:AL
+ LOW samba:ALLOW
+serviceAccesControl: 06:00 DEFAULT
+serviceAccesControl: 08:10  all: internet:ALLOW mailing:ALLOW printing:ALLOW s
+ amba:ALLOW
+description: TEST
+
+# Room1, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room1,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room1
+dhcpNetMask: 26
+dhcpRange: 192.168.2.64
+serviceAccesControl: DEFAULT all:DENY internet:ALLOW printing:ALLOW mailing:AL
+ LOW samba:ALLOW
+serviceAccesControl: 06:00 DEFAULT
+description: Raum2
+
+# Room2, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room2,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room2
+dhcpNetMask: 26
+dhcpRange: 192.168.2.128
+
+# Room3, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room3,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room3
+dhcpNetMask: 26
+dhcpRange: 192.168.2.192
+
+# Room4, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room4,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room4
+dhcpNetMask: 26
+dhcpRange: 192.168.3.0
+
+# Room5, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room5,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room5
+dhcpNetMask: 26
+dhcpRange: 192.168.3.64
+
+# Room6, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room6,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room6
+dhcpNetMask: 26
+dhcpRange: 192.168.3.128
+
+# Room7, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room7,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room7
+dhcpNetMask: 26
+dhcpRange: 192.168.3.192
+
+# Room8, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room8,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room8
+dhcpNetMask: 26
+dhcpRange: 192.168.4.0
+
+# Room9, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room9,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room9
+dhcpNetMask: 26
+dhcpRange: 192.168.4.64
+
+# Room10, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room10,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room10
+dhcpNetMask: 26
+dhcpRange: 192.168.4.128
+
+# Room11, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room11,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room11
+dhcpNetMask: 26
+dhcpRange: 192.168.4.192
+
+# Room12, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room12,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room12
+dhcpNetMask: 26
+dhcpRange: 192.168.5.0
+
+# Room13, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room13,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room13
+dhcpNetMask: 26
+dhcpRange: 192.168.5.64
+
+# Room14, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room14,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room14
+dhcpNetMask: 26
+dhcpRange: 192.168.5.128
+
+# Room15, 192.168.0.0, config1, admin, DHCP, superschool.org
+dn: cn=Room15,cn=192.168.0.0,cn=config1,cn=admin,ou=DHCP,#LDAPBASE#
+objectClass: top
+objectClass: dhcpOptions
+objectClass: dhcpGroup
+objectClass: SchoolRoom
+cn: Room15
+dhcpNetMask: 26
+dhcpRange: 192.168.5.192
+
+# bigboss, people, superschool.org
+dn: uid=bigboss,ou=people,#LDAPBASE#
+ou: 5B 6B 7B 9D 12
+description: Lehrer
+sn: Big
+givenName: Boss
+birthDay: 1945-01-01
+preferredLanguage: DE
+rasAccess: 0
+uid: bigboss
+o: Super School
+c: DE
+gidNumber: 502
+OXGroupID: 502
+OXGroupID: 1001
+OXGroupID: 1005
+OXGroupID: 1009
+OXGroupID: 1019
+OXGroupID: 1028
+OXGroupID: 505
+OXGroupID: 1031
+homeDirectory: /home/teachers/bigboss
+loginShell: /bin/bash
+cn: Boss Big
+uidNumber: 2001
+userPassword:: e3NtZDV9RWZmUjFLajhNbVIrSmdSaWsvaTZuVmRaQUFBQQ==
+shadowLastChange: 12804
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: bigboss@superschool.org
+suseMailAcceptAddress: Boss.Big@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: OK
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5002
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2005
+displayName: Boss Big
+sambaPwdCanChange: 1106298760
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 2848822810E16C51AAD3B435B51404EE
+sambaNTPassword: F441F41AA59214CCCC3D4BA5ED1550CC
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106298760
+sambaAcctFlags: [U          ]
+
+# addr, bigboss, people, superschool.org
+dn: ou=addr,uid=bigboss,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# BET1A, group, superschool.org
+dn: cn=BET1A,ou=group,#LDAPBASE#
+cn: BET1A
+displayName: BET1A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3059
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r BET1A -a cyrus -m BET1A"
+gidNumber: 1029
+description: KLASSE
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=paustobi,ou=people,#LDAPBASE#
+member: uid=lippguid,ou=people,#LDAPBASE#
+member: uid=lopejose,ou=people,#LDAPBASE#
+member: uid=hieguli,ou=people,#LDAPBASE#
+member: uid=madldami,ou=people,#LDAPBASE#
+member: uid=fiedcari,ou=people,#LDAPBASE#
+member: uid=grohstef,ou=people,#LDAPBASE#
+member: uid=heitlari,ou=people,#LDAPBASE#
+member: uid=helbsore,ou=people,#LDAPBASE#
+member: uid=karpfabi,ou=people,#LDAPBASE#
+member: uid=lawpoh,ou=people,#LDAPBASE#
+member: uid=erkephil,ou=people,#LDAPBASE#
+member: uid=rutktim,ou=people,#LDAPBASE#
+member: uid=vogttobi,ou=people,#LDAPBASE#
+member: uid=blicstef,ou=people,#LDAPBASE#
+member: uid=branbjor,ou=people,#LDAPBASE#
+member: uid=wolfthor,ou=people,#LDAPBASE#
+member: uid=vonchri,ou=people,#LDAPBASE#
+member: uid=overseba,ou=people,#LDAPBASE#
+member: uid=schnchri,ou=people,#LDAPBASE#
+userPassword:: Kg==
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+
+# paustobi, people, superschool.org
+dn: uid=paustobi,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Pause
+givenName: Tobias
+preferredLanguage: DE
+birthDay: 1985-05-30
+rasAccess: 0
+uid: paustobi
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/paustobi
+loginShell: /bin/bash
+cn: Tobias Pause
+uidNumber: 2002
+userPassword:: e3NtZDV9b2R1b3E3MUNndVlyaFVzVjlacFcra2RVQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: paustobi@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5004
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Tobias Pause
+sambaPwdCanChange: 1106682497
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 1D3BAA77E5412D287CA65F36030673DD
+sambaNTPassword: F3FA97B34B639101827BEA63F1E956FA
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106682497
+sambaAcctFlags: [U          ]
+ou:: QkVUMUEg
+
+# addr, paustobi, people, superschool.org
+dn: ou=addr,uid=paustobi,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# lippguid, people, superschool.org
+dn: uid=lippguid,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Lippmann
+givenName: Guido
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-08-15
+rasAccess: 0
+uid: lippguid
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/lippguid
+loginShell: /bin/bash
+cn: Guido Lippmann
+uidNumber: 2003
+userPassword:: e3NtZDV9eHNHQklFcHJUT01xdXhRN1dQeEwrMGhHQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: lippguid@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5006
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Guido Lippmann
+sambaPwdCanChange: 1106684780
+sambaPwdMustChange: 2147483647
+sambaLMPassword: EE0A42A6BC0E18B0D8F7F5860820ED3F
+sambaNTPassword: 60E48F174B6AAB01624B8A2FB11B64CD
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684780
+sambaAcctFlags: [U          ]
+
+# addr, lippguid, people, superschool.org
+dn: ou=addr,uid=lippguid,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# lopejose, people, superschool.org
+dn: uid=lopejose,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Lopes
+givenName:: Sm9zw6kgTWlndWVs
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-09-19
+rasAccess: 0
+uid: lopejose
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/lopejose
+loginShell: /bin/bash
+cn:: Sm9zw6kgTWlndWVsIExvcGVz
+uidNumber: 2004
+userPassword:: e3NtZDV9VTgrSC9QOHBORE1XbVpZK1pIT3VQa05TQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: lopejose@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5008
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName:: Sm9zw6kgTWlndWVsIExvcGVz
+sambaPwdCanChange: 1106684785
+sambaPwdMustChange: 2147483647
+sambaLMPassword: C23D26C09E52C019E72C57EF50F76A05
+sambaNTPassword: 802CBC66501F12507C34196F20A84943
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684785
+sambaAcctFlags: [U          ]
+
+# addr, lopejose, people, superschool.org
+dn: ou=addr,uid=lopejose,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# hieguli, people, superschool.org
+dn: uid=hieguli,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Hiegemeier
+givenName: Uli
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-05-14
+rasAccess: 0
+uid: hieguli
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/hieguli
+loginShell: /bin/bash
+cn: Uli Hiegemeier
+uidNumber: 2005
+userPassword:: e3NtZDV9S3lTVHlsN1BUSHVoRHV4M2dldld4MWRYQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: hieguli@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5010
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Uli Hiegemeier
+sambaPwdCanChange: 1106684790
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 2B40EBEEBF7475C717306D272A9441BB
+sambaNTPassword: 8DF59B545A98CE94F4B5958E2990EA53
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684790
+sambaAcctFlags: [U          ]
+
+# addr, hieguli, people, superschool.org
+dn: ou=addr,uid=hieguli,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# madldami, people, superschool.org
+dn: uid=madldami,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Madla
+givenName: Damian
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-06-16
+rasAccess: 0
+uid: madldami
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/madldami
+loginShell: /bin/bash
+cn: Damian Madla
+uidNumber: 2006
+userPassword:: e3NtZDV9YUJiSUZjTE1lTERGN2U1TjJuMVl3VUpNQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: madldami@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5012
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Damian Madla
+sambaPwdCanChange: 1106684796
+sambaPwdMustChange: 2147483647
+sambaLMPassword: CBC0751A8D3FB1BEF7E62F36F8DB5AE6
+sambaNTPassword: 913B9257E08466BC89268400423166D5
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684796
+sambaAcctFlags: [U          ]
+
+# addr, madldami, people, superschool.org
+dn: ou=addr,uid=madldami,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# fiedcari, people, superschool.org
+dn: uid=fiedcari,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Fiedler
+givenName: Carina
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-12-11
+rasAccess: 0
+uid: fiedcari
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+OXGroupID: 1020
+homeDirectory: /home/students/fiedcari
+loginShell: /bin/bash
+cn: Carina Fiedler
+uidNumber: 2007
+userPassword:: e3NtZDV9MlR5Wk9VZWVjaHpMaFYvbElRa3BybGxUQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: fiedcari@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5014
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Carina Fiedler
+sambaPwdCanChange: 1106684802
+sambaPwdMustChange: 2147483647
+sambaLMPassword: B937AA8205E3738A17306D272A9441BB
+sambaNTPassword: E2AA55CE1A4C11C0F3AC98DB35DAB0A5
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684802
+sambaAcctFlags: [U          ]
+
+# addr, fiedcari, people, superschool.org
+dn: ou=addr,uid=fiedcari,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# grohstef, people, superschool.org
+dn: uid=grohstef,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Grohmann
+givenName: Stefan
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-08-05
+rasAccess: 0
+uid: grohstef
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/grohstef
+loginShell: /bin/bash
+cn: Stefan Grohmann
+uidNumber: 2008
+userPassword:: e3NtZDV9Mk9jVk1pT09tVGhyTWpTQzhqTGxQbE5WQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: grohstef@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5016
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Stefan Grohmann
+sambaPwdCanChange: 1106684806
+sambaPwdMustChange: 2147483647
+sambaLMPassword: D5E5BE0972D795EEF9393D97E7A1873C
+sambaNTPassword: 764B9CFA2189DA8A1ABCFE5FD1703FCC
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684806
+sambaAcctFlags: [U          ]
+
+# addr, grohstef, people, superschool.org
+dn: ou=addr,uid=grohstef,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# heitlari, people, superschool.org
+dn: uid=heitlari,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Heitmann
+givenName: Larissa
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-11-17
+rasAccess: 0
+uid: heitlari
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/heitlari
+loginShell: /bin/bash
+cn: Larissa Heitmann
+uidNumber: 2009
+userPassword:: e3NtZDV9ZkpVb1E1OFpWYzRsRTlrSlhjMlJ4VXBMQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: heitlari@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5018
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Larissa Heitmann
+sambaPwdCanChange: 1106684811
+sambaPwdMustChange: 2147483647
+sambaLMPassword: EEBE679CCD008255C187B8085FE1D9DF
+sambaNTPassword: 6FBBFBA15FD63988C3C280ABA56F3F0D
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684811
+sambaAcctFlags: [U          ]
+
+# addr, heitlari, people, superschool.org
+dn: ou=addr,uid=heitlari,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# helbsore, people, superschool.org
+dn: uid=helbsore,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Helbig
+givenName:: U8O2cmVu
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-08-03
+rasAccess: 0
+uid: helbsore
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/helbsore
+loginShell: /bin/bash
+cn:: U8O2cmVuIEhlbGJpZw==
+uidNumber: 2010
+userPassword:: e3NtZDV9UFVsaS9ITERwbzZKK01vejBBblltVmxYQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: helbsore@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5020
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName:: U8O2cmVuIEhlbGJpZw==
+sambaPwdCanChange: 1106684815
+sambaPwdMustChange: 2147483647
+sambaLMPassword: BA61E11F874E4A6C902139606B6D16B5
+sambaNTPassword: 496C155D31BEFC7AFA32E675720CBC7E
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684815
+sambaAcctFlags: [U          ]
+
+# addr, helbsore, people, superschool.org
+dn: ou=addr,uid=helbsore,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# karpfabi, people, superschool.org
+dn: uid=karpfabi,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Karpawitz
+givenName: Fabian
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-07-15
+rasAccess: 0
+uid: karpfabi
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/karpfabi
+loginShell: /bin/bash
+cn: Fabian Karpawitz
+uidNumber: 2011
+userPassword:: e3NtZDV9Uk1TOHY2Yk53WGFwd2JMazgrQXFFVVZTQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: karpfabi@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5022
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Fabian Karpawitz
+sambaPwdCanChange: 1106684821
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 8483D3D2199D3D22F500944B53168930
+sambaNTPassword: 9448855E27664454D4B5E5E01E8A7C9F
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684821
+sambaAcctFlags: [U          ]
+
+# addr, karpfabi, people, superschool.org
+dn: ou=addr,uid=karpfabi,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# lawpoh, people, superschool.org
+dn: uid=lawpoh,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Law
+givenName: Po Him
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1985-08-07
+rasAccess: 0
+uid: lawpoh
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/lawpoh
+loginShell: /bin/bash
+cn: Po Him Law
+uidNumber: 2012
+userPassword:: e3NtZDV9ZHhaYUFFVVlmczNmd2prSmRsWkErMDlNQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: lawpoh@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5024
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Po Him Law
+sambaPwdCanChange: 1106684827
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 3DA3E65B713E7C69902139606B6D16B5
+sambaNTPassword: 5559E4B08FAA95D375D1520F22D4E8B4
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684827
+sambaAcctFlags: [U          ]
+
+# addr, lawpoh, people, superschool.org
+dn: ou=addr,uid=lawpoh,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# erkephil, people, superschool.org
+dn: uid=erkephil,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Erkeling
+givenName: Philipp
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-08-14
+rasAccess: 0
+uid: erkephil
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+OXGroupID: 1020
+homeDirectory: /home/students/erkephil
+loginShell: /bin/bash
+cn: Philipp Erkeling
+uidNumber: 2013
+userPassword:: e3NtZDV9ZDA1Z0ZBcTFqRE5lM2lIODVIa3BrVXRKQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: erkephil@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5026
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Philipp Erkeling
+sambaPwdCanChange: 1106684832
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 99BF45E26A7FB4A2E72C57EF50F76A05
+sambaNTPassword: 2737E040F5F42C6E7517C0397F5D46EC
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684832
+sambaAcctFlags: [U          ]
+
+# addr, erkephil, people, superschool.org
+dn: ou=addr,uid=erkephil,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# rutktim, people, superschool.org
+dn: uid=rutktim,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Rutke
+givenName: Tim
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1987-01-06
+rasAccess: 0
+uid: rutktim
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/rutktim
+loginShell: /bin/bash
+cn: Tim Rutke
+uidNumber: 2014
+userPassword:: e3NtZDV9cHNsSFZVbHZOekQ1dG14QkZsdU9wMWxGQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: rutktim@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5028
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Tim Rutke
+sambaPwdCanChange: 1106684836
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 55E8655D0752C96AB79AE2610DD89D4C
+sambaNTPassword: 1C09F2F88CAC3C1F18FA4A1CB68C46ED
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684836
+sambaAcctFlags: [U          ]
+
+# addr, rutktim, people, superschool.org
+dn: ou=addr,uid=rutktim,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# vogttobi, people, superschool.org
+dn: uid=vogttobi,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Vogt
+givenName: Tobias
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-01-24
+rasAccess: 0
+uid: vogttobi
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/vogttobi
+loginShell: /bin/bash
+cn: Tobias Vogt
+uidNumber: 2015
+userPassword:: e3NtZDV9ZzFzTzdsWVAxdUk5a3M3Y2oranA2a1ZhQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: vogttobi@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5030
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Tobias Vogt
+sambaPwdCanChange: 1106684842
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 4ED9072844AE3D42DF128B2DD32BAD07
+sambaNTPassword: 40B5C1A266844A241E002EAD94150E57
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684842
+sambaAcctFlags: [U          ]
+
+# addr, vogttobi, people, superschool.org
+dn: ou=addr,uid=vogttobi,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# blicstef, people, superschool.org
+dn: uid=blicstef,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Blicke
+givenName: Stefanie
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1987-01-15
+rasAccess: 0
+uid: blicstef
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+OXGroupID: 1032
+OXGroupID: 1020
+homeDirectory: /home/students/blicstef
+loginShell: /bin/bash
+cn: Stefanie Blicke
+uidNumber: 2016
+userPassword:: e3NtZDV9YjNVTEpRK3Rlc3BQZzhTTlBmbHAxRVJNQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: blicstef@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5032
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Stefanie Blicke
+sambaPwdCanChange: 1106684848
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 8DCE3A42FE9E98EB1104594F8C2EF12B
+sambaNTPassword: 9E2B1D6E058D91B4E92697BEAF6F422A
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684848
+sambaAcctFlags: [U          ]
+
+# addr, blicstef, people, superschool.org
+dn: ou=addr,uid=blicstef,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# branbjor, people, superschool.org
+dn: uid=branbjor,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Brandt
+givenName:: QmrDtnJu
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1985-10-30
+rasAccess: 0
+uid: branbjor
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+OXGroupID: 1032
+OXGroupID: 1020
+homeDirectory: /home/students/branbjor
+loginShell: /bin/bash
+cn:: QmrDtnJuIEJyYW5kdA==
+uidNumber: 2017
+userPassword:: e3NtZDV9Z1YxeUNBZi9aRklDUGZ4NCtnaDhka3RRQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: branbjor@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5034
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName:: QmrDtnJuIEJyYW5kdA==
+sambaPwdCanChange: 1106684853
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 944D1FECE112D927FDCFC2AFB2D1BE34
+sambaNTPassword: 051C75476751A40C2611DD5125B539BA
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684853
+sambaAcctFlags: [U          ]
+
+# addr, branbjor, people, superschool.org
+dn: ou=addr,uid=branbjor,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# wolfthor, people, superschool.org
+dn: uid=wolfthor,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Wolff
+givenName: Thorsten
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-08-15
+rasAccess: 0
+uid: wolfthor
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/wolfthor
+loginShell: /bin/bash
+cn: Thorsten Wolff
+uidNumber: 2018
+userPassword:: e3NtZDV9eFpwLzJ2bEJjdmZOQms1QzF2QUEyRXBOQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: wolfthor@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5036
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Thorsten Wolff
+sambaPwdCanChange: 1106684857
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 23A9BB9163A3D11BF9393D97E7A1873C
+sambaNTPassword: 232C2464A62A3AAFB2F836FC053DD1D4
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684857
+sambaAcctFlags: [U          ]
+
+# addr, wolfthor, people, superschool.org
+dn: ou=addr,uid=wolfthor,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# vonchri, people, superschool.org
+dn: uid=vonchri,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: von Glinski
+givenName: Christoph
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1985-11-03
+rasAccess: 0
+uid: vonchri
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/vonchri
+loginShell: /bin/bash
+cn: Christoph von Glinski
+uidNumber: 2019
+userPassword:: e3NtZDV9MTVHU3NYTmJTbDR2QUQ0UFRoWlloa2xOQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: vonchri@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5038
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Christoph von Glinski
+sambaPwdCanChange: 1106684862
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 447433065CE30A14C482C03F54CDB5D9
+sambaNTPassword: FDE7FE196C317EB9B743F9C433872DF5
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684862
+sambaAcctFlags: [U          ]
+
+# addr, vonchri, people, superschool.org
+dn: ou=addr,uid=vonchri,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# overseba, people, superschool.org
+dn: uid=overseba,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Overmann
+givenName: Sebastian
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-07-01
+rasAccess: 0
+uid: overseba
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/overseba
+loginShell: /bin/bash
+cn: Sebastian Overmann
+uidNumber: 2020
+userPassword:: e3NtZDV9emlZWS9USzVyc3pPNW9ya3ZsMU9iRUZZQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: overseba@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5040
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Sebastian Overmann
+sambaPwdCanChange: 1106684866
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 6221464D0AD634A8613E9293942509F0
+sambaNTPassword: 8A3FD9D3B6D1215485E811010286ABAA
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684866
+sambaAcctFlags: [U          ]
+
+# addr, overseba, people, superschool.org
+dn: ou=addr,uid=overseba,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# schnchri, people, superschool.org
+dn: uid=schnchri,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Schnurbus
+givenName: Christian
+preferredLanguage: DE
+ou: BET1A
+birthDay: 1986-02-24
+rasAccess: 0
+uid: schnchri
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1029
+homeDirectory: /home/students/schnchri
+loginShell: /bin/bash
+cn: Christian Schnurbus
+uidNumber: 2021
+userPassword:: e3NtZDV9UHhvUjNmTGNVM3QyV2pUaFNXOWt0VmRIQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: schnchri@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5042
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Christian Schnurbus
+sambaPwdCanChange: 1106684871
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 9A01B588263E11417CA65F36030673DD
+sambaNTPassword: D37463501F97BD7503DEA56D7317BA7F
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684871
+sambaAcctFlags: [U          ]
+
+# addr, schnchri, people, superschool.org
+dn: ou=addr,uid=schnchri,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# BF1A, group, superschool.org
+dn: cn=BF1A,ou=group,#LDAPBASE#
+cn: BF1A
+displayName: BF1A
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3061
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r BF1A -a cyrus -m BF1A"
+gidNumber: 1030
+description: KLASSE
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=okurfaru,ou=people,#LDAPBASE#
+member: uid=dreyklau,ou=people,#LDAPBASE#
+member: uid=erhamark,ou=people,#LDAPBASE#
+member: uid=ruminadi,ou=people,#LDAPBASE#
+member: uid=pochrolf,ou=people,#LDAPBASE#
+member: uid=krogfran,ou=people,#LDAPBASE#
+member: uid=canggokh,ou=people,#LDAPBASE#
+member: uid=zeugvolk,ou=people,#LDAPBASE#
+member: uid=wlotpatr,ou=people,#LDAPBASE#
+member: uid=hollmarc,ou=people,#LDAPBASE#
+member: uid=randnils,ou=people,#LDAPBASE#
+member: uid=schudenn,ou=people,#LDAPBASE#
+member: uid=jabupeta,ou=people,#LDAPBASE#
+member: uid=teutkevi,ou=people,#LDAPBASE#
+member: uid=schmjoha,ou=people,#LDAPBASE#
+member: uid=brauanto,ou=people,#LDAPBASE#
+member: uid=zimmmart,ou=people,#LDAPBASE#
+member: uid=freystef,ou=people,#LDAPBASE#
+member: uid=lutgtobi,ou=people,#LDAPBASE#
+member: uid=belorusl,ou=people,#LDAPBASE#
+member: uid=kundkolj,ou=people,#LDAPBASE#
+member: uid=sauedomi,ou=people,#LDAPBASE#
+member: uid=ceylali,ou=people,#LDAPBASE#
+member: uid=steiivon,ou=people,#LDAPBASE#
+member: uid=senddani,ou=people,#LDAPBASE#
+member: uid=piecpete,ou=people,#LDAPBASE#
+member: uid=ossejens,ou=people,#LDAPBASE#
+member: uid=kluvkath,ou=people,#LDAPBASE#
+userPassword:: Kg==
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+
+# okurfaru, people, superschool.org
+dn: uid=okurfaru,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Okur
+givenName: Faruk
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1984-11-02
+rasAccess: 0
+uid: okurfaru
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/okurfaru
+loginShell: /bin/bash
+cn: Faruk Okur
+uidNumber: 2022
+userPassword:: e3NtZDV9L2ZkL0s4cW5YWE1SYUMva3dqZHpjMUJPQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: okurfaru@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5044
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Faruk Okur
+sambaPwdCanChange: 1106684877
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 4F2E4E3F61DEFC21F7E62F36F8DB5AE6
+sambaNTPassword: FB2C233E0FFB3183C95CD18EDCB4EF7A
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684877
+sambaAcctFlags: [U          ]
+
+# addr, okurfaru, people, superschool.org
+dn: ou=addr,uid=okurfaru,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# dreyklau, people, superschool.org
+dn: uid=dreyklau,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Dreyer
+givenName: Klaus
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1983-11-24
+rasAccess: 0
+uid: dreyklau
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+OXGroupID: 1020
+homeDirectory: /home/students/dreyklau
+loginShell: /bin/bash
+cn: Klaus Dreyer
+uidNumber: 2023
+userPassword:: e3NtZDV9bXBLbWZIZWYvcjVkMStIWVBGeWNUMUJJQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: dreyklau@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5046
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Klaus Dreyer
+sambaPwdCanChange: 1106684882
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 025FB6D448CAA87AF500944B53168930
+sambaNTPassword: 4C0172AF3A761F98213E0AD22192BEE2
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684882
+sambaAcctFlags: [U          ]
+
+# addr, dreyklau, people, superschool.org
+dn: ou=addr,uid=dreyklau,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# erhamark, people, superschool.org
+dn: uid=erhamark,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Erhard
+givenName: Mark Oliver
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1980-04-05
+rasAccess: 0
+uid: erhamark
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/erhamark
+loginShell: /bin/bash
+cn: Mark Oliver Erhard
+uidNumber: 2024
+userPassword:: e3NtZDV9a0F1dExuaTdYc1VHcHNuRHR5alJ5MEZOQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: erhamark@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5048
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Mark Oliver Erhard
+sambaPwdCanChange: 1106684886
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 65B37D4888877E8A902139606B6D16B5
+sambaNTPassword: C41DF020298332E3C3167BF167E4BEB4
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684886
+sambaAcctFlags: [U          ]
+
+# addr, erhamark, people, superschool.org
+dn: ou=addr,uid=erhamark,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# ruminadi, people, superschool.org
+dn: uid=ruminadi,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Rumi
+givenName: Nadine
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1983-03-29
+rasAccess: 0
+uid: ruminadi
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/ruminadi
+loginShell: /bin/bash
+cn: Nadine Rumi
+uidNumber: 2025
+userPassword:: e3NtZDV9VHdHT2RyakJ5WFE0dUdQT0VXblUzRVpQQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: ruminadi@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5050
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Nadine Rumi
+sambaPwdCanChange: 1106684891
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 7A4AEF2B0557658D7CA65F36030673DD
+sambaNTPassword: 6DDE846C0DFD197BDB4EB3335368DAA4
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684891
+sambaAcctFlags: [U          ]
+
+# addr, ruminadi, people, superschool.org
+dn: ou=addr,uid=ruminadi,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# pochrolf, people, superschool.org
+dn: uid=pochrolf,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Pochert
+givenName: Rolf
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1982-10-22
+rasAccess: 0
+uid: pochrolf
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/pochrolf
+loginShell: /bin/bash
+cn: Rolf Pochert
+uidNumber: 2026
+userPassword:: e3NtZDV9VGdBUitLZHZjcWFYT1JpKzJtNUc1VVJTQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: pochrolf@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5052
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Rolf Pochert
+sambaPwdCanChange: 1106684895
+sambaPwdMustChange: 2147483647
+sambaLMPassword: AD5AF9C8820248004A3B108F3FA6CB6D
+sambaNTPassword: A2BBA0FAD7069618FAD77556154576DB
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684895
+sambaAcctFlags: [U          ]
+
+# addr, pochrolf, people, superschool.org
+dn: ou=addr,uid=pochrolf,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# krogfran, people, superschool.org
+dn: uid=krogfran,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Kroggel
+givenName: Frank
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1984-10-01
+rasAccess: 0
+uid: krogfran
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/krogfran
+loginShell: /bin/bash
+cn: Frank Kroggel
+uidNumber: 2027
+userPassword:: e3NtZDV9Y21JWkJwbXQ2S0w1YzZHZzJ5bUNEbFJEQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: krogfran@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5054
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Frank Kroggel
+sambaPwdCanChange: 1106684901
+sambaPwdMustChange: 2147483647
+sambaLMPassword: A02F431305B7D8271486235A2333E4D2
+sambaNTPassword: 5403C32F22698DCE3A43A7A143E90ABE
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684901
+sambaAcctFlags: [U          ]
+
+# addr, krogfran, people, superschool.org
+dn: ou=addr,uid=krogfran,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# canggokh, people, superschool.org
+dn: uid=canggokh,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn:: Q2FuZ8O8bA==
+givenName:: R8O2a2hhbg==
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1986-11-05
+rasAccess: 0
+uid: canggokh
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+OXGroupID: 1020
+homeDirectory: /home/students/canggokh
+loginShell: /bin/bash
+cn:: R8O2a2hhbiBDYW5nw7xs
+uidNumber: 2028
+userPassword:: e3NtZDV9clN0OFlPbTNCUDJMcktTaDlPLzNUMDlIQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: canggokh@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5056
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName:: R8O2a2hhbiBDYW5nw7xs
+sambaPwdCanChange: 1106684906
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 18C91C5E255CAB34D8F7F5860820ED3F
+sambaNTPassword: 6C75B9B7C52EA789F583EC1C12E81F74
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684906
+sambaAcctFlags: [U          ]
+
+# addr, canggokh, people, superschool.org
+dn: ou=addr,uid=canggokh,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# zeugvolk, people, superschool.org
+dn: uid=zeugvolk,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Zeugner
+givenName: Volker
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1984-10-07
+rasAccess: 0
+uid: zeugvolk
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/zeugvolk
+loginShell: /bin/bash
+cn: Volker Zeugner
+uidNumber: 2029
+userPassword:: e3NtZDV9dUkrVlZyRWRVcE1ZVEVzTnA3OG1MazlSQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: zeugvolk@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5058
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Volker Zeugner
+sambaPwdCanChange: 1106684911
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 5B054A59A4157DCB5ACDCD7C247FA83A
+sambaNTPassword: 9DCBF18A1E1512E81C5D227534F6D0E6
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684911
+sambaAcctFlags: [U          ]
+
+# addr, zeugvolk, people, superschool.org
+dn: ou=addr,uid=zeugvolk,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# wlotpatr, people, superschool.org
+dn: uid=wlotpatr,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Wlotzka
+givenName: Patrick
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1984-03-20
+rasAccess: 0
+uid: wlotpatr
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/wlotpatr
+loginShell: /bin/bash
+cn: Patrick Wlotzka
+uidNumber: 2030
+userPassword:: e3NtZDV9SzVnY2JjS0ZVV2VQTDNWU3RoWUozMVJGQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: wlotpatr@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5060
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Patrick Wlotzka
+sambaPwdCanChange: 1106684915
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 7033E1F1E3588D9917306D272A9441BB
+sambaNTPassword: D603DA01F43B3C82A3E2084DD53E1522
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684915
+sambaAcctFlags: [U          ]
+
+# addr, wlotpatr, people, superschool.org
+dn: ou=addr,uid=wlotpatr,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# hollmarc, people, superschool.org
+dn: uid=hollmarc,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn:: SMO2bGw=
+givenName: Marcel
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1986-01-14
+rasAccess: 0
+uid: hollmarc
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/hollmarc
+loginShell: /bin/bash
+cn:: TWFyY2VsIEjDtmxs
+uidNumber: 2031
+userPassword:: e3NtZDV9cmMzL0hjMkMrL2NmdzljMkdVRVFFVk5VQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: hollmarc@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5062
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName:: TWFyY2VsIEjDtmxs
+sambaPwdCanChange: 1106684920
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 2A54685F5DA7AD5A902139606B6D16B5
+sambaNTPassword: DA3AD4D9655AA52911860CC8EE57AC32
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684920
+sambaAcctFlags: [U          ]
+
+# addr, hollmarc, people, superschool.org
+dn: ou=addr,uid=hollmarc,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# randnils, people, superschool.org
+dn: uid=randnils,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Randowski
+givenName: Nils
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1982-10-08
+rasAccess: 0
+uid: randnils
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/randnils
+loginShell: /bin/bash
+cn: Nils Randowski
+uidNumber: 2032
+userPassword:: e3NtZDV9bDIybTRaK0l4Mm5pcWJqL1JkSWRXRkZQQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: randnils@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5064
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Nils Randowski
+sambaPwdCanChange: 1106684924
+sambaPwdMustChange: 2147483647
+sambaLMPassword: DA3DA9E98C1AD308D8F7F5860820ED3F
+sambaNTPassword: 7995C1B8C2BF14143C17855AAA521692
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684924
+sambaAcctFlags: [U          ]
+
+# addr, randnils, people, superschool.org
+dn: ou=addr,uid=randnils,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# schudenn, people, superschool.org
+dn: uid=schudenn,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Schulz
+givenName: Dennis
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1985-05-03
+rasAccess: 0
+uid: schudenn
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/schudenn
+loginShell: /bin/bash
+cn: Dennis Schulz
+uidNumber: 2033
+userPassword:: e3NtZDV9b09tR3hKVTAzc2JmT1laSy9RLzNSVWxGQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: schudenn@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5066
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Dennis Schulz
+sambaPwdCanChange: 1106684929
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 40F473EF2FA0181BF7E62F36F8DB5AE6
+sambaNTPassword: 3E00EB82B95E67FCD3818311D81F8D55
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684929
+sambaAcctFlags: [U          ]
+
+# addr, schudenn, people, superschool.org
+dn: ou=addr,uid=schudenn,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# jabupeta, people, superschool.org
+dn: uid=jabupeta,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Jabucanin
+givenName: Petar
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1983-07-18
+rasAccess: 0
+uid: jabupeta
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/jabupeta
+loginShell: /bin/bash
+cn: Petar Jabucanin
+uidNumber: 2034
+userPassword:: e3NtZDV9Skl1QWlCS3pXQ1NIaXRmem9nY0x5bFpaQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: jabupeta@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5068
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Petar Jabucanin
+sambaPwdCanChange: 1106684933
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 831ABD8FFC2A6688C187B8085FE1D9DF
+sambaNTPassword: 6DC48DE3E9B22C8F189718540D04E4E4
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684933
+sambaAcctFlags: [U          ]
+
+# addr, jabupeta, people, superschool.org
+dn: ou=addr,uid=jabupeta,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# teutkevi, people, superschool.org
+dn: uid=teutkevi,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Teuteberg
+givenName: Kevin
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1986-03-23
+rasAccess: 0
+uid: teutkevi
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/teutkevi
+loginShell: /bin/bash
+cn: Kevin Teuteberg
+uidNumber: 2035
+userPassword:: e3NtZDV9cXJqdDI0d0hOZHEvZzFUMitxWkZUVmRXQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: teutkevi@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5070
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Kevin Teuteberg
+sambaPwdCanChange: 1106684938
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 7826F3ADE165B47D902139606B6D16B5
+sambaNTPassword: FAFBE9A19CC400DB8BDEE0119B7E214B
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684938
+sambaAcctFlags: [U          ]
+
+# addr, teutkevi, people, superschool.org
+dn: ou=addr,uid=teutkevi,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# schmjoha, people, superschool.org
+dn: uid=schmjoha,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Schmeiduch
+givenName: Johanna
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1985-05-12
+rasAccess: 0
+uid: schmjoha
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/schmjoha
+loginShell: /bin/bash
+cn: Johanna Schmeiduch
+uidNumber: 2036
+userPassword:: e3NtZDV9ZzJiQXpMV2dBdmRzaEpnQ2V0ZnJWRUZJQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: schmjoha@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5072
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Johanna Schmeiduch
+sambaPwdCanChange: 1106684943
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 0EC64B5E7A138ED91104594F8C2EF12B
+sambaNTPassword: 20A8DEC6FB635F40C1CEE3D3D0128B54
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684943
+sambaAcctFlags: [U          ]
+
+# addr, schmjoha, people, superschool.org
+dn: ou=addr,uid=schmjoha,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# brauanto, people, superschool.org
+dn: uid=brauanto,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Braun
+givenName: Anton
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1985-07-24
+rasAccess: 0
+uid: brauanto
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+OXGroupID: 1020
+homeDirectory: /home/students/brauanto
+loginShell: /bin/bash
+cn: Anton Braun
+uidNumber: 2037
+userPassword:: e3NtZDV9bllMMkk4eW1UNnZaMFpGNGZwVnc2a2RSQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: brauanto@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5074
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Anton Braun
+sambaPwdCanChange: 1106684947
+sambaPwdMustChange: 2147483647
+sambaLMPassword: B027598CAA8D65E6FDCFC2AFB2D1BE34
+sambaNTPassword: 2E4AE0C4F54FA320E345A3091B68C749
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684947
+sambaAcctFlags: [U          ]
+
+# addr, brauanto, people, superschool.org
+dn: ou=addr,uid=brauanto,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# zimmmart, people, superschool.org
+dn: uid=zimmmart,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Zimmer
+givenName: Martin
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1986-12-10
+rasAccess: 0
+uid: zimmmart
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/zimmmart
+loginShell: /bin/bash
+cn: Martin Zimmer
+uidNumber: 2038
+userPassword:: e3NtZDV9Z1habDFtZHMxUjkweitLMmoxVWRpRmRQQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: zimmmart@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5076
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Martin Zimmer
+sambaPwdCanChange: 1106684952
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 818342B33FF465CD417EAF50CFAC29C3
+sambaNTPassword: B65BF8F98853DE64AC08D730A3848A8D
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684952
+sambaAcctFlags: [U          ]
+
+# addr, zimmmart, people, superschool.org
+dn: ou=addr,uid=zimmmart,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# freystef, people, superschool.org
+dn: uid=freystef,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Freyberg
+givenName: Stefan
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1984-10-13
+rasAccess: 0
+uid: freystef
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/freystef
+loginShell: /bin/bash
+cn: Stefan Freyberg
+uidNumber: 2039
+userPassword:: e3NtZDV9Rkt3UTlrSDBCZlZmbW1iMThUNTRvRVpNQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: freystef@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5078
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Stefan Freyberg
+sambaPwdCanChange: 1106684957
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 13BE3C086A574742F7E62F36F8DB5AE6
+sambaNTPassword: EEE0CF102AAD28998DAA60EA9E2334A7
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684957
+sambaAcctFlags: [U          ]
+
+# addr, freystef, people, superschool.org
+dn: ou=addr,uid=freystef,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# lutgtobi, people, superschool.org
+dn: uid=lutgtobi,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn:: TMO8dGdlYmF1Y2tz
+givenName: Tobias
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1983-09-26
+rasAccess: 0
+uid: lutgtobi
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/lutgtobi
+loginShell: /bin/bash
+cn:: VG9iaWFzIEzDvHRnZWJhdWNrcw==
+uidNumber: 2040
+userPassword:: e3NtZDV9NWl2VEg2VDM1aUkxcDNiK2sxaXlZa3BYQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: lutgtobi@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5080
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName:: VG9iaWFzIEzDvHRnZWJhdWNrcw==
+sambaPwdCanChange: 1106684961
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 7F376371623D785693E28745B8BF4BA6
+sambaNTPassword: A1F3316E46414A05D657460C335AD8A6
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684961
+sambaAcctFlags: [U          ]
+
+# addr, lutgtobi, people, superschool.org
+dn: ou=addr,uid=lutgtobi,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# belorusl, people, superschool.org
+dn: uid=belorusl,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Belov
+givenName: Ruslan
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1983-02-04
+rasAccess: 0
+uid: belorusl
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+OXGroupID: 1032
+OXGroupID: 1020
+homeDirectory: /home/students/belorusl
+loginShell: /bin/bash
+cn: Ruslan Belov
+uidNumber: 2041
+userPassword:: e3NtZDV9WnZ6UEJtWEFGVVpiZjZMM3lna1l3VnBTQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: belorusl@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5082
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Ruslan Belov
+sambaPwdCanChange: 1106684966
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 34911AFA49114BF14A3B108F3FA6CB6D
+sambaNTPassword: 21D4DCE5F60D3A9F44021271B52C1736
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684966
+sambaAcctFlags: [U          ]
+
+# addr, belorusl, people, superschool.org
+dn: ou=addr,uid=belorusl,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# kundkolj, people, superschool.org
+dn: uid=kundkolj,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Kundrun
+givenName: Kolja
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1984-04-15
+rasAccess: 0
+uid: kundkolj
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/kundkolj
+loginShell: /bin/bash
+cn: Kolja Kundrun
+uidNumber: 2042
+userPassword:: e3NtZDV9ZWdVWmY1T0FkYlg5Mk5mYWlOZDdGME5JQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: kundkolj@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5084
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Kolja Kundrun
+sambaPwdCanChange: 1106684971
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 30A99603019CE213F500944B53168930
+sambaNTPassword: F33725625A2332A78F4C52C99275E44F
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684971
+sambaAcctFlags: [U          ]
+
+# addr, kundkolj, people, superschool.org
+dn: ou=addr,uid=kundkolj,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# sauedomi, people, superschool.org
+dn: uid=sauedomi,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Sauer
+givenName: Dominic
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1985-02-23
+rasAccess: 0
+uid: sauedomi
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/sauedomi
+loginShell: /bin/bash
+cn: Dominic Sauer
+uidNumber: 2043
+userPassword:: e3NtZDV9Qnl5UFc4Vk10NURsVVJERHRuV2p6a3BUQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: sauedomi@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5086
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Dominic Sauer
+sambaPwdCanChange: 1106684976
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 8D9668690C32F800FDCFC2AFB2D1BE34
+sambaNTPassword: 3D83DF70BE215B60F9D12C07F4CA6583
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684976
+sambaAcctFlags: [U          ]
+
+# addr, sauedomi, people, superschool.org
+dn: ou=addr,uid=sauedomi,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# ceylali, people, superschool.org
+dn: uid=ceylali,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Ceylan
+givenName: Ali
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1984-10-09
+rasAccess: 0
+uid: ceylali
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+OXGroupID: 1020
+homeDirectory: /home/students/ceylali
+loginShell: /bin/bash
+cn: Ali Ceylan
+uidNumber: 2044
+userPassword:: e3NtZDV9YVBTMFdJUkJrQXVSOXpkbU5ib1JLa2hSQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: ceylali@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5088
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Ali Ceylan
+sambaPwdCanChange: 1106684981
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 5D75882D83E79A501104594F8C2EF12B
+sambaNTPassword: 71D5AC6D7E104A1A53E1A66822D47207
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684981
+sambaAcctFlags: [U          ]
+
+# addr, ceylali, people, superschool.org
+dn: ou=addr,uid=ceylali,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# steiivon, people, superschool.org
+dn: uid=steiivon,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Steinhoff
+givenName: Ivonne Marina
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1985-08-30
+rasAccess: 0
+uid: steiivon
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/steiivon
+loginShell: /bin/bash
+cn: Ivonne Marina Steinhoff
+uidNumber: 2045
+userPassword:: e3NtZDV9eTNMYlhGTXlLYVVvVmo2d043RXpGMGxKQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: steiivon@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5090
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Ivonne Marina Steinhoff
+sambaPwdCanChange: 1106684986
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 79E7FDE45FB4C141417EAF50CFAC29C3
+sambaNTPassword: FCCFEED5A08B958E46F1E347537755B2
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684986
+sambaAcctFlags: [U          ]
+
+# addr, steiivon, people, superschool.org
+dn: ou=addr,uid=steiivon,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# senddani, people, superschool.org
+dn: uid=senddani,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Sendermann
+givenName: Daniel
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1986-03-05
+rasAccess: 0
+uid: senddani
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/senddani
+loginShell: /bin/bash
+cn: Daniel Sendermann
+uidNumber: 2046
+userPassword:: e3NtZDV9eHFiUWF1YWFsakx5dEpRMGc0bUJLbGhZQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: senddani@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5092
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Daniel Sendermann
+sambaPwdCanChange: 1106684991
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 238D9087822D9BB4417EAF50CFAC29C3
+sambaNTPassword: E3AE058B96B3ABF45E9E43B857410F8B
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684991
+sambaAcctFlags: [U          ]
+
+# addr, senddani, people, superschool.org
+dn: ou=addr,uid=senddani,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# piecpete, people, superschool.org
+dn: uid=piecpete,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Pieczyk
+givenName: Peter
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1987-02-04
+rasAccess: 0
+uid: piecpete
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/piecpete
+loginShell: /bin/bash
+cn: Peter Pieczyk
+uidNumber: 2047
+userPassword:: e3NtZDV9amN5ZzJWMnh5MWZ4bERrcksyZjJpa3hEQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: piecpete@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5094
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Peter Pieczyk
+sambaPwdCanChange: 1106684997
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 32A8E7F0676D19DBC187B8085FE1D9DF
+sambaNTPassword: E97CC41E7375088CA32C2ECDF3FCF916
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106684997
+sambaAcctFlags: [U          ]
+
+# addr, piecpete, people, superschool.org
+dn: ou=addr,uid=piecpete,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# ossejens, people, superschool.org
+dn: uid=ossejens,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn: Ossenkemper
+givenName: Jens
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1985-06-26
+rasAccess: 0
+uid: ossejens
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/ossejens
+loginShell: /bin/bash
+cn: Jens Ossenkemper
+uidNumber: 2048
+userPassword:: e3NtZDV9T3Ezd2JBd0RjejJSTmN3OERUN1pvMEpFQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: ossejens@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5096
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName: Jens Ossenkemper
+sambaPwdCanChange: 1106685003
+sambaPwdMustChange: 2147483647
+sambaLMPassword: 234221538C8FAFFEF7E62F36F8DB5AE6
+sambaNTPassword: BF2CD0D69EB94EBB1371C67961CCF8B8
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106685003
+sambaAcctFlags: [U          ]
+
+# addr, ossejens, people, superschool.org
+dn: ou=addr,uid=ossejens,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# kluvkath, people, superschool.org
+dn: uid=kluvkath,ou=people,#LDAPBASE#
+description:: U2Now7xsZXIoaW4p
+sn:: S2zDvHZlcg==
+givenName: Katharina
+preferredLanguage: DE
+ou: BF1A
+birthDay: 1987-01-29
+rasAccess: 0
+uid: kluvkath
+o: Super School
+c: DE
+gidNumber: 501
+OXGroupID: 501
+OXGroupID: 1030
+homeDirectory: /home/students/kluvkath
+loginShell: /bin/bash
+cn:: S2F0aGFyaW5hIEtsw7x2ZXI=
+uidNumber: 2049
+userPassword:: e3NtZDV9ME9qSitLcUJoRDg5NEFxUlBRM29JRTFYQUFBQQ==
+shadowLastChange: 12808
+shadowMax: 99999
+shadowMin: 0
+shadowWarning: 7
+shadowInactive: 0
+phpgwAccountType: u
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+suseMailAcceptAddress: kluvkath@superschool.org
+OXTaskDays: 5
+OXAppointmentDays: 5
+mailEnabled: local_only
+internetDisabled: false
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: OXUserObject
+objectClass: phpgwAccount
+objectClass: SchoolAccount
+objectClass: suseMailRecipient
+objectClass: sambaSamAccount
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-5098
+sambaPrimaryGroupSID: S-1-5-21-3888977888-660310903-2018252091-2003
+displayName:: S2F0aGFyaW5hIEtsw7x2ZXI=
+sambaPwdCanChange: 1106685008
+sambaPwdMustChange: 2147483647
+sambaLMPassword: F4DF4B79BEC8A5E97CA65F36030673DD
+sambaNTPassword: B6558499DFC1C2874EA9CFE2BDD2DC97
+sambaPasswordHistory: 00000000000000000000000000000000000000000000000000000000
+ 00000000
+sambaPwdLastSet: 1106685008
+sambaAcctFlags: [U          ]
+
+# addr, kluvkath, people, superschool.org
+dn: ou=addr,uid=kluvkath,ou=people,#LDAPBASE#
+ou: addr
+objectClass: top
+objectClass: organizationalUnit
+
+# GRUPP, group, superschool.org
+dn: cn=GRUPP,ou=group,#LDAPBASE#
+cn: GRUPP
+displayName: GRUPP
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-2011
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r GRUPP -a cyrus -m GRUPP"
+gidNumber: 505
+description: Arbeitsgruppe
+member: uid=bigboss,ou=people,#LDAPBASE#
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolGroup
+objectClass: phpgwAccount
+
+# GRUPP1, group, superschool.org
+dn: cn=GRUPP1,ou=group,#LDAPBASE#
+cn: GRUPP1
+displayName: GRUPP1
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3063
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r GRUPP1 -a cyrus -m GRUPP1"
+gidNumber: 1031
+description: Arbeitsgruppe
+member: uid=bigboss,ou=people,#LDAPBASE#
+member: uid=admin,ou=people,#LDAPBASE#
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+
+# KALSSE, group, superschool.org
+dn: cn=KALSSE,ou=group,#LDAPBASE#
+cn: KALSSE
+displayName: KALSSE
+sambaSID: S-1-5-21-3888977888-660310903-2018252091-3065
+sambaGroupType: 2
+suseMailCommand: "|/usr/bin/formail -I \"From \" |/usr/lib/cyrus/bin/deliver -
+ r KALSSE -a cyrus -m KALSSE"
+gidNumber: 1032
+description: Arbeitsgruppe
+userPassword:: Kg==
+phpgwAccountType: g
+phpgwAccountStatus: A
+phpgwAccountExpires: -1
+objectClass: top
+objectClass: posixGroup
+objectClass: suseMailRecipient
+objectClass: sambaGroupMapping
+objectClass: groupOfNames
+objectClass: SchoolClass
+objectClass: phpgwAccount
+member: uid=admin,ou=people,#LDAPBASE#
+member: uid=bigboss,ou=people,#LDAPBASE#
+member: uid=uid,ou=people,#LDAPBASE#
+
+# search result
+search: 2
+result: 0 Success
+
+# numResponses: 249
+# numEntries: 248

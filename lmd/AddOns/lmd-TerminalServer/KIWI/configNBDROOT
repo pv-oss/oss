@@ -1,0 +1,3 @@
+NBDROOT=#NBDROOT#
+UNIONFS_CONFIG=/dev/ram1,nbd,aufs
+CONF=/KIWI/lts.#lts_MAC#;/etc/lts.conf;#SERVER_IP#,/KIWI/ssh_known_hosts;/etc/ssh/ssh_known_hosts;#SERVER_IP#,/KIWI/clock;/etc/sysconfig/clock;#SERVER_IP#,/KIWI/keyboard;/etc/sysconfig/keyboard;#SERVER_IP#,/KIWI/language;/etc/sysconfig/language;#SERVER_IP#,/KIWI/defkeymap.map;/etc/defkeymap.map;#SERVER_IP#,/KIWI/defkeymap.name;/etc/defkeymap.name;#SERVER_IP#,/KIWI/ifcfg-eth0;/etc/sysconfig/network/;#SERVER_IP#,/KIWI/authorized_keys;/root/.ssh/authorized_keys;#SERVER_IP#,/KIWI/resolv.conf;/etc/resolv.conf;#SERVER_IP#

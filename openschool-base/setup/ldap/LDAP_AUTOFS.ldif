@@ -1,0 +1,55 @@
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+dn: ou=autofs,#LDAPBASE#
+objectClass: organizationalUnit
+ou: autofs
+
+dn: automountMapName=auto_master,ou=autofs,#LDAPBASE#
+objectClass: top
+objectClass: automountMap
+automountMapName: auto_master
+
+dn: automountMapName=auto_home,ou=autofs,#LDAPBASE#
+objectClass: top
+objectClass: automountMap
+automountMapName: auto_home
+
+dn: automountKey=/home,automountMapName=auto_master,ou=autofs,#LDAPBASE#
+objectClass: top
+objectClass: automount
+automountKey: /home
+automountInformation: auto_home
+
+dn: automountKey=*,automountMapName=auto_home,ou=autofs,#LDAPBASE#
+objectClass: top
+objectClass: automount
+automountKey: *
+automountInformation: -fstype=nfs nfs:/home/&
+
+dn: nisMapName=auto.master,ou=autofs,#LDAPBASE#
+nisMapName: auto.master
+objectClass: nisMap
+
+dn: nisMapName=auto.master,ou=autofs,#LDAPBASE#
+nisMapName: auto.master
+objectClass: nisMap
+
+dn: cn=/home,nisMapName=auto.master,ou=autofs,#LDAPBASE#
+cn: /home
+nisMapEntry: ldap ldap:nisMapName=auto.home,ou=autofs,#LDAPBASE#
+nisMapName: auto.master
+objectClass: nisObject
+
+dn: nisMapName=auto.home,ou=autofs,#LDAPBASE#
+nisMapName: auto.home
+objectClass: nisMap
+
+dn: nisMapName=auto.home,ou=autofs,#LDAPBASE#
+nisMapName: auto.home
+objectClass: nisMap
+
+dn: cn=*,nisMapName=auto.home,ou=autofs,#LDAPBASE#
+cn: *
+nisMapEntry: -fstype=nfs,rw,soft,async nfs:/home/&
+nisMapName: auto.home
+objectClass: nisObject
+

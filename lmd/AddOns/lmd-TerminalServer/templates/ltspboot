@@ -1,0 +1,4 @@
+timeout         1
+prompt          0
+default ltsp/linux
+append initrd=ltsp/initrd vga=791 splash=silent showopts kiwiserver=#SERVER_IP# kiwiservertype=tftp

@@ -1,0 +1,2 @@
+REM for worksations
+net time \\#PDC-SERVER# /SET /YES

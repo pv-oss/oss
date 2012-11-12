@@ -1,0 +1,12 @@
+default         menu.c32
+KBDMAP          german.kbd
+timeout         1
+prompt          0
+allowoptions    1
+noescape        0
+
+menu master passwd $4$OIhVhxhQ$76LQnGfeA3tm9GsRrC2FUDrDZXk$
+menu title OpenSchoolServer V2.5 PXE Boot Enviroment
+
+LABEL Festplatte
+        LOCALBOOT 0

@@ -1,0 +1,7 @@
+*.kde*/share/apps/kmail/*
+*.kde*/socket*
+*.kde*/tmp*
+*.kde*/cache*
+*.kde*/share/apps/kconf_update/log*
+*.DCOPserver_*
+*.libreoffice/*

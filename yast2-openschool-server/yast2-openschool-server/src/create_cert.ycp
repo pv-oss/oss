@@ -1,0 +1,36 @@
+{
+import "YaPI::CaManagement";
+
+  string domain   = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_DOMAIN);
+  string ldappasswd = (string)WFM::Args(0);
+  string name       = (string)WFM::Args(1);
+
+  map  cadef  = YaPI::CaManagement::ReadCertificateDefaults($[
+                        "caName"       : "YaST_Default_CA",
+                        "certType"     : "server",
+                        "keyPasswd"    : ldappasswd
+			]);
+
+  string new_cert = YaPI::CaManagement::AddCertificate($[
+                        "caName"       : "YaST_Default_CA",
+                        "certType"     : "server",
+                        "keyPasswd"    : ldappasswd,
+                        "caPasswd"     : ldappasswd,
+                        "commonName"   : name,
+                        "keyLength"    : "2048",
+                        "days"         : "3000",
+                        "emailAddress" : "admin@" + domain
+               ]);
+   string file   = (string) YaPI::CaManagement::ExportCertificate($[
+                        "caName"          : "YaST_Default_CA",
+                        "keyPasswd"       : ldappasswd,
+                        "certificate"     : new_cert,
+                        "exportFormat"    : "PEM_CERT_KEY"
+               ]);
+
+
+   list files = regexptokenize(file, "(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*(-----BEGIN RSA PRIVATE KEY-----.*-----END RSA PRIVATE KEY-----)" );
+   SCR::Write(.target.string,"/etc/ssl/servercerts/"+name+"cert.pem",files[0]:"");
+   SCR::Write(.target.string,"/etc/ssl/servercerts/"+name+"key.pem",files[1]:"");
+   SCR::Execute(.target.bash,"chmod 640 /etc/ssl/servercerts/"+name+"key.pem");
+}

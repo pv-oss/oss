@@ -1,0 +1,24 @@
+<?xml version="1.0" standalone='no'?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+   <name replace-wildcards="yes">AirPrint #printer_name# @ %h</name>
+   <service>
+       <type>_ipp._tcp</type>
+                <subtype>_universal._sub._ipp._tcp</subtype>
+                <port>631</port>
+                <txt-record>txtvers=1</txt-record>
+                <txt-record>qtotal=1</txt-record>
+                <txt-record>Transparent=T</txt-record>
+                <txt-record>URF=none</txt-record>
+                <txt-record>rp=printers/#printer_name#</txt-record>
+                <txt-record>note=#location#</txt-record>
+                <txt-record>ty=#make_model#</txt-record>
+                <txt-record>product=(GPL Ghostscript)</txt-record>
+                <txt-record>printer-state=#printer_state#</txt-record>
+                <txt-record>printer-type=0x#printer_type#</txt-record>
+                <txt-record>Binary=T</txt-record>
+                <txt-record>Duplex=T</txt-record>
+                <txt-record>Copies=T</txt-record>
+                <txt-record>pdl=application/pdf,application/postscript,application/vnd.cups-raster,application/octet-stream,image/png</txt-record>
+        </service>
+</service-group>

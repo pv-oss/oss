@@ -1,0 +1,189 @@
+/**
+ * File:	include/openschool-server/complex.ycp
+ * Package:	Configuration of openschool-server
+ * Summary:	Dialogs definitions
+ * Authors:	Péter Varkoly <peter@varkoly.de>
+ *
+ * $Id: complex.ycp,v 2.0.0.1 2005/01/21 13:08:37 pv Exp $
+ */
+
+{
+
+textdomain "openschool-server";
+
+import "Label";
+import "Popup";
+import "Wizard";
+import "Wizard_hw";
+import "OpenschoolServer";
+
+include "openschool-server/helps.ycp";
+
+/**
+ * Return a modification status
+ * @return true if data was modified
+ */
+boolean Modified() {
+    return OpenschoolServer::Modified();
+}
+/*
+boolean ReallyAbort() {
+    return !OpenschoolServer::Modified() || Popup::ReallyAbort(true);
+}
+
+boolean PollAbort() {
+    return UI::PollInput() == `abort;
+}
+*/
+/**
+ * Read settings dialog
+ * @return `abort if aborted and `next otherwise
+ */
+symbol ReadDialog() {
+    Wizard::RestoreHelp(HELPS["read"]:"");
+    // OpenschoolServer::AbortFunction = PollAbort;
+    boolean ret = OpenschoolServer::Read();
+    return ret ? `next : `abort;
+}
+
+symbol ReadNetworkDialog() {
+    Wizard::RestoreHelp(HELPS["read"]:"");
+    // OpenschoolServer::AbortFunction = PollAbort;
+    boolean ret = OpenschoolServer::ReadNetwork();
+    return ret ? `next : `abort;
+}
+
+/**
+ * Write settings dialog
+ * @return `abort if aborted and `next otherwise
+ */
+symbol WriteDialog() {
+    Wizard::RestoreHelp(HELPS["write"]:"");
+    // OpenschoolServer::AbortFunction = PollAbort;
+    boolean ret = OpenschoolServer::Write();
+    return ret ? `next : `abort;
+}
+
+/**
+ * Summary dialog
+ * @return dialog result
+ */
+any SummaryDialog() {
+
+    /* OpenschoolServer summary dialog caption */
+    string caption = _("OpenschoolServer Configuration");
+
+    /* FIXME */
+    list summary = OpenschoolServer::Summary();
+    list unconfigured = summary[1]:[];
+    string configured = summary[0]:"";
+
+    /* Frame label */
+    term contents = Wizard_hw::DetectedContent(_("OpenschoolServer to Configure"),
+	    unconfigured, false, configured);
+
+    Wizard::SetContentsButtons(caption, contents, HELPS["summary"]:"",
+	    Label::BackButton(), Label::FinishButton());
+
+    any ret = nil;
+    while(true) {
+
+	ret = UI::UserInput();
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel || ret == `back) {
+	    if(Popup::ReallyAbort(false)) break;
+	    else continue;
+	}
+        /* overview dialog */
+        else if(ret == `edit_button) {
+            ret = `overview;
+            break;
+        }
+        /* configure the selected device */
+        else if(ret == `configure_button) {
+	    // TODO FIXME: check for change of the configuration
+            any selected = UI::QueryWidget(`id(`detected_selbox), `CurrentItem);
+            if(selected == `other) {
+                ret = `other;
+            }
+            else {
+                ret = `configure;
+            }
+            break;
+        }
+        else if(ret == `next) {
+            break;
+        }
+        else {
+            y2error("unexpected retcode: %1", ret);
+            continue;
+        }
+    }
+
+    return ret;
+}
+
+/**
+ * Overview dialog
+ * @return dialog result
+ */
+any OverviewDialog() {
+
+    /* OpenschoolServer overview dialog caption */
+    string caption = _("OpenschoolServer Overview");
+
+    list overview = OpenschoolServer::Overview();
+
+    /* FIXME table header */
+    term contents = Wizard_hw::ConfiguredContent(
+	/* Table header */
+	`header(_("Number"), _("OpenschoolServer")),
+	overview, nil, nil, nil, nil );
+
+    contents = Wizard_hw::SpacingAround(contents, 1.5, 1.5, 1.0, 1.0);
+
+    Wizard::SetContentsButtons(caption, contents, HELPS["overview"]:"",
+	    Label::BackButton(), Label::FinishButton());
+
+    any ret = nil;
+    while(true) {
+
+	ret = UI::UserInput();
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel) {
+	    if(Popup::ReallyAbort(false)) break;
+	    else continue;
+	}
+        /* add */
+        else if(ret == `add_button) {
+	    /* FIXME */
+            ret = `add;
+            break;
+        }
+        /* edit */
+        else if(ret == `edit_button) {
+	    /* FIXME */
+            ret = `edit;
+            break;
+        }
+        /* delete */
+        else if(ret == `delete_button) {
+	    /* FIXME */
+            continue;
+        }
+        else if(ret == `next || ret == `back) {
+            break;
+        }
+        else {
+            y2error("unexpected retcode: %1", ret);
+            continue;
+        }
+    }
+
+    return ret;
+}
+
+/* EOF */
+}

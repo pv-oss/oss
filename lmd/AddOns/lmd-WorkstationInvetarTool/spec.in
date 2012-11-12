@@ -1,0 +1,56 @@
+#
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+# This file and all modifications and additions to the pristine
+# package are under the same license as the package itself.
+#
+
+# norootforbuild
+
+Name:           lmd-WorkstationInvetarTool
+Version:        @VERSION@
+Release:	1
+Summary:	Workstation Inventar Tool for the OSS lmd daemon
+Group:		Productivity/
+License:	GPL
+Url:		www.openschoolserver.net
+PreReq:		lmd
+BuildRequires:  lmd
+Source:		lmd-WorkstationInvetarTool.tar.bz2
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+AutoReqProv:    on
+
+%description
+Workstation Inventar Tool for the OSS lmd daemon
+
+Authors:
+--------
+    Peter Varkoly 
+
+%prep
+%setup -n %name
+
+%build
+
+%install
+%makeinstall
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+if [ -e /etc/sysconfig/schoolserver ]; then
+    mysql < /usr/share/lmd/sql/WorkstationInventarTool.sql
+fi
+%postun
+
+%files
+%defattr(644,root,root)
+/usr/share/lmd/alibs/*
+/usr/share/lmd/sql/WorkstationInventarTool.sql
+%defattr(755,root,root)
+/usr/share/oss/tools/*
+#%doc ChangeLog README COPYING
+
+%changelog
+* Sun Jul 04 2010 peter@varkoly.de
+

@@ -1,0 +1,3 @@
+REM for workstations
+net time \\#PDC-SERVER# /SET /YES
+net use h: \\#PDC-SERVER#\homes

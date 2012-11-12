@@ -1,0 +1,52 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+
+if [ -e /var/adm/oss/update-3.2.0-1 ]
+then
+echo "Patch 3.2.0-1 already installed"
+        exit 0
+fi
+
+. /etc/sysconfig/ldap
+. /etc/sysconfig/schoolserver
+DATE=$( /usr/share/oss/tools/oss_date.sh )
+SCHOOL_LDAPBASE=`echo $BASE_CONFIG_DN | sed s/ou=ldapconfig,//`
+
+##############################################
+# Prepare default profil für linux
+mkdir -p /home/profile/linux
+if [ ! -e /home/profile/linux/default ]
+then
+	cp /usr/share/oss/templates/linux-default-profil /home/profile/linux/default
+	sed -i "s/#LDAPBASE#/$SCHOOL_LDAPBASE/g" /home/profile/linux/default
+	sed -i "s/#NETWORK#/$SCHOOL_NETWORK/g"   /home/profile/linux/default
+fi
+
+#############################################
+# Remove not used sysconfig variables
+
+for i in $( oss_ldapsearch ckey=SCHOOL_SSO_* dn | grep dn: | sed 's/dn: //' )
+do
+	oss_ldapdelete $i
+done
+for i in $( oss_ldapsearch ckey=SCHOOL_ENABLE_USER_SPAM_FRONTEND dn | grep dn: | sed 's/dn: //' )
+do
+        oss_ldapdelete $i
+done
+oss_ldap_to_sysconfig.pl
+
+#############################################
+# Add dav to apache config
+. /etc/sysconfig/apache2
+for i in dav dav_fs dav_lock;
+do
+	IS=$( echo $APACHE_MODULES | grep " $i " )
+	if [ -z "$IS" ]
+	then
+		APACHE_MODULES="$APACHE_MODULES $i"
+	fi
+done
+
+sed -i "s/^APACHE_MODULES=.*/APACHE_MODULES=\"$APACHE_MODULES\"/" /etc/sysconfig/apache2
+/etc/init.d/apache2 reload
+touch /var/adm/oss/update-3.2.0-1

@@ -1,0 +1,1094 @@
+/**
+ * File:	modules/OpenschoolServer.ycp
+ * Package:	Configuration of openschool-server
+ * Summary:	OpenschoolServer settings, input and output functions
+ * Authors:	Péter Varkoly <peter@varkoly.de>
+ *
+ * $Id: OpenschoolServer.ycp,v 2.116 2007/04/12 10:29:29 pv Exp $
+ *
+ * Representation of the configuration of openschool-server.
+ * Input and output routines.
+ */
+
+{
+
+module "OpenschoolServer";
+textdomain "openschool-server";
+
+import "Arch";
+import "DNS";
+import "IP";
+import "Host";
+import "Keyboard";
+import "Lan";
+import "LanItems";
+import "Language";
+import "Ldap";
+import "MailServerLDAP";
+import "NetworkInterfaces";
+import "OpenschoolServerLDAP";
+import "Progress";
+import "Report";
+import "Summary";
+import "Service";
+import "SuSEFirewall";
+import "Timezone";
+import "UI";
+import "Users";
+import "Package";
+import "Popup";
+import "YaPI::CaManagement";
+import "YaPI::MailServer";
+
+/**
+ * Prototypes
+ */
+global boolean Modified();
+
+/**
+ * Data was modified?
+ */
+global boolean modified = false;
+
+/**
+ */
+global boolean proposal_valid = false;
+
+/**
+ * Write only, used during autoinstallation.
+ * Don't run services and SuSEconfig, it's all done at one place.
+ */
+global boolean write_only = false;
+
+/**
+ * AbortFunction function
+ * return boolean return true if Abort
+ */
+global boolean() AbortFunction = Modified;
+
+/**
+ * Abort function
+ * @return boolean return true if abort
+ */
+global define boolean Abort() ``{
+    if(AbortFunction != nil)
+    {
+	return AbortFunction () == true;
+    }
+    return false;
+}
+
+/**
+ * Modified function
+ * Data was modified?
+ * @return true if modified
+ */
+global define boolean Modified() {
+    y2debug("modified=%1",modified);
+    return modified;
+}
+
+// Settings: Define all variables needed for configuration of openschool-server
+// Boolean variables
+global boolean readbackup    = false;
+global boolean demo          = false;
+global boolean ox            = true;
+global boolean egroupware    = false;
+global boolean isgate        = true;
+global boolean isppp         = false;
+global boolean openschool_cz = false;
+global boolean openschool_de = false;
+global boolean openschool_en = true;
+global boolean openschool_es = false;
+global boolean openschool_fr = false;
+global boolean openschool_hu = false;
+global boolean openschool_it = false;
+global boolean openschool_ro = false;
+global boolean ldapsep       = false;
+global boolean no_ext_mail   = true;
+global boolean observ_home   = true;
+global boolean sso_allowed   = false;
+global boolean sso_forced    = false;
+// This variable is only for the interestion net in Duesseldorf.
+global boolean duesseldorf   = false;
+
+// This variables shows which addon software must be installed
+global boolean terminalserver= false;
+global boolean moodle        = false;
+global boolean joomla        = false;
+
+//Integer variables
+global integer i_anon_dhcp_first = 1;
+global integer i_anon_dhcp_last  = 31;
+global integer netcnt            = 0;    // Netmask counter (how many 255)
+global integer intdev		 = -1;   // Which device is internal
+global integer extdev		 = -1;   // Which device is exterlnal
+
+//List variables
+/* IT IS VERY IMPORTANT THE lnetmask and netmask can be different
+*  becouse lnetmask must be 255.0.0.0 or 255.255.0.0. netmask can
+*  be classless
+*/
+global list   lnetmask   = [];
+global list   lbroadcast = [];
+global list   lnetaddr   = [];
+global list   localip    = [];
+
+//Map variables
+global map<string, any>    config       = $[];
+global map                 LDAPSettings = $[];
+global map<string,string> LangMap = $[	"EN" : "EN",
+					"US" : "EN",
+					"AU" : "EN",
+					"FR" : "FR",
+					"DE" : "DE",
+					"AT" : "DE",
+					"CH" : "DE",
+					"RO" : "RO",
+					"HU" : "HU",
+					"IT" : "IT",
+					"ES" : "ES",
+					"CZ" : "CZ"
+			  ];
+
+//String variables
+global string ossversion = "3.1.0";
+global string schooltype = "no";
+/* files */
+global string cyrusconf  = "/etc/cyrus.conf";
+global string imapdconf  = "/etc/imapd.conf";
+global string dhcpdconf  = "/etc/dhcpd.conf";
+global string dhcp_ldif  = "/var/lib/ldap/dhcp.ldif";
+global string dhcp_dns_patch_ldif  = "/var/lib/ldap/dhcp_dns_patch_.ldif";
+/* network variables */
+global string ipaddr     = "";
+global string netmask    = "";
+global integer inetmask  = 16;
+global string wsnr_in_room  = "64";
+global string netaddr    = "";
+global string broadcast  = "";
+global string proxy      = "";
+global string backup     = "";
+global string mailserver = "";
+global string printserver= "";
+global string gateway    = "";
+global string ldaporg    = "";
+global string domain     = "";
+global string fqhn       = "";
+global string extip      = "";
+global string extgw      = "";
+global string extnm      = "";
+global string nr_of_room         = "";
+global string first_room_net     = "";
+global string server_net         = "";
+global string anon_dhcp          = "";
+global string anon_dhcp_first    = "1";
+global string anon_dhcp_last     = "25";
+global boolean use_dhcp  = true;
+global string workgroup  = "";
+global string passwd     = "";
+global string ccode      = "";
+global string ldapserver         = "ldap";
+global string ldapbinddn         = "";
+global string ldappasswd         = "";
+global string client_code_page   = "850";
+global string character_set      = "ISO8859-15";
+global string netbiosname        = "pdc-server";
+global string serverdescription  = "Open School Server V"+ossversion;
+global string classes            = "";
+global string nclasses           = "5 6 7 8 9 10";
+global string aclasses           = "A B C D";
+global string schoolservername   = "schoolserver";
+global string aliases_admin      = "schooladmin dns samba nfs install timeserver";
+global string aliases_mailserver = "mailserver mailszerver schoolserver suliszerver schulserver";
+global string Lang = "EN";
+global string regcode    = "";
+global string timezone   = "Europe/Berlin";
+
+/**
+ * Privat Functions
+ */
+
+void PreSetup() {
+    //Save the sysconfig variables
+    y2milestone("--- OSS Starting PreSetup -=-=-=-");
+
+    if(!openschool_cz) SCR::Execute(.target.bash,"rpm -e --nodeps openschool-cz");
+    if(!openschool_de) SCR::Execute(.target.bash,"rpm -e --nodeps openschool-de");
+    if(!openschool_es) SCR::Execute(.target.bash,"rpm -e --nodeps openschool-es");
+    if(!openschool_fr) SCR::Execute(.target.bash,"rpm -e --nodeps openschool-fr");
+    if(!openschool_hu) SCR::Execute(.target.bash,"rpm -e --nodeps openschool-hu");
+    if(!openschool_it) SCR::Execute(.target.bash,"rpm -e --nodeps openschool-it");
+    if(!openschool_ro) SCR::Execute(.target.bash,"rpm -e --nodeps openschool-ro");
+
+    SCR::Write(.sysconfig.apache2.APACHE_SERVER_FLAGS,"-D SSL");
+    SCR::Write(.sysconfig.apache2.APACHE_MODULES,"actions alias auth_basic authn_file authz_host authnz_ldap authz_groupfile authz_default authz_user authn_dbm autoindex cgi dir env expires include log_config mod_ldap mime negotiation setenvif ssl suexec userdir php5 jk dav dav_fs dav_lock");
+    SCR::Write(.sysconfig.apache2, nil);
+
+    SCR::Write(.sysconfig.boot.RUN_PARALLEL, "no");
+    SCR::Write(.sysconfig.boot, nil);
+
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_CCODE,ccode);
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_NAME,ldaporg);
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_DOMAIN,domain);
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_ACLASSES,aclasses);
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_NCLASSES,nclasses);
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_NETBIOSNAME,netbiosname);
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_WORKGROUP,workgroup);
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_REG_CODE,regcode);
+    if(ox) {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_USE_OX,"yes");
+    } else {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_USE_OX,"no");
+    }
+
+    if(egroupware) {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_USE_EGROUPWARE,"yes");
+    } else {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_USE_EGROUPWARE,"no");
+    }
+
+    if(sso_allowed) {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_SSO_ALLOWED,"yes");
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_SSO_FORCED,"no");
+    } else {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_SSO_ALLOWED,"no");
+    }
+    if(sso_forced) {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_SSO_FORCED,"yes");
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_SSO_ALLOWED,"no");
+    } else {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_SSO_FORCED,"no");
+    }
+
+    if(no_ext_mail) {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_NO_EXTERN_MAIL,"yes");
+    } else {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_NO_EXTERN_MAIL,"no");
+    }
+
+    if(observ_home) {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_TEACHER_OBSERV_HOME,"yes");
+      SCR::Execute(.target.bash,"setfacl -m g:students:r /usr/bin/setfacl");
+    } else {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_TEACHER_OBSERV_HOME,"no");
+    }
+
+    if(terminalserver) {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_IS_TERMINALSERVER,"yes");
+    } else {
+      SCR::Write(.sysconfig.schoolserver.SCHOOL_IS_TERMINALSERVER,"no");
+    }
+
+    SCR::Write(.sysconfig.schoolserver.SCHOOL_NETWORK,netaddr);
+
+    SCR::Write(.sysconfig.schoolserver, nil);
+
+    SCR::Write(.sysconfig.displaymanager.KDM_SHUTDOWN,   "root");
+    SCR::Write(.sysconfig.displaymanager.KDM_GREETSTRING,"Open School Server "+ossversion);
+    SCR::Write(.sysconfig.displaymanager, nil);
+
+    SCR::Write(.sysconfig.security.PERMISSION_SECURITY,"secure local oss");
+    SCR::Write(.sysconfig.security, nil);
+
+    SCR::Write(.sysconfig.language.ROOT_USES_LANG,       "yes");
+    SCR::Write(.sysconfig.language, nil);
+
+}
+
+boolean SetupLDAPServer() ``{
+
+    y2milestone("--- OSS SetupLDAPServer ---");
+    MailServerLDAP::ConfigureLDAPServer();
+    OpenschoolServerLDAP::ConfigureLDAPServer();
+    return true;
+}
+
+boolean SetupMailServer() ``{
+
+    y2milestone("--- OSS SetupMailServer --- %1",ldappasswd);
+    // Reseting the mailserver
+    YaPI::MailServer::ResetMailServer(ldappasswd);
+    y2milestone("-- OSS Reseting the MailServer --");
+
+    //Setup the cyrus password
+    string crypted  = Users::CryptPassword(ldappasswd, "system","foo");
+    SCR::Write(.target.passwd.cyrus, crypted);
+
+    // Define Cyrus as local delivery
+    map<string,any> TMP = (map<string,any>) YaPI::MailServer::ReadMailLocalDelivery(ldappasswd);
+    TMP["Changed"]            = true;
+    TMP["Type"]               = "cyrus";
+    TMP["MailboxSizeLimit"]   = 10240000;
+    TMP["QuotaLimit"]         = 90;
+    TMP["HardQuotaLimit"]     = false;
+    TMP["AlternateNameSpace"] = true;
+    TMP["ImapIdleTime"]       = 120;
+    TMP["PopIdleTime"]        = 30;
+    TMP["Security"]           = true;
+    YaPI::MailServer::WriteMailLocalDelivery(TMP,ldappasswd);
+
+    //Define the local domain
+    TMP = (map<string,any>) YaPI::MailServer::ReadMailLocalDomains(ldappasswd);
+    TMP["Changed"]            = true;
+    TMP["Domains"] = add(TMP["Domains"]:[], $[ "Name"         : domain,
+                                               "Type"         : "main",
+                                               "Masquerading" : "yes"
+                                               ]);
+    YaPI::MailServer::WriteMailLocalDomains(TMP,ldappasswd);
+
+    TMP = (map<string,any>) YaPI::MailServer::ReadMailPrevention(ldappasswd);
+    TMP["Changed"]            = true;
+    TMP["VirusScanning"]      = true;
+    TMP["VSCount"]            = 3;
+    TMP["SpamLearning"]       = true;
+    TMP["BasicProtection"]    = "medium";
+    YaPI::MailServer::WriteMailPrevention(TMP,ldappasswd);
+//    Service::Enable("saslauthd");
+//    Service::Start("saslauthd");
+//    Service::Enable("cyrus");
+//    Service::Start("cyrus");
+    sleep(10000);
+
+    return true;
+}
+
+boolean SetupCertificates() {
+
+    y2milestone("--- OSS SetupCertificates --- ");
+
+  string new_cert = YaPI::CaManagement::AddCertificate($[
+			"caName"       : "YaST_Default_CA",
+			"certType"     : "server",
+			"keyPasswd"    : ldappasswd,
+			"caPasswd"     : ldappasswd,
+			"commonName"   : "admin." + domain,
+			"subjectAltName" : "DNS:admin." + domain + ", DNS:admin",
+			"keyLength"    : "2048",
+			"days"         : "3600",
+			"emailAddress" : "admin@" + domain,
+			"basicConstraints" : "ca:false",
+			"countryName"  : ccode
+               ]);
+
+   string file   = (string) YaPI::CaManagement::ExportCertificate($[
+			"caName"          : "YaST_Default_CA",
+			"keyPasswd"       : ldappasswd,
+			"caPasswd"        : ldappasswd,
+                        "certificate"     : new_cert,
+                        "exportFormat"    : "PEM_CERT_KEY"
+               ]);
+
+
+   list files = regexptokenize(file, "(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*(-----BEGIN RSA PRIVATE KEY-----.*-----END RSA PRIVATE KEY-----)" );
+   SCR::Write(.target.string,"/etc/ssl/servercerts/admincert.pem",files[0]:"");
+   SCR::Write(.target.string,"/etc/ssl/servercerts/adminkey.pem",files[1]:"");
+   SCR::Execute(.target.bash,"chmod 640 /etc/ssl/servercerts/adminkey.pem");
+   SCR::Execute(.target.bash,"setfacl -m group:mail:r /etc/ssl/servercerts/adminkey.pem");
+
+   new_cert = YaPI::CaManagement::AddCertificate($[
+			"caName"       : "YaST_Default_CA",
+			"certType"     : "server",
+			"keyPasswd"    : ldappasswd,
+			"caPasswd"     : ldappasswd,
+			"commonName"   : "schoolserver." + domain,
+			"subjectAltName" : "DNS:schoolserver." + domain + ", DNS:schoolserver, DNS:schulserver, DNS:schulserver." + domain,
+			"keyLength"    : "2048",
+			"days"         : "3600",
+			"emailAddress" : "admin@" + domain,
+			"basicConstraints" : "ca:false",
+			"countryName"  : ccode
+               ]);
+
+   file   = (string) YaPI::CaManagement::ExportCertificate($[
+			"caName"          : "YaST_Default_CA",
+			"keyPasswd"       : ldappasswd,
+			"caPasswd"        : ldappasswd,
+                        "certificate"     : new_cert,
+                        "exportFormat"    : "PEM_CERT_KEY"
+               ]);
+
+
+   files = regexptokenize(file, "(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*(-----BEGIN RSA PRIVATE KEY-----.*-----END RSA PRIVATE KEY-----)" );
+   SCR::Write(.target.string,"/etc/ssl/servercerts/schoolservercert.pem",files[0]:"");
+   SCR::Write(.target.string,"/etc/ssl/servercerts/schoolserverkey.pem",files[1]:"");
+   SCR::Execute(.target.bash,"chmod 640 /etc/ssl/servercerts/schoolserverkey.pem");
+
+   new_cert = YaPI::CaManagement::AddCertificate($[
+			"caName"       : "YaST_Default_CA",
+			"certType"     : "server",
+			"keyPasswd"    : ldappasswd,
+			"caPasswd"     : ldappasswd,
+			"commonName"   : "proxy." + domain,
+			"subjectAltName" : "DNS:proxy." + domain + ", DNS:proxy",
+			"keyLength"    : "2048",
+			"days"         : "3600",
+			"emailAddress" : "admin@" + domain,
+			"basicConstraints" : "ca:false",
+			"countryName"  : ccode
+               ]);
+
+   file   = (string) YaPI::CaManagement::ExportCertificate($[
+			"caName"          : "YaST_Default_CA",
+			"keyPasswd"       : ldappasswd,
+			"caPasswd"        : ldappasswd,
+                        "certificate"     : new_cert,
+                        "exportFormat"    : "PEM_CERT_KEY"
+               ]);
+
+
+   files = regexptokenize(file, "(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*(-----BEGIN RSA PRIVATE KEY-----.*-----END RSA PRIVATE KEY-----)" );
+   SCR::Write(.target.string,"/etc/ssl/servercerts/proxycert.pem",files[0]:"");
+   SCR::Write(.target.string,"/etc/ssl/servercerts/proxykey.pem",files[1]:"");
+   SCR::Execute(.target.bash,"chmod 640 /etc/ssl/servercerts/proxykey.pem");
+
+   return true;
+}
+
+boolean InstallAddOn()
+{
+   y2milestone("--- OSS InstallAddOn ---");
+   // Setup Groupware
+   if( egroupware )
+   {
+	Package::DoInstall(["eGroupware","eGroupware-bookmarks","eGroupware-calendar","eGroupware-core","eGroupware-developer_tools","eGroupware-egw-pear","eGroupware-emailadmin","eGroupware-felamimail","eGroupware-filemanager","eGroupware-gallery","eGroupware-icalsrv","eGroupware-importexport","eGroupware-infolog","eGroupware-manual","eGroupware-mydms","eGroupware-news_admin","eGroupware-notifications","eGroupware-phpbrain","eGroupware-phpsysinfo","eGroupware-polls","eGroupware-projectmanager","eGroupware-registration","eGroupware-resources","eGroupware-sambaadmin","eGroupware-sitemgr","eGroupware-syncml","eGroupware-timesheet","eGroupware-tracker","eGroupware-wiki","egroupware-oss"]);
+	y2milestone("--- OSS Setup eGroupware ---");
+   }
+   if( ox )
+   {
+	Package::DoInstall(["ox-openschool"]);
+	y2milestone("--- OSS Setup OX ---");
+   }
+   if( moodle )
+   {
+	list<string>    l_to_install = ["moodle","oss-moodle"];
+	if(openschool_cz) l_to_install = add( l_to_install, "moodle-cs" );
+	if(openschool_de) l_to_install = add( l_to_install, "moodle-de" );
+	if(openschool_es) l_to_install = add( l_to_install, "moodle-es" );
+	if(openschool_fr) l_to_install = add( l_to_install, "moodle-fr" );
+	if(openschool_hu) l_to_install = add( l_to_install, "moodle-hu" );
+	if(openschool_it) l_to_install = add( l_to_install, "moodle-it" );
+	if(openschool_ro) l_to_install = add( l_to_install, "moodle-ro" );
+	Package::DoInstall(l_to_install);
+	y2milestone("--- OSS Moodle ---");
+   }
+   if( joomla )
+   {
+	Package::DoInstall(["joomla-openschool-de"]);
+	Package::DoInstall(["joomla-openschool"]);
+	y2milestone("--- OSS Joomla ---");
+   }
+   Package::DoInstall(["squidGuard","blacklist-openschool"]);
+   if( ! demo )
+   {
+       Package::DoInstall(["bpjm-openschool","lmd-WorkstationInvetarTool","oss-evaluate-squidlogs"]);
+   }
+   return true;
+}
+
+boolean PostSetup() {
+
+    y2milestone("--- OSS PostSetup ---");
+    SCR::Write(.target.string,"/tmp/ldappasswd",ldappasswd);
+    SCR::Execute(.target.bash,"/usr/share/oss/setup/oss_setup.pl --all --ldappasswd=/tmp/ldappasswd");
+    SCR::Execute(.target.bash,"rm /tmp/ldappasswd");
+
+    SCR::Write(.sysconfig.cron.DAILY_TIME,"00:15");
+    SCR::Write(.sysconfig.cron,nil);
+    if( terminalserver )
+    {
+        SCR::Write(.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS, "yes");
+        SCR::Write(.sysconfig.displaymanager.DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN, "yes");
+        SCR::Write(.sysconfig.displaymanager,nil);
+    }
+    SCR::Write(.sysconfig.openldap.OPENLDAP_REGISTER_SLP,"yes");
+    SCR::Write(.sysconfig.openldap,"nil");
+    SCR::Write(.sysconfig.mail.SKIP_ASK,"yes");
+    SCR::Write(.sysconfig.mail.CONFIG_TYPE,"advanced");
+    SCR::Write(.sysconfig.mail,nil);
+    Package::DoInstall(["oss-nagios"]);
+    y2milestone("--- OSS ENDPostSetup ---");
+
+    return true;
+}
+/**
+ * global functions
+ */
+
+/**
+ * read openschool-server settings
+ * @return true on success
+ */
+global define boolean ReadNetwork()
+{
+    y2milestone("--- OSS ReadNetwork --- ");
+    /* openschoolserver read dialog caption */
+    string caption = _("Initializing Open School Server Configuration");
+
+    // todo fixme set the right number of stages
+    integer steps = 2;
+
+    integer sl = 500;
+
+    //Copy the sysconfig file and import from 2.6 or usb-stick if any
+    string cmd = "test -e /etc/sysconfig/schoolserver || cp /var/adm/fillup-templates/sysconfig.schoolserver /etc/sysconfig/schoolserver
+if [ -e /var/adm/oss/old-schoolserver ]
+then
+	. /var/adm/oss/old-schoolserver 
+	for i in echo ${!SCHOOL_*}
+	do
+		val=$(eval \"echo \\$$i\" | sed 's/\\//\\\\\\//g');
+		sed -i \"s/^$i=.*$/$i=\\\"$val\\\"/\" /etc/sysconfig/schoolserver 
+	done
+elif [ -e /home/archiv/OSS-2.6/etc/sysconfig/schoolserver ]
+then
+	. /home/archiv/OSS-2.6/etc/sysconfig/schoolserver 
+	for i in echo ${!SCHOOL_*}
+	do
+		val=$(eval \"echo \\$$i\" | sed 's/\\//\\\\\\//g');
+		sed -i \"s/^$i=.*$/$i=\\\"$val\\\"/\" /etc/sysconfig/schoolserver 
+	done
+fi
+";
+    SCR::Execute(.target.bash,cmd);
+    SCR::Write(.target.string,"/tmp/setup-cmd",cmd);
+
+    sleep(sl);
+
+    // todo fixme names of real stages
+    // we do not set help text here, because it was set outside
+    Progress::New( caption, " ", steps, [
+	    /* progress stage 1/1 */
+	    _("Read the Open School Server Configuration")
+	], [
+	    /* progress step 1/1 */
+	    _("Reading the Open School Server configuration..."),
+	    /* progress finished */
+	    _("Finished")
+	],
+	""
+    );
+
+    // read the current settings from the /etc/sysconfig/schoolserver file
+    if(Abort()) return false;
+    Progress::NextStage();
+    domain            = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_DOMAIN);
+    ipaddr            = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SERVER);
+    netmask           = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_NETMASK);
+    mailserver        = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_MAILSERVER);
+    printserver       = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_PRINTSERVER);
+    proxy             = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_PROXY);
+    backup            = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_BACKUP_SERVER);
+    server_net        = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SERVER_NET);
+    first_room_net    = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_FIRST_ROOM_NET);
+    nr_of_room        = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_ROOM_NR);
+    anon_dhcp         = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_ANON_DHCP_RANGE);
+    extip             = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SERVER_EXT_IP);
+    schooltype        = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_TYPE);
+    wsnr_in_room      = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_CONT_WS_IN_ROOM);
+    Lang              =  LangMap[Language::GetLanguageCountry()]:"EN";
+    if( extip == "" )
+    {
+      extip = "1.1.1.1";
+    }
+    extnm             = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SERVER_EXT_NETMASK);
+    if( extnm == "" )
+    {
+      extnm = "255.255.255.0";
+    }
+    extgw             = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SERVER_EXT_GW);
+    if( extgw == "" )
+    {
+      extgw = "1.1.1.2";
+    }
+    string suse_dhcp = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_USE_DHCP);
+    if ( suse_dhcp == "no" ) {
+        use_dhcp = false;
+    }
+    if( wsnr_in_room == nil )
+    {
+	wsnr_in_room = "64";
+    }
+    sleep(sl);
+
+    return true;
+
+}
+
+global define boolean Read() {
+
+    y2milestone("--- OSS Read --- ");
+    /* openschoolserver read dialog caption */
+    string caption = _("Initializing Open School Server Configuration");
+
+    // todo fixme set the right number of stages
+    integer steps = 3;
+
+    integer sl = 500;
+
+    //Copy the sysconfig file
+    SCR::Execute(.target.bash,"test -e /etc/sysconfig/schoolserver || cp /var/adm/fillup-templates/sysconfig.schoolserver /etc/sysconfig/schoolserver");
+
+    sleep(sl);
+
+    // todo fixme names of real stages
+    // we do not set help text here, because it was set outside
+    Progress::New( caption, " ", steps, [
+	    /* progress stage 1/2 */
+	    _("Read the Open School Server Configuration"),
+	    /* progress stage 2/2 */
+	    _("Calculate Settings")
+	], [
+	    /* progress step 1/2 */
+	    _("Reading the Open School Server configuration..."),
+	    /* progress step 2/2 */
+	    _("Calculating settings ..."),
+	    /* progress finished */
+	    _("Finished")
+	],
+	""
+    );
+
+    // read the current settings from the /etc/sysconfig/schoolserver file
+    if(Abort()) return false;
+    Progress::NextStage();
+    timezone          = (string)SCR::Read(.sysconfig.clock.DEFAULT_TIMEZONE);
+    regcode           = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_REG_CODE);
+    netbiosname       = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_NETBIOSNAME);
+    workgroup         = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_WORKGROUP);
+    domain            = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_DOMAIN);
+    ipaddr            = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SERVER);
+    netmask           = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_NETMASK);
+    mailserver        = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_MAILSERVER);
+    printserver       = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_PRINTSERVER);
+    proxy             = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_PROXY);
+    backup            = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_BACKUP_SERVER);
+    server_net        = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SERVER_NET);
+    first_room_net    = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_FIRST_ROOM_NET);
+    nr_of_room        = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_ROOM_NR);
+    anon_dhcp         = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_ANON_DHCP_RANGE);
+    classes           = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_CLASSES);
+    Lang              =  LangMap[Language::GetLanguageCountry()]:"EN";
+    if ( classes != nil && classes != "" ) {
+        nclasses = "";
+        aclasses = classes;
+    }
+    string school_no_extern_mail = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_NO_EXTERN_MAIL);
+    if ( school_no_extern_mail == "no" ) {
+        no_ext_mail = false;
+    }
+    string school_teacher_observ_home = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_TEACHER_OBSERV_HOME);
+    if ( school_teacher_observ_home == "no" ) {
+        observ_home = false;
+    }
+    string sterminalserver = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_IS_TERMINALSERVER);
+    if ( sterminalserver == "yes" ) {
+        terminalserver = true;
+    }
+    string school_egroupware_used = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_USE_EGROUPWARE);
+    if ( school_egroupware_used == "yes" ) {
+        egroupware = true;
+    }
+    string school_ox_used = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_USE_OX);
+    if ( school_ox_used == "yes" ) {
+        ox = true;
+    }
+    string school_is_demo = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_IS_DEMO);
+    if ( school_is_demo == "yes" ) {
+        demo = true;
+    }
+    string school_sso_allowed = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SSO_ALLOWED);
+    if ( school_sso_allowed == "yes" ) {
+        sso_allowed = true;
+    }
+    string school_sso_forced = (string)SCR::Read(.sysconfig.schoolserver.SCHOOL_SSO_FORCED);
+    if ( school_sso_forced == "yes" ) {
+        sso_forced = true;
+    }
+    Progress::NextStage();
+    sleep(sl);
+
+    // calculate some values
+    if(Abort()) return false;
+    Progress::NextStage();
+    list tmp          = splitstring(anon_dhcp, " ");
+    anon_dhcp_first   = tmp[0]:"";
+    anon_dhcp_last    = tmp[1]:"";
+    tmp               = splitstring(anon_dhcp_first, ".");
+    i_anon_dhcp_first = tointeger(tmp[3]:"1");
+    tmp               = splitstring(anon_dhcp_last, ".");
+    i_anon_dhcp_last  = tointeger(tmp[3]:"32");
+    fqhn              = "admin."+domain;
+    lnetmask          = splitstring(netmask,".");
+    localip           = splitstring(ipaddr,".");
+
+    // If we have a classless network...
+    // modify netmask to match into the next greater CLASS
+    integer i = 0;
+    netcnt = 0;
+    while( i < 4 ) {
+            if( lnetmask[i]:"" < "255" ) {
+                tmp = add(tmp, "0");
+		netcnt = netcnt + 1;
+            } else {
+                tmp    = add(tmp, "255");
+            }
+            i = i + 1;
+    }
+    lnetmask = tmp;
+
+    //Calculating the network address broadcast
+    netaddr   = IP::ComputeNetwork(ipaddr,netmask);
+    lnetaddr  = splitstring(netaddr,".");
+    broadcast = IP::ComputeBroadcast(ipaddr,netmask);
+
+    //Language settings
+
+    if( Lang == "CZ" ) openschool_cz = true;
+    if( Lang == "DE" ) openschool_de = true;
+    if( Lang == "ES" ) openschool_es = true;
+    if( Lang == "FR" ) openschool_fr = true;
+    if( Lang == "HU" )
+    {
+	openschool_hu = true;
+	client_code_page = "852";
+	character_set = "ISO8859-2";
+    }
+    if( Lang == "IT" ) openschool_it = true;
+    if( Lang == "RO" )
+    {
+	openschool_hu = true;
+	client_code_page = "852";
+	character_set = "ISO8859-2";
+    }
+    if( !openschool_cz && !openschool_de && !openschool_hu && !openschool_ro && !openschool_es && !openschool_it && !openschool_fr ){
+	Lang          = "EN";
+	openschool_en = true;
+    }
+    list<string> tmpdom = splitstring(domain,".");
+    if( workgroup == "" || workgroup == "EXTIS-School" ) {
+	workgroup  =  substring(tmpdom[0]:"", 0, 15);
+	if(substring(workgroup, size(workgroup)-1 , 1) == "-") {
+	    workgroup = substring(workgroup, 0, size(workgroup)-1);
+	}
+    }
+
+    // Read the LDAP Configuration
+    Ldap::Read();
+    LDAPSettings = Ldap::Export();
+/* TODO Make it activ only if "setup"
+/*    if(LDAPSettings["base_config_dn"]:"" == "" ) {
+       Report::Error (_("You must configure LDAP to use the Open School Server."));
+       return false;
+    }
+*/
+    ldapserver = LDAPSettings["ldap_server"]:"";
+    ldaporg    = workgroup;
+    ldapbinddn = LDAPSettings["bind_dn"]:"";
+    if(ldapserver == "localhost" ) {
+       ldapserver    = "ldap";
+       ldapsep       = false;
+       aliases_admin = aliases_admin + " ldap";
+    } else {
+	ldapsep = true;
+    }
+    //Enhancing the aliases
+    if(isgate) {
+        aliases_admin = aliases_admin + " gateway";
+    }
+    sleep(sl);
+    if(Abort()) return false;
+
+    /* Progress finished */
+    Progress::NextStage();
+    sleep(sl);
+
+    ldappasswd = Users::GetRootPassword();
+
+    if(ldappasswd == "") {
+	// We are not installing we have to read the password
+	UI::OpenDialog(`opt(`decorated ),
+	  `VBox(
+		`Left(`Password (`id(`password), _("Administrator Password"),ldappasswd)),
+                `HBox(
+                        `PushButton(`id(`cancel),   _("Cancel")),
+                        `PushButton(`id(`ok),   _("OK"))
+                     )
+		)
+	);
+	any    ret               = nil;
+	while(true)
+	{
+          map event = UI::WaitForEvent();
+          ret       = event["ID"]:nil;
+          if(ret == `cancel) {
+	    return false;
+            break;
+          }
+          if(ret == `ok) {
+            ldappasswd = (string)UI::QueryWidget(`id(`password), `Value);
+            break;
+          }
+	}
+        UI::CloseDialog();
+	Ldap::SetBindPassword(ldappasswd);
+    }
+
+    if(Abort()) return false;
+    modified = false;
+    return true;
+}
+
+/**
+ * Write all openschool-server settings
+ * @return true on success
+ */
+global define boolean Write() {
+
+    boolean success = true;
+
+    /* OpenschoolServer read dialog caption */
+    string caption = _("Saving the Open School Server configuration");
+
+    integer steps = 11;
+
+    integer sl = 500;
+    sleep(sl);
+
+    y2milestone("--- OSS Starting Write -=-=-=-");
+
+    // Set gnome to the default window display and windowmanager
+    SCR::Write(.sysconfig.windowmanager.DEFAULT_WM,"gnome");
+    SCR::Write(.sysconfig.displaymanager.DISPLAYMANAGER,"gdm");
+    SCR::Write(.sysconfig.windowmanager,nil);
+    SCR::Write(.sysconfig.displaymanager,nil);
+    // We do not set help text here, because it was set outside
+    Progress::on();
+    Progress::New( caption, " ", steps, [
+	    /* progress stage 1/10 */
+	    _("Calculate Settings"),
+	    _("Configure the LDAP Server"),
+	    _("Set up Mail Server"),
+	    _("Set up Certificates"),
+	    _("Set up the System"),
+	    _("Set up the AddOns"),
+            _("Set up AutoYaST")
+	], [
+	    /* progress step 1/10 */
+	    _("Calculating settings ..."),
+	    _("Enchance the LDAP server"),
+	    _("Setting up mail server"),
+	    _("Creating certificates"),
+	    _("Set up the System"),
+	    _("Setting up the AddOns"),
+            _("Setting up AutoYaST"),
+	    /* progress finished */
+	    _("Finished")
+	],
+	""
+    );
+
+
+
+    //Calculating some values
+    if(Abort()) return false;
+    Progress::NextStage();
+    Progress::off();
+    PreSetup();
+    sleep(sl);
+
+    //Enchance the LDAP Server
+    if(Abort()) return false;
+    Progress::on();
+    Progress::NextStage();
+    Progress::off();
+    if(!SetupLDAPServer()) Report::Error (_("Cannot setup ldap server settings."));
+    sleep(sl);
+
+    // Setting up mail server
+    if(Abort()) return false;
+    Progress::on();
+    Progress::NextStage();
+    Progress::off();
+    if(!SetupMailServer()) Report::Error (_("Cannot write mail server settings."));
+    sleep(sl);
+
+    // Setting up groupware
+    if(Abort()) return false;
+    Progress::on();
+    Progress::NextStage();
+    Progress::off();
+    if(!SetupCertificates()) Report::Error (_("Cannot write certificates."));
+    sleep(sl);
+
+    /* Adjust some needed services */
+    if(Abort()) return false;
+    Progress::on();
+    Progress::NextStage();
+    Progress::off();
+    PostSetup();
+    sleep(sl);
+
+    if(Abort()) return false;
+    Progress::on();
+    Progress::NextStage();
+    Progress::off();
+    if(!InstallAddOn()) Report::Error (_("Cannot write AddOn settings."));
+    sleep(sl);
+
+    if(Abort()) return false;
+    Progress::on();
+    Progress::NextStage();
+    Progress::off();
+    y2milestone("--- SetupAutoYaSTEnviroment ---");
+    Package::DoInstall(["autoyast-openschool"]);
+    sleep(sl);
+    SCR::Execute(.target.bash,"/usr/share/oss/setup/init-portal.pl");
+
+    if( readbackup )
+    {
+	Popup::LongMessage(_("The installation of the OSS was finished.
+Your system was configured with the settings read from the backup.
+To recover all datas please connect the backup medium and login as <b>root</b>
+after the system was started."));
+
+	string recover = "#!/bin/bash
+. /etc/sysconfig/schoolserver
+if [ \"$SCHOOL_BACKUP_START_CMD\" ]; then
+    eval $SCHOOL_BACKUP_START_CMD
+fi
+
+if [ ! -e $SCHOOL_BACKUP_FULL_DIR/oss_recover.sh ]; then
+    dialog --msgbox \"The backup media was not found.\"  6 35
+    clear
+    exit 1
+fi
+$SCHOOL_BACKUP_FULL_DIR/oss_recover.sh 
+";
+	SCR::Write(.target.string,"/root/Desktop/oss_recover.sh", recover);
+	SCR::Execute(.target.bash,"chmod 700 /root/Desktop/oss_recover.sh");
+    }
+
+
+    if(Abort()) return false;
+    return true;
+}
+
+/**
+ * Get all openschool-server settings from the first parameter
+ * (For use by autoinstallation.)
+ * @param settings The YCP structure to be imported.
+ * @return boolean True on success
+ */
+global define boolean Import (map settings) {
+    // TODO FIXME: your code here (fill the above mentioned variables)...
+    return true;
+}
+
+/**
+ * Dump the openschool-server settings to a single map
+ * (For use by autoinstallation.)
+ * @return map Dumped settings (later acceptable by Import ())
+ */
+global define map Export () {
+    // TODO FIXME: your code here (return the above mentioned variables)...
+    return $[];
+}
+
+/**
+ * Create a textual summary and a list of unconfigured cards
+ * @return summary of the current configuration
+ */
+global define list Summary() {
+    // TODO FIXME: your code here...
+    /* Configuration summary text for autoyast */
+    return [ _("Configuration summary ..."), [] ];
+}
+
+/**
+ * Create an overview table with all configured cards
+ * @return table items
+ */
+global define list Overview() {
+    // TODO FIXME: your code here...
+    return [];
+}
+
+/**
+ * Return packages needed to be installed and removed during
+ * Autoinstallation to insure module has all needed software
+ * installed.
+ * @return map with 2 lists.
+ */
+global define map AutoPackages() {
+    // TODO FIXME: your code here...
+    return $[ "install":[], "remove":[] ];
+}
+
+/**
+ * Writes the OpenSchoolServer intranet network Settings
+ * @return any
+ */
+global define any WriteNetwork () ``{
+
+        DNS::hostname    = "schooladmin";
+        DNS::domain      = domain;
+        DNS::nameservers = [ "127.0.0.1" ];
+        DNS::searchlist  = [ domain ];
+        DNS::modified    = true;
+	Host::hosts[ipaddr]      = [ "schooladmin."+domain+" schooladmin" ];
+	Host::hosts[mailserver]  = [ " mailserver."+domain+"  mailserver" ];
+	Host::hosts[printserver] = [ "printserver."+domain+" printserver" ];
+	Host::hosts[proxy]       = [ "proxy."+domain+" proxy" ];
+	Host::hosts[backup]      = [ "backup."+domain+" backup" ];
+        Host::modified   = true;
+	string internal  = LanItems::Items[intdev,"hwinfo","dev_name"]:"";
+	map <string, any>  FW = SuSEFirewall::Export();
+	FW["FW_DEV_INT"] = internal+" "+internal+":mail "+internal+":prin "+internal+":prox";
+	SuSEFirewall::Import(FW);
+        SCR::Write(.sysconfig.SuSEfirewall2, nil);
+        SCR::Write(.sysconfig.dhcpd.DHCPD_INTERFACE, internal);
+        SCR::Write(.sysconfig.dhcpd,nil);
+	if( NetworkInterfaces::Check( internal ) )
+	{
+		NetworkInterfaces::Edit ( internal );
+	}
+	else
+	{
+		NetworkInterfaces::Add ();
+		NetworkInterfaces::Name = internal;
+	}
+	NetworkInterfaces::Current =  $[
+	                    "BOOTPROTO": "static",
+	                    "NAME"     : LanItems::Items[intdev,"hwinfo","name"]:"",
+	                    "STARTMODE": "onboot",
+	                    "IPADDR"   : ipaddr,
+			    "NETMASK"  : netmask,
+			    "_aliases" : $[
+					   "mail":$[
+							   "IPADDR" :mailserver,
+							   "NETMASK":netmask,
+							   "LABEL"  :"mail"
+							 ],
+					   "print":$[
+							   "IPADDR" :printserver,
+							   "NETMASK":netmask,
+							   "LABEL"  :"prin"
+							 ],
+					   "proxy":$[
+							   "IPADDR" :proxy,
+							   "NETMASK":netmask,
+							   "LABEL"  :"prox"
+							 ],
+					  ]
+			  ];
+        NetworkInterfaces::Commit();
+	LanItems::modified = true;
+	Users::SetAfterAuth ("ldap");
+	SCR::Execute(.target.bash,"perl -pi -e \'s/#MAILSERVER#/"+mailserver+"/g\'  /etc/rinetd.conf.ppp
+perl -pi -e \'s/#ADMIN#/"+ipaddr+"/g\'  /etc/rinetd.conf.ppp");
+        return Lan::Write();
+}
+
+/* EOF */
+}

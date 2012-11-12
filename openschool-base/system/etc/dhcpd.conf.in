@@ -1,0 +1,5 @@
+ldap-base-dn "ou=DHCP,#LDAPBASE#";
+ldap-method static;
+ldap-server "localhost";
+ldap-debug-file "/var/run/dhcp-ldap-startup.log";
+

@@ -1,0 +1,108 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+
+usage ()
+{
+	echo 'Usage: /usr/share/oss/tools/oss_del_user_files [OPTION]'
+	echo 'Leiras .....'
+	echo
+	echo 'Options :'
+	echo 'Mandatory parameters :'
+	echo '	      --uid          User name.'
+	echo '	      --uidnumber    uid number.'
+	echo '	      --startpath    Starting Path.'
+	echo '	      --homedir      Home directory.'
+	echo 'Optional parameters :'
+	echo '	-h,   --help         Display this help.'
+	echo '	-d,   --description  Display the descriptiont.'
+}
+
+description ()
+{
+	echo 'NAME:'
+	echo '	oss_del_user_files'
+	echo 'DESCRIPTION:'
+	echo '	Leiras ...'
+	echo 'PARAMETERS:'
+	echo '	MANDATORY:'
+	echo '		      --uid         : User name.(type=string)'
+	echo '		      --uidnumber   : uid number.(type=string)'
+	echo '		      --startpath   : Starting Path.(type=string)'
+	echo '		      --homedir     : Home directory.(type=string)'
+        echo '	OPTIONAL:'
+        echo '		-h,   --help        : Display this help.(type=boolean)'
+        echo '		-d,   --description : Display the descriptiont.(type=boolean)'
+        exit
+}
+if [ -z "$1" ]
+then
+	usage
+	exit
+fi
+
+while [ "$1" != "" ]; do
+    case $1 in
+	--uid=* )
+				USERNAME=$(echo $1 | sed -e 's/--uid=//g');
+				if [ "$USERNAME" = '' ]
+				then
+					usage
+					exit;
+				fi;;
+	--uidnumber=* )		UIDNUMBER=$(echo $1 | sed -e 's/--uidnumber=//g');
+				if [ "$UIDNUMBER" = '' ]
+				then
+					usage
+					exit;
+				fi;;
+	--startpath=* )         START=$(echo $1 | sed -e 's/--startpath=//g');
+				if [ "$START" = '' ]
+				then
+					usage
+					exit;
+				fi;;
+	--homedir=* )         	HOMEDIR=$(echo $1 | sed -e 's/--homedir=//g');
+				if [ "$HOMEDIR" = '' ]
+				then
+					usage
+					exit;
+				fi;;
+	-d | --description )    description
+				exit;;
+	-h | --help )           usage
+				exit;;
+	* )                     usage
+				exit 1
+    esac
+    shift
+done
+. /etc/sysconfig/schoolserver
+FILE=`mktemp /tmp/oss_del_user_filesXXX`
+DATUM=`/usr/share/oss/tools/oss_date.sh`
+
+if [ -d $HOMEDIR ]
+then
+	# Archiv and delete the home directory
+	tar czf /home/archiv/$USERNAME-$DATUM.tgz $HOMEDIR
+	rm -rf $HOMEDIR
+fi
+
+if [ -d $START ]
+then
+	# Delete the profiles
+	test -d $START/profile/$USERNAME && rm -rf $START/profile/$USERNAME
+	# Delete the subdirectories of home
+	for i in $SCHOOL_SEARCH_FOR_DELETE
+	do
+		test -d $START/$i || continue;
+		#Find directories owned by this user
+		find $START/$i -type d -uid $UIDNUMBER -printf "rm -fr '%p'\n" > $FILE
+		. $FILE
+		#Find files owned by this user
+		find $START/$i -type f -uid $UIDNUMBER -printf "rm -f  '%p'\n" > $FILE
+		. $FILE
+	done
+	rm $FILE
+fi
+
+exit 0;

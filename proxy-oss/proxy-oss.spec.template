@@ -1,0 +1,79 @@
+#
+# spec file for package @PACKAGE@ (Version @VERSION@)
+#
+# Copyright (c) 2012 Peter Varkoly, Nürnberg, Germany.
+# This file and all modifications and additions to the pristine
+# package are under the same license as the package itself.
+#
+# please send bugfixes or comments to peter@varkoly.de.
+#
+
+Name:         @PACKAGE@
+License:      GNU Public License
+Packager:     peter@varkoly.de
+Vendor:       EXTIS GmbH, Uttenreuth, Germany
+Group:        Productivity/Networking/Web/Proxy
+Autoreqprov:  no
+Summary:      Proxy extensions for the @PRODNAME@ 
+Version:      @VERSION@
+Release:      @RELEASE@
+Source:       @PACKAGE@.tar.bz2
+BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+BuildArchitectures: noarch
+BuildRequires: -brp-check-suse
+Provides:     blacklist-openschool <= 3.3.0
+Obsoletes:    blacklist-openschool = %{version}
+Prereq:       squid squidGuard lmd cron
+%description
+Proxy extensions for the for the @PRODNAME@
+
+Authors:
+--------
+        peter@varkoly.de
+        l.rupp@web.de
+
+# ---------------------------------------------------------------------------
+%prep
+%setup -n @PACKAGE@
+# ---------------------------------------------------------------------------
+
+%build
+# ---------------------------------------------------------------------------
+
+%install
+[ "$RPM_BUILD_ROOT" != "/" ] && [ -d $RPM_BUILD_ROOT ] && rm -rf $RPM_BUILD_ROOT;
+mkdir -p  $RPM_BUILD_ROOT
+cp -a var $RPM_BUILD_ROOT
+cp -a etc $RPM_BUILD_ROOT
+cp -a usr $RPM_BUILD_ROOT
+
+%post
+if [ -e /etc/sysconfig/schoolserver ]
+then
+	if [ ${1:-0} -gt 1 ]; then
+		/usr/share/oss/tools/update-squidguard-conf.pl
+	fi
+	/usr/sbin/oss_init_shallalist.sh
+	%restart_on_update lmd
+fi
+
+%postun
+
+%files 
+%defattr(644,root,root,755)
+/usr/share/lmd
+%config /etc/squid/squidguard.conf
+%defattr(750,root,root)
+/etc/cron.weekly/oss-blacklist
+/usr/sbin/oss_init_shallalist.sh
+/usr/share/oss/tools/update-squidguard-conf.pl
+%defattr(640,squid,nogroup,750)
+/var/lib/squidGuard/db/BL
+/var/lib/squidGuard/db/shallalist.tar.gz
+%dir /var/lib/squidGuard/db
+%dir /var/lib/squidGuard/db/custom
+%dir /var/lib/squidGuard/db/custom/good
+%dir /var/lib/squidGuard/db/custom/bad
+%config(noreplace) /var/lib/squidGuard/db/custom/good/*
+%config(noreplace) /var/lib/squidGuard/db/custom/bad/*
+

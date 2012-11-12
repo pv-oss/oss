@@ -1,0 +1,56 @@
+#
+# This file and all modifications and additions to the pristine
+# package are under the same license as the package itself.
+#
+
+# norootforbuild
+
+Name:           lmd-TerminalServer
+Version:        @VERSION@
+Release:	1
+Summary:	Terminal Server and PXE Boot Management for the OSS lmd daemon
+Group:		Productivity/
+License:	GPL
+Url:		www.openschoolserver.net
+PreReq:		lmd
+BuildRequires:  lmd
+Source:		lmd-PrinterPriceManagement.tar.bz2
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+AutoReqProv:    on
+
+%description
+Terminal Server and PXE Boot Management for the OSS lmd daemon.
+With this module you can connect Linux and Windows Terminal Server with thin and fat clients.
+Further more you can create autoinstallation boot configuration for SUSE Linux Clients
+
+Authors:
+--------
+    Peter Varkoly 
+
+%prep
+%setup -n %name
+
+%build
+%configure
+make %{?jobs:-j%jobs}
+
+%install
+%makeinstall
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+%postun
+
+%files
+%dir /srv/tftp/KIWI/
+%config(noreplace) /srv/tftp/KIWI/*
+%config(noreplace) /user/share/oss/templates/{autoinstallation,cloneTool,localboot,ltspboot}
+%defattr(644root,root)
+/usr/share/lmd/alibs/*
+#%doc ChangeLog README COPYING
+
+%changelog
+* Sun Jul 04 2010 peter@varkoly.de
+

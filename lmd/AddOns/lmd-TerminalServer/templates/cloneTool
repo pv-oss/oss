@@ -1,0 +1,9 @@
+default         suse/linux
+KBDMAP          german.kbd
+timeout         100
+prompt          0
+allowoptions    1
+noescape        0
+
+kernel suse/linux
+append initrd=itool/itoolrd,suse/initrd splash=silent install=exec:/bin/start_itool?device=eth0 MemLimit=10 MemYASTText=10 Info=tftp://install/linuxrc.config ITOOL=clone SLEEP=1 acpi=off noapic

@@ -1,0 +1,38 @@
+#/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+# (c) 2011 EXTIS GmbH
+# Revision: $Rev$
+
+if [ "$1" = "--help" -o  "$1" = "-h" ]
+then
+	echo 'Usage: /usr/share/oss/tools/check_updates_in_squid_log [OPTION]'
+	echo 'A tool to evaluate squid logs.'
+	echo
+	echo 'Options :'
+	echo 'Mandatory parameters :'
+	echo "		No need for mandatory parameters. (There's no need for parameters for running this script.)"
+	echo 'Optional parameters :'
+	echo '		-h,   --help         Display this help.'
+	echo '		-d,   --description  Display the descriptiont.'
+	exit
+fi
+
+if [ "$1" = "--description" -o  "$1" = "-d" ]
+then
+	echo 'NAME:'
+	echo '	check_updates_in_squid_log'
+	echo 'DESCRIPTION:'
+	echo '	A tool to evaluate squid logs.'
+	echo 'PARAMETERS:'
+	echo '	MANDATORY:'
+	echo "		                    : No need for mandatory parameters. (There's no need for parameters for running this script.)"
+	echo '	OPTIONAL:'
+	echo '		-h,   --help        : Display this help.(type=boolean)'
+	echo '		-d,   --description : Display the descriptiont.(type=boolean)'
+	exit
+fi
+
+grep -i update /var/log/squid/access.log | gawk 'BEGIN { a=0 } { a=a+$5} END { print a/1024/1024 "MB" }'
+grep -i update /var/log/squid/access.log | grep TCP_MISS | gawk 'BEGIN { a=0 } { a=a+$5} END { print a/1024/1024 "MB" }'
+grep -i update /var/log/squid/access.log | grep TCP_HIT | gawk 'BEGIN { a=0 } { a=a+$5} END { print a/1024/1024 "MB" }'
+

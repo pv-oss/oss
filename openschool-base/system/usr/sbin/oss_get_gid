@@ -1,0 +1,3 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+ldapsearch -x cn=$1 gidnumber | grep gidNumber: | gawk '{ printf "%s", $2 }'

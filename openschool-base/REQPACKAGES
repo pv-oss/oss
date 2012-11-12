@@ -1,0 +1,10 @@
+perl
+perl-Config-IniFiles
+perl-Crypt-SmbHash
+perl-DBI
+perl-DBD-mysql
+perl-Digest-SHA1
+perl-Net-Netmask
+perl-NetxAP
+perl-ldap
+quota

@@ -1,0 +1,53 @@
+/**
+ * File:	clients/openschool-server.ycp
+ * Package:	Configuration of openschool-server
+ * Summary:	Main file
+ * Authors:	Péter Varkoly <peter@varkoly.de>
+ *
+ * $Id: inst_openschool-setup.ycp,v 2.0.0.1 2005/01/21 13:08:37 pv Exp $
+ *
+ * Main file for openschool-server configuration. Uses all other files.
+ */
+
+{
+
+/***
+ * <h3>Configuration of openschool-server</h3>
+ */
+
+textdomain "openschool-server";
+import  "CommandLine";
+include "openschool-server/wizards.ycp";
+
+any        ret     = nil;
+string     help    ="
+YaST-Konfigurationsmodul: openschool-setup
+--------------------------------------------------------------
+
+Configuration of the Openschool Setup
+
+Grundsyntax:
+    yast2 openschool-setup
+
+";
+
+
+define boolean HelpMe() ``{
+  CommandLine::Print (help);
+  return true;
+}
+
+/* The main () */
+y2milestone ("----------------------------------------");
+//y2milestone ("Setting up LDAP-Client");
+//ret = WFM::CallFunction ("ldap",WFM::Args());
+y2milestone ("Openschool setup module started");
+ret = OpenschoolServerSequence("setup");
+/* Finish */
+y2milestone("Openschool setup module finished");
+y2milestone("----------------------------------------");
+
+return ret;
+
+/* EOF */
+}

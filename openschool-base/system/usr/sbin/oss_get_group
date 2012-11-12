@@ -1,0 +1,9 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+if [ -z $1 ]
+then
+        echo "Usage:
+     $0  class|primary|workgroup"
+fi
+ldapsearch -x -LLL "(&(objectclass=schoolGroup)(grouptype=$1))" cn | grep cn: | sed 's/cn: //'
+

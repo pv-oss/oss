@@ -1,0 +1,319 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+# oss-backup
+# 
+# $Id: oss-backup,v 1.10 2007/07/18 16:43:22 pv Exp $
+#
+
+LOGFILE=/var/log/oss-backup.log
+DATE=`date +%Y-%m-%d-%H-%M`
+MYSQLDUMP_OPTIONS="--lock-tables --add-drop-database --add-locks --quote-names --opt --create-options"
+MAILADDR="admin"
+FORCE="no"
+VERBOSE="yes"
+CONFIG=/etc/sysconfig/schoolserver
+RSYNCPARS=" -aA --delete "
+
+
+if [ -e /var/adm/oss/BackupRunning ]
+then
+	BPID=$( cat /var/adm/oss/BackupRunning )
+	if [ -d /proc/$BPID ]; then
+		echo "An other backup process is running with PID: $BPID"
+		exit 1;
+	fi
+fi
+
+echo $$ > /var/adm/oss/BackupRunning
+
+function TheEnd(){
+	rm /var/adm/oss/BackupRunning
+	if [ "$2" ]; then
+		echo $2;
+	fi
+	exit $1
+}
+function usage (){
+	echo 
+	echo "Usage: `basename $0` [OPTION] "
+	echo "       -h|--help     : help (this message)"
+	echo "       -f            : force backup (even if it's disabled in config)"
+	echo "       -v            : be verbose"
+	echo 
+	echo "       Use this script to immediately create a backup of your OSS."
+	echo "       You can find the configuration in $CONFIG."
+	echo "       Feel free to read the administration handbook for further details."
+	echo
+	TheEnd $1
+}
+
+function check_discspace() {
+	#TODO Limit have to be configurable
+	LIMIT=80
+	#SIZE=`df  $1 | tail -n1 | awk '{ print $(NF-4) }'`
+	#USED=`df  $1 | tail -n1 | awk '{ print $(NF-3) }'`
+	USED=`df $1 | tail -n1 | awk '{ print $(NF-1) }' | sed s/%//`
+	if [ $USED -gt $LIMIT ]; then
+	{
+		AVAIL=`df -h $1 | tail -n1 | awk '{ print $(NF-2) }'`
+		echo "WARNING: only $AVAIL space available on $1." | tee -a $LOGFILE
+	} | mail -s "BACKUP WARNING from $0" $MAILADDR
+	fi
+}
+
+function LOG() {
+	LOG_DATE=`date "+%b %d %H:%M:%S"`
+	HOST=`hostname`
+	echo "$LOG_DATE $HOST oss-backup: $1" >> $LOGFILE
+	if [ "$VERBOSE" = "yes" ]; then
+		echo $1
+	fi
+}
+
+while getopts 'fhv --long help --' OPTION ; do
+        case $OPTION in
+		        h|H|help)    usage 0
+                ;;
+				f) FORCE="yes"
+				;;
+				v) VERBOSE="yes"
+				;;
+		esac
+done
+
+shift $(( OPTIND - 1 ))
+
+if [ ! -f $CONFIG ]; then
+	echo -e "\033[0;31;1mThis script is for Open School Server only!\033[\0m"
+	echo -e "\033[0;31;1m*********         exiting         *********\033[\0m"
+	TheEnd 1
+fi
+
+. $CONFIG
+MAILADDR="admin@$SCHOOL_DOMAIN"
+
+if [ "$SCHOOL_BACKUP" = "yes" ] || [ "$FORCE" = "yes" ] ; then
+	LOG "********** Starting Backup **********"
+
+    if [ "$SCHOOL_BACKUP_CAN_NOT_SAVE_ACL" = "yes" ]; then
+	RSYNCPARS=" -a --delete "	
+    fi
+    if [ "$SCHOOL_BACKUP_START_CMD" ]; then
+	eval $SCHOOL_BACKUP_START_CMD
+    fi
+    if [ -e /var/adm/backup/LAST_BACKUP ]; then
+        LAST_BACKUP=`cat /var/adm/backup/LAST_BACKUP`
+    else    
+        LAST_BACKUP=$DATE
+    fi
+	# check needed configs
+	if [ -z $SCHOOL_BACKUP_FULL_DIR ]; then
+		VERBOSE="yes"
+		LOG "No SCHOOL_BACKUP_FULL_DIR defined - exiting" 
+		TheEnd 1
+	fi
+	check_discspace $SCHOOL_BACKUP_FULL_DIR
+	if [ -z $SCHOOL_BACKUP_INC_DIR ]; then
+		VERBOSE="yes"
+		LOG "No SCHOOL_BACKUP_INC_DIR defined - using $SCHOOL_BACKUP_FULL_DIR instead" 
+		SCHOOL_BACKUP_INC_DIR=$SCHOOL_BACKUP_FULL_DIR
+	else
+		check_discspace $SCHOOL_BACKUP_INC_DIR
+	fi
+
+    #create the backup direcktory
+    BACKUP_DIR="$SCHOOL_BACKUP_INC_DIR/$LAST_BACKUP"
+    mkdir -p $BACKUP_DIR
+    touch $SCHOOL_BACKUP_FULL_DIR/DO_BACKUP
+
+    export BACKUP_DIR
+    export SCHOOL_BACKUP_FULL_DIR
+    if [ "$SCHOOL_BACKUP_CHECK_MOUNT" = "yes" ]; then
+        mount | grep -q "$SCHOOL_BACKUP_FULL_DIR" || {
+            LOG "Unable to mount $SCHOOL_BACKUP_FULL_DIR" 
+            TheEnd 5
+        }
+        mount | grep -q "$SCHOOL_BACKUP_INC_DIR" || {
+            LOG "Unable to mount $SCHOOL_BACKUP_INC_DIR" 
+            TheEnd 5
+        }
+    fi
+
+    # save LDAP database
+    if [ "$SCHOOL_BACKUP_LDAP" = "yes" ]; then
+	LOG "Syncing LDAP Database" 
+        rcldap stop 1>/dev/null;
+	if [ -e $SCHOOL_BACKUP_FULL_DIR/SLAPCAT.gz ]; then
+		mv $SCHOOL_BACKUP_FULL_DIR/SLAPCAT.gz $BACKUP_DIR/SLAPCAT.gz
+	fi
+        slapcat | gzip > $SCHOOL_BACKUP_FULL_DIR/SLAPCAT.gz
+        rcldap start 1>/dev/null;
+    fi
+
+    # copy sysconfig file schoolconf to the base for simple recovery
+    cp /etc/sysconfig/schoolserver $SCHOOL_BACKUP_FULL_DIR/
+
+    # save custom squidGuard database
+    LOG "Syncing custom squidGuard database" 
+    mkdir -p $SCHOOL_BACKUP_FULL_DIR/var/lib/squidGuard/db/custom/
+    mkdir -p $BACKUP_DIR/var/lib/squidGuard/db/custom/
+    rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/var/lib/squidGuard/db/custom/ \
+		/var/lib/squidGuard/db/custom/ \
+		$SCHOOL_BACKUP_FULL_DIR/var/lib/squidGuard/db/custom/
+
+    # save samba settings
+    if chkconfig -c smb
+    then
+    	LOG "Syncing samba settings" 
+    	test -d $SCHOOL_BACKUP_FULL_DIR/var/lib/samba/netlogon || mkdir -p $SCHOOL_BACKUP_FULL_DIR/var/lib/samba/netlogon
+    	mkdir -p $SCHOOL_BACKUP_FULL_DIR/var/lib/samba
+    	pushd /var/lib/samba/ 1>/dev/null
+    	tdbbackup -s .bak *.tdb
+    	popd 1>/dev/null
+    	pushd /etc/samba 1>/dev/null
+    	tdbbackup -s .bak secrets.tdb
+    	popd 1>/dev/null
+        if [ "$SCHOOL_BACKUP_CAN_NOT_SAVE_ACL" = "yes" ]; then
+		test -e $SCHOOL_BACKUP_FULL_DIR/samba_facls.gz && mv $SCHOOL_BACKUP_FULL_DIR/samba_facls.gz $BACKUP_DIR
+    		getfacl --absolute-names -R /var/lib/samba/ | gzip > $SCHOOL_BACKUP_FULL_DIR/samba_facls.gz
+	fi
+        mkdir -p $BACKUP_DIR/var/lib/samba/
+    	rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/var/lib/samba/ /var/lib/samba/ $SCHOOL_BACKUP_FULL_DIR/var/lib/samba/
+    fi
+
+    # save /etc - must run after samba-backup otherwise secrets.tdb.bak is not saved
+    if [ "$SCHOOL_BACKUP_CAN_NOT_SAVE_ACL" = "yes" ]; then
+	LOG "Saving acls on /etc/"
+	if [ -e $SCHOOL_BACKUP_FULL_DIR/etc_facls.gz ]; then
+		mv $SCHOOL_BACKUP_FULL_DIR/etc_facls.gz $BACKUP_DIR/etc_facls.gz
+	fi
+	getfacl --skip-base --absolute-names -R /etc/ | gzip > $SCHOOL_BACKUP_FULL_DIR/etc_facls.gz
+    fi
+    LOG "Syncing /etc/"
+    mkdir -p $BACKUP_DIR/etc/
+    rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/etc/ /etc/ $SCHOOL_BACKUP_FULL_DIR/etc/
+
+    # save server certificates
+    LOG "Saving server certificate"
+    test -d $SCHOOL_BACKUP_FULL_DIR/var/lib/CAM || mkdir -p $SCHOOL_BACKUP_FULL_DIR/var/lib/CAM
+    test -d $BACKUP_DIR/var/lib/CAM || mkdir -p $BACKUP_DIR/var/lib/CAM
+    rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/var/lib/CAM/ /var/lib/CAM/ $SCHOOL_BACKUP_FULL_DIR/var/lib/CAM/
+    
+    # save /root (needed already for ssh-key files)
+    LOG "Syncing /root/"
+    mkdir -p $BACKUP_DIR/root/
+    rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/root/ /root/ $SCHOOL_BACKUP_FULL_DIR/root/
+
+    if [ "$SCHOOL_BACKUP_HOME" = "yes" ]; then
+        if [ "$SCHOOL_BACKUP_CAN_NOT_SAVE_ACL" = "yes" ]; then
+		LOG "Saving acls on /home/" 
+		if [ -e $SCHOOL_BACKUP_FULL_DIR/home_facls.gz ]; then
+		    mv $SCHOOL_BACKUP_FULL_DIR/home_facls.gz $BACKUP_DIR/home_facls.gz
+		fi
+		getfacl --skip-base --absolute-names -R /home/ | gzip > $SCHOOL_BACKUP_FULL_DIR/home_facls.gz
+	fi
+	LOG "Syncing /home/" 
+	test -e /usr/share/oss/templates/exclude-from-home-backup || touch /usr/share/oss/templates/exclude-from-home-backup
+	# If $SCHOOL_BACKUP_FULL_DIR equal $SCHOOL_BACKUP_INC_DIR we make hartlinks
+	if [ $SCHOOL_BACKUP_FULL_DIR = $SCHOOL_BACKUP_INC_DIR ]; then
+	    if [ -d $SCHOOL_BACKUP_FULL_DIR/home/ ]; then
+	    	mv $SCHOOL_BACKUP_FULL_DIR/home/ $BACKUP_DIR/home/
+	    else
+	    	mkdir -p $BACKUP_DIR/home/
+	    fi
+	    rsync $RSYNCPARS --exclude-from=/usr/share/oss/templates/exclude-from-home-backup --link-dest=$BACKUP_DIR/home/ /home/ $SCHOOL_BACKUP_FULL_DIR/home/
+	else
+	    mkdir -p $BACKUP_DIR/home/
+	    rsync $RSYNCPARS --exclude-from=/usr/share/oss/templates/exclude-from-home-backup -b --backup-dir=$BACKUP_DIR/home/ /home/ $SCHOOL_BACKUP_FULL_DIR/home/
+	fi
+    fi
+
+    if [ "$SCHOOL_BACKUP_CTOOL" = "yes" ]; then
+    	LOG "Syncing itool"  
+    	mkdir -p $SCHOOL_BACKUP_FULL_DIR/srv/itool
+    	mkdir -p $BACKUP_DIR/srv/itool
+    	rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/srv/itool /srv/itool $SCHOOL_BACKUP_FULL_DIR/srv/itool
+    fi
+    
+    if [ "$SCHOOL_BACKUP_DB" = "yes" ]; then
+        if [ "$SCHOOL_USE_OX" = "yes" ]; then
+            LOG "Syncing openXchange Database" 
+            pg_dump -c -U openexchange openexchange | gzip >  $BACKUP_DIR/openexchange.gz 
+	    mkdir -p $BACKUP_DIR/srv/www/oss/openxchange/var/
+	    mkdir -p $SCHOOL_BACKUP_FULL_DIR/srv/www/oss/openxchange/var/   
+            cp $BACKUP_DIR/openexchange.gz $SCHOOL_BACKUP_FULL_DIR/openexchange.gz    
+            rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/srv/www/oss/openxchange/var/ /srv/www/oss/openxchange/var/ $SCHOOL_BACKUP_FULL_DIR/srv/www/oss/openxchange/var/
+        fi
+        if [ "$SCHOOL_USE_EGROUPWARE" = "yes" ]; then
+            LOG "Syncing eGroupware Database" 
+            mysqldump $MYSQLDUMP_OPTIONS egroupware | gzip > $BACKUP_DIR/egroupware.gz    
+            cp $BACKUP_DIR/egroupware.gz $SCHOOL_BACKUP_FULL_DIR/egroupware.gz    
+        fi
+	if [ "$SCHOOL_BACKUP_JOOMLA" = "yes" ]; then
+	  if [ `echo "show databases;" | mysql -u root | grep -q joomla; echo $?` -eq 0 ] ; then
+		LOG "Syncing Joomla Database" 
+		mysqldump $MYSQLDUMP_OPTIONS joomla | gzip > $BACKUP_DIR/joomla.gz
+		cp $BACKUP_DIR/joomla.gz $SCHOOL_BACKUP_FULL_DIR/joomla.gz
+	  fi
+	fi
+    fi
+
+    if [ "$SCHOOL_BACKUP_MOODLE" = "yes" ]; then
+      if [ `echo "show databases;" | mysql -u root | grep -q moodle; echo $?` -eq 0 ] ; then
+    	LOG "Syncing Moodle Database"
+    	mysqldump $MYSQLDUMP_OPTIONS moodle | gzip > $BACKUP_DIR/moodle.gz
+    	cp $BACKUP_DIR/moodle.gz $SCHOOL_BACKUP_FULL_DIR/moodle.gz
+    	if [ -d /srv/www/moodledata/ ]; then
+    		test -d $SCHOOL_BACKUP_FULL_DIR/srv/www/moodledata/ || mkdir -p $SCHOOL_BACKUP_FULL_DIR/srv/www/moodledata/
+    		test -d $BACKUP_DIR/srv/www/moodledata/             || mkdir -p $BACKUP_DIR/srv/www/moodledata/
+    		rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/srv/www/moodledata/ \
+    		 /srv/www/moodledata/ \
+    		 $SCHOOL_BACKUP_FULL_DIR/srv/www/moodledata/
+    	elif [ "$SCHOOL_BACKUP_HOME" != "yes" ]; then
+    		test -d $SCHOOL_BACKUP_FULL_DIR/home/groups/moodledata/ || mkdir -p $SCHOOL_BACKUP_FULL_DIR/home/groups/moodledata/
+    		test -d $BACKUP_DIR/home/groups/moodledata/ 		|| mkdir -p $BACKUP_DIR/home/groups/moodledata/
+    		rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/home/groups/moodledata/ \
+    		 /home/groups/moodledata/ \
+    		$SCHOOL_BACKUP_FULL_DIR/home/groups/moodledata/
+    	fi # otherwise moodledata is included in /home
+      fi
+    fi
+
+    if [ "$SCHOOL_BACKUP_MAIL" = "yes" ]; then
+	LOG "Syncing Mail Data"
+        for i in var/spool/imap/ var/lib/imap/; do
+            mkdir -p $SCHOOL_BACKUP_FULL_DIR/$i
+            mkdir -p $BACKUP_DIR/$i
+            rsync $RSYNCPARS -b --backup-dir=$BACKUP_DIR/$i /$i $SCHOOL_BACKUP_FULL_DIR/$i
+        done    
+    fi
+
+    # Now we make recovery easy
+    if [ -f /usr/share/oss/tools/oss_recover.sh ]; then
+      cp -f /usr/share/oss/tools/oss_recover.sh $SCHOOL_BACKUP_FULL_DIR/
+      chmod 750 $SCHOOL_BACKUP_FULL_DIR/oss_recover.sh 
+      chown root:root $SCHOOL_BACKUP_FULL_DIR/oss_recover.sh
+    fi
+    if [ -f /usr/share/doc/packages/openschool-base/oss_recover.readme ]; then
+      cp -f /usr/share/doc/packages/openschool-base/oss_recover.readme $SCHOOL_BACKUP_FULL_DIR/	
+    fi
+
+    # Execute custom scripts
+    if [ "$SCHOOL_BACKUP_CUSTOM_SCRIPTS" ]; then
+        for i in $SCHOOL_BACKUP_CUSTOM_SCRIPTS
+        do
+                LOG "Starting $i"
+                $i $BACKUP_DIR $SCHOOL_BACKUP_FULL_DIR
+        done
+    fi
+
+    # create mark for last backup
+    DATE=`date +%Y-%m-%d-%H-%M`
+    LOG "********** Backup finished **********"
+    echo $DATE > /var/adm/backup/LAST_BACKUP
+    if [ "$SCHOOL_BACKUP_STOP_CMD" ]; then
+	eval $SCHOOL_BACKUP_STOP_CMD
+    fi
+   
+fi
+TheEnd

@@ -1,0 +1,34 @@
+#Basic settings
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+export CUPS_SERVER=printserver
+LDAPBASE=#LDAPBASE#
+DHCPBASE=ou=DHCP,#LDAPBASE#
+ROOMBASE=cn=#NETWORK#,cn=config1,cn=schooladmin,ou=DHCP,#LDAPBASE#
+ROOMCN=$( ldapsearch -x -LLL "(&(objectclass=SchoolRoom)(description=$ROOM))" cn | grep cn: | sed 's/cn: //' )
+ROOMBASE="cn=$ROOMCN,$ROOMBASE"
+export ROOMBASE
+export ROOMCN
+export LDAPBASE
+export DHCPBASE
+#Default printer
+DEFPRINTER=$( ldapsearch -x -LLL ckey=DEFAULT_PRINTER -b $ROOMBASE cvalue | grep configurationValue: | sed 's/configurationValue: //' )
+if [ "$DEFPRINTER" ]; then
+        lpoptions -d $DEFPRINTER -o PageSize=A4 &> /dev/null
+fi
+#Repair firefox
+rm $HOME/.mozilla/firefox/*/.parentlock &> /dev/null
+rm $HOME/.mozilla/firefox/*/lock        &> /dev/null
+
+typeset -a q=($(/usr/sbin/oss_get_quota))
+
+if [ "${q[0]}" -a "${q[1]}" ]; then
+        if [ ${q[0]} -gt ${q[1]} ]; then
+                xterm -e dialog --title "Quota Warnung" --msgbox "Sie haben Ihre Festplattenquota überschritten.\nBitte löschen Sie einige Dateien aus Ihrem Homeverzeichnis." 6 70
+        elif [ ${q[0]} -gt $((${q[1]}/10*9)) ]; then
+                xterm -e dialog --title "Quota Warnung" --msgbox "Ihre Festplattenquota ist über 90% ausgeschöpft.\nBitte löschen Sie einige Dateien aus Ihrem Homeverzeichnis." 6 70
+        elif [ ${q[0]} -gt $((${q[1]}/5*4)) ]; then
+                xterm -e dialog --title "Quota Warnung" --msgbox "Ihre Festplattenquota ist über 80% ausgeschöpft.\nBitte löschen Sie einige Dateien aus Ihrem Homeverzeichnis." 6 70
+        fi
+fi
+
+true

@@ -1,0 +1,253 @@
+# Open School Server Schema
+#
+# Copyright (c) 2000-2001 SuSE GmbH Nuernberg, Germany.  All rights reserved.
+# Copyright (c) 2002 SuSE Linux AG Nuernberg, Germany.  All rights reserved.
+# Copyright (c) 2005 Peter Varkoly Fuerth, Germany.  All rights reserved.
+#
+# $Id: openschool-server.schema,v 2.9 2006/06/01 19:26:48 pv Exp $
+#
+# For different syntaxes take a look at RFC 2798 (inetOrgPerson) and
+# syntax descriptions in RFC 2252 and 2256
+#
+#
+## Some macros
+objectidentifier EXTIS 1.3.6.1.4.1.22288
+objectidentifier EXTIS.OSS EXTIS:1.1
+objectidentifier EXTIS.OSS.AT EXTIS.OSS:1
+objectidentifier EXTIS.OSS.OC EXTIS.OSS:2
+
+##
+## Attribute Section
+##
+attributetype ( EXTIS.OSS.AT:1 NAME 'rasAccess'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{10} SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:2 NAME 'internetDisabled'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{10} SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:3 NAME 'religion'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{10} SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:4 NAME 'writerdn'
+	DESC 'the administrators of a group'
+        SUP distinguishedName )
+
+attributetype ( EXTIS.OSS.AT:5 NAME 'loginDisabled'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{15} SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:6 NAME 'clientMustUpdate'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{15} SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:7 NAME 'clientUpdatePath'
+        EQUALITY caseExactIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:8 NAME 'importSortInDirectory'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{10} SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:9 NAME 'serviceAccesControl'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
+
+attributetype ( EXTIS.OSS.AT:10 NAME 'dNSZoneDN'
+        EQUALITY distinguishedNameMatch
+        DESC 'the distinguished name(s) of the dNSZone objects.'
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.12 )
+
+attributetype ( EXTIS.OSS.AT:11 NAME ( 'defaultUserAci' )
+        DESC 'space separated list of attributes'
+        EQUALITY caseIgnoreIA5Match
+        SUBSTR caseIgnoreIA5SubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:12 NAME 'creatorDN'
+	DESC 'the creator of a group'
+        SUP distinguishedName )
+
+attributetype ( EXTIS.OSS.AT:13 NAME ( 'authData' )
+        DESC 'Datas for Authorisation'
+        EQUALITY caseExactIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+# -----------------------------------------------------------------------------------
+#
+# This attribute shows the roles of a user in a school
+# There are some standard defined roles:
+#    student
+#    teacher
+#    sysadmin
+#    administration
+# This attribute is mostly redundant because the roles are posixGroups or
+# groupOfNames
+#
+# This 'attribute' will be used furthermore for marking the workstations role in a 
+# room:
+#   teacherws
+#   studentws
+#
+attributetype ( EXTIS.OSS.AT:14 NAME ( 'role' )
+        DESC 'Roles of a user like student, teacher, sysadmin, ...'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+##-----------------------------------------------------------------------------------
+# This attribute will be used to dermine the type of the groups in the school 
+# Now we have there type of SchoolGroups:
+#   class
+#   workgroup
+#   primarygroup
+#
+attributetype ( EXTIS.OSS.AT:15 NAME ( 'groupType' )
+        DESC 'Type of the SchoolGroup: class| workgroup| primarygroup'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+##-----------------------------------------------------------------------------------
+attributetype ( EXTIS.OSS.AT:16 NAME ( 'configurationKey' )
+        DESC 'Open School Server  specific Configuration Entry Key'
+        EQUALITY caseIgnoreIA5Match
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( EXTIS.OSS.AT:17 NAME ( 'configurationValue' )
+        DESC 'Open School Server  specific Configuration Entry Value'
+        EQUALITY caseIgnoreIA5Match
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+##
+## Objectclass Section
+##
+# -----------------------------------------------------------------------------------
+#objectclass SchoolClass
+#        requires
+#                objectClass,
+#        allows
+#                cn
+objectclass ( EXTIS.OSS.OC:1 NAME 'SchoolClass' SUP top AUXILIARY
+	DESC 'Open School Server  specific Configuration'
+	MAY (  writerdn ))
+
+# -----------------------------------------------------------------------------------
+# To define a school account we use the 'person' as STRUCTURAL objectclass and enhance
+# it with folloing object classes:
+#   posixAccount, shadowAccount: contains the unix account attributes
+#   sambaSamAccount:             contains the Windows account attributes
+#   inetOrgPerson:               contains some further personal attributes
+#   mailRecipient:               contains postfix configuration
+#   phpgwAccount, OXUserObject:  contains groupware attributes
+#   schoolAccount:               contains school server attributes
+#  
+objectclass ( EXTIS.OSS.OC:2 NAME 'SchoolAccount' SUP top AUXILIARY
+	DESC 'Open School Server  specific Configuration'
+	MAY ( birthday $ rasAccess $ internetDisabled $ OXTimeZone $ religion $
+	      loginDisabled $ importSortInDirectory $ mailenabled $ c $
+	      defaultUserAci $ authData $ role $ uniqueIdentifier $
+	      writerDN $ configurationValue ))
+
+# -----------------------------------------------------------------------------------
+# A school room is basicaly an dhcpGroup object and will be enhanced bye the objectclass
+# schoolRoom to handle the clients in the room. The 'cn' of the objectclass dhcpGroup
+# will be used only as an mark. The attribute 'description' contains the real name of the room.
+# The attribute 'dhcpRange' contains the starting IP-address of the school room and 
+# 'dhcpNetMask' determine the IP-address range. 
+# !!!! 'dhcpNetMask' is not the real netmask of  the clients in this room!!!!!!!!
+#
+objectclass ( EXTIS.OSS.OC:3 NAME 'SchoolRoom' SUP top AUXILIARY
+	DESC 'Open School Server  specific Configuration'
+	MAY ( description $ dhcpRange $ dhcpNetMask $ serviceAccesControl $
+		clientMustUpdate $ clientUpdatePath $ configurationValue ))
+
+# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
+# A school group is based on the STRUCTURAL objectclass 'groupOfNames' which contains
+# the DN-s of the member of the group. If neccessary the group objects will be 
+# enhanced with the following objectclasses:
+#  posixGroup:        contains the unix group attributes
+#  sambaGroupMapping: contains the samba group mappings
+#  mailRecipient:     contains the mail delivery configuration
+#  phpgwAccount:      contains groupware attributes
+#  schoolGroup:       contains school server attributes
+#
+objectclass ( EXTIS.OSS.OC:4 NAME 'SchoolGroup' SUP top AUXILIARY
+        DESC 'Open School Server  specific Configuration' 
+	MAY (  groupType $ role $ writerdn ))
+
+# -----------------------------------------------------------------------------------
+# For each workstation in the school network there will be created 5 LDAP-entries:
+# 1. uid=<WSNAME>,ou=people,<LDAPBASE>:      For workstation accounts. With these accounts
+#                                            is login only on the named workstation possible.
+#                                            uid=userPassword=sambaPasswor=<WSNAME>
+#                                            These entries are 'schoolAccont'-s
+# 2. uid=<WSNAME>$,ou=Computers,<LDAPBASE>:  Windows machine account
+#                                            These entries are 'sambaSamAccount'-s
+# 3. cn=<WSNAME>,cn=<ROOM>,cn=<NETWORK>,...  The DHCP-entrie of the workstation (
+#                                            These entries are 'dhcpHost'-s
+# 4. relativeDomainName=<WSNAME>,zoneName=.. The DNS-entrie of the workstation
+# 5. relativeDomainName=<ReversIP>,zoneName..The revers lookup DNS-entrie of the workstation
+#                                            The entries 4-5 are 'dNSZone'-s
+#
+# -----------------------------------------------------------------------------------
+# The schoolWorkstation objectclass enhance the 'dhcpHost' entrie with some school specific
+# attributes.
+objectclass ( EXTIS.OSS.OC:5 NAME 'SchoolWorkstation' SUP top AUXILIARY
+	DESC 'Open School Server  specific Configuration'
+	MAY ( internetDisabled $ mailenabled $ OXTimeZone $ clientMustUpdate $ clientUpdatePath $
+		serviceAccesControl $ configurationValue ))
+# -----------------------------------------------------------------------------------
+objectclass ( EXTIS.OSS.OC:6 NAME 'SchoolPrimaryGroup' SUP top AUXILIARY
+        DESC 'Open School Server  specific Configuration'
+	MAY (  writerdn ))
+# -----------------------------------------------------------------------------------
+objectclass ( EXTIS.OSS.OC:7 NAME 'DHCPEntry' SUP top AUXILIARY
+        DESC 'Open School Server  specific Configuration' 
+	MAY   ( dhcpHostDN $ dNSZoneDN $ dhcpPoolDN ) ) 
+# -----------------------------------------------------------------------------------
+objectclass ( EXTIS.OSS.OC:8 NAME 'SchoolUserTemplate' SUP top AUXILIARY
+	DESC 'Open School Server  specific Configuration'
+	MAY ( birthday $ rasAccess $ internetDisabled $ OXTimeZone $ religion $
+	      loginDisabled $ importSortInDirectory $ mailenabled $ c $
+	      defaultUserAci ))
+# -----------------------------------------------------------------------------------
+# The configuration object of the school
+# This object can be placed under: ou=ossConfig,<LDAP_BASE>
+# This object contains entries like:
+# dn: configurationKey=SCHOOL_SERVER,ou=ossConfig,<LDAP_BASE>
+# configurationKey:   SCHOOL_SERVER
+# configurationValue: 172.17.0.2
+#
+# dn: configurationKey=SCHOOL_MAILSERVER,ou=ossConfig,<LDAP_BASE>
+# configurationKey:   SCHOOL_MAILSERVER
+# configurationValue: 172.17.0.3
+#
+# dn: configurationKey=SCHOOL_PRINTSERVER,ou=ossConfig,<LDAP_BASE>
+# configurationKey:   SCHOOL_PRINTSERVER
+# configurationValue: 172.17.0.4
+# ......
+objectclass ( EXTIS.OSS.OC:9 NAME 'SchoolConfiguration' SUP top STRUCTURAL
+        DESC 'Open School Server specific Configuration'
+        MUST ( configurationKey $ configurationValue )
+        MAY (  writerDN $ description ))
+
+# -----------------------------------------------------------------------------------
+# To define a school we use the objectclass 'organization' as STRUCTURAL objectclass and enhance
+# it by the objectclass School. This objectclass holds some School specific informations:
+# uniqueIdentifier: school number 
+#
+objectclass ( EXTIS.OSS.OC:10 NAME 'School' SUP top AUXILIARY
+        DESC 'Open School Server  specific Configuration'
+        MUST ( uniqueIdentifier )
+        MAY  ( c ))
+

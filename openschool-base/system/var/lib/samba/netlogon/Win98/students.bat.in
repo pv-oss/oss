@@ -1,0 +1,6 @@
+REM for students
+net time \\#PDC-SERVER# /SET /YES
+net use h: \\#PDC-SERVER#\homes
+net use p: \\#PDC-SERVER#\all 
+net use g: \\#PDC-SERVER#\groups 
+net use s: \\#PDC-SERVER#\software

@@ -1,0 +1,31 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+
+if [ -e /var/adm/oss/update-3.2.0-2 ]
+then
+echo "Patch 3.2.0-2 already installed"
+        exit 0
+fi
+
+. /etc/sysconfig/ldap
+. /etc/sysconfig/schoolserver
+DATE=$( /usr/share/oss/tools/oss_date.sh )
+SCHOOL_LDAPBASE=`echo $BASE_CONFIG_DN | sed s/ou=ldapconfig,//`
+
+# Fix existing webdav directories.
+
+for i in "/etc/apache2/vhosts.d/oss-ssl/*.conf"
+do
+	test -e $i || continue;
+	DAV=$( grep 'AuthName "webdav"' $i )
+	if [ "$DAV" ]; then
+		sed 's/        Options All$/        Options All -FollowSymLinks/' $i
+	fi
+done
+for i in "/etc/apache2/vhosts.d/*.group"
+do
+	test -e $i || continue;
+	sed 's/   Options +Indexes$/        Options +Indexes -FollowSymLinks/' $i
+done
+/etc/init.d/apache2 reload
+touch /var/adm/oss/update-3.2.0-2

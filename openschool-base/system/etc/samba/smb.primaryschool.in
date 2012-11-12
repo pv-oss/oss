@@ -1,0 +1,168 @@
+[global]
+   #add machine script = /sbin/yast /usr/share/YaST2/data/add_machine.ycp %m$
+   add machine script = 
+   bind interfaces only = yes
+   domain logons = yes
+   domain master = yes
+   encrypt passwords = yes
+   interfaces = 127.0.0.1, #IPADDR#
+   ldap admin dn = #BINDDN#
+   ldap group suffix = ou=group
+   ldap idmap suffix = ou=Idmap
+   ldap machine suffix = ou=Computers
+   ldap passwd sync = yes
+   ldap suffix = #LDAPBASE#
+   ldap user suffix = ou=people
+   load printers = no
+   local master = yes
+   #logon drive = Z:
+   logon path = \\%L\profiles\%U\%a
+   logon script = %U.bat
+   map to guest = Bad User
+   netbios name = #PDC-SERVER#
+   netbios aliases = PRINTSERVER
+   os level = 255
+   passdb backend = ldapsam:ldap://localhost
+   preferred master = yes
+   printcap name = 
+   security = user
+   server string = @PROD_NAME@
+   socket options = SO_KEEPALIVE
+   smb ports = 139
+   time server = yes
+   username map = /etc/samba/smbusers
+   wins support = yes
+   workgroup = #WORKGROUP#
+
+[netlogon]
+   comment = Network Logon Service
+   root preexec  = /usr/share/oss/tools/make_logon_script.pl %u %I %a %m
+   path = /var/lib/samba/netlogon/%a
+   browseable = no
+   guest ok = yes
+   write list = root
+   writable = no
+   share modes = no
+[homes]
+   root preexec  = /usr/share/oss/tools/make_sso.pl %u %I %a
+   root postexec = /usr/share/oss/tools/remove_sso.pl %u %I %a
+   browseable = no
+   comment = Home Directories
+   guest ok = no
+   inherit permissions = Yes
+   printable = no
+   read only = No
+   valid users = %S
+   veto files = /+*/.*/Desktop/
+[pdf]
+   browseable = yes
+   comment = PDF creator
+   create mask = 0600
+   guest ok = no
+   path = /var/tmp
+   print command = /usr/bin/smbprngenpdf -J '%J' -c %c -s %s -u '%u' -z %z
+   printable = yes
+[profiles]
+   root preexec = /usr/sbin/make_sso.pl %u %I %a
+   browseable = no
+   comment = Network Profiles Service
+   create mask = 0600
+   directory mask = 0700
+   guest ok = no
+   path = /home/profile
+   printable = no
+   read only = No
+   store dos attributes = Yes
+[groups]
+   root preexec  = /usr/share/oss/tools/make_sso.pl %u %I %a
+   root postexec = /usr/share/oss/tools/remove_sso.pl %u %I %a
+   browseable = yes
+   comment = All groups
+   guest ok = yes
+   inherit permissions = Yes
+   path = /home/groups
+   printable = no
+   read only = No
+[all]
+   comment = Folder for all
+   path = /home/all
+   inherit permissions = Yes
+   browseable = yes
+   guest ok = yes
+   writable = yes
+[pc]
+   root preexec = /usr/sbin/oss_prepair_pc_share.sh %m
+   comment = Folder for the PCs
+   path = /home/workstations/%m
+   inherit permissions = Yes
+   browseable = yes
+   guest ok = yes
+   writable = yes
+[allteachers]
+   comment = Folder for all teacher
+   path = /home/groups/TEACHERS
+   browseable = yes
+   inherit permissions = Yes
+   valid users = @TEACHERS
+   force group = TEACHERS
+   guest ok = no
+   writable = yes
+[alladmins]
+   comment = Folder for all teacher
+   path = /home/groups/ADMINISTRATION
+   browseable = yes
+   inherit permissions = Yes
+   valid users = @ADMINISTRATION
+   force group = ADMINISTRATION
+   guest ok = no
+   writable = yes
+[software]
+   comment = Folder for software
+   path = /home/software
+   inherit permissions = Yes
+   browseable = yes
+   guest ok = yes
+   writable = yes
+[archiv]
+   browseable = yes
+   comment = Folder for Arhived Users
+   valid users = @TEACHERS
+   guest ok = no
+   path = /home/archiv
+   writable = yes
+[users]
+   browseable = yes
+   comment = All users
+   guest ok = no
+   inherit permissions = Yes
+   path = /home
+   printable = no
+   read only = No
+   valid users = @sysadmins, @TEACHERS, root
+   veto files = /aquota.user/
+[print$]
+   browseable = yes
+   comment = Printer Drivers
+   create mask = 0664
+   directory mask = 0775
+   force group = ntadmin
+   guest ok = no
+   path = /var/lib/samba/drivers
+   printable = no
+   write list = @ntadmin root
+   read only = no
+[printers]
+   browseable = yes
+   comment = All Printers
+   create mask = 0600
+   path = /var/tmp
+   printable = yes
+[itool]
+   comment = Imaging Tool
+   path = /srv/itool
+   root preexec = /usr/share/oss/tools/remove_pxe_autostart.pl %u %I %a
+   inherit permissions = Yes
+   valid users = @TEACHERS, @sysadmins, @workstations, root
+   browseable = no
+   guest ok = no
+   writable = yes

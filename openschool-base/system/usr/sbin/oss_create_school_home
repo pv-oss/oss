@@ -1,0 +1,20 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+#This script creates the neccessar directories for a school
+SUBDIRS="all archiv classes groups profile software"
+
+if [ "$1" ] 
+then
+  BASE=$1
+else
+ BASE="/home"
+fi
+
+mkdir -p -m 755 $BASE
+
+for i in $SUBDIRS
+do
+  mkdir -p -m 755 "$BASE/$i" 
+done
+
+chmod 1770 $BASE/all

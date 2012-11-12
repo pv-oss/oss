@@ -1,0 +1,152 @@
+html {
+	margin: 0;
+	}
+body {
+	margin: 0;
+	font-family:"Lucida Grande",Verdana,"Bitstream Vera Sans",Arial,sans-serif;
+	background: #70d0f0 url(img/bg.png) repeat-y scroll left top;
+}
+
+div#header {
+background:#FFFFFF;
+}
+
+div#header h2{
+	margin:0;
+	font-weight: normal;
+}
+div#header h1{
+	font-weight: normal;
+}
+
+div#body {
+display:block;
+padding-top:30px;
+border-top:1px solid #31c3f3;
+}
+
+div#content {
+height:100%;
+margin:0 auto;
+width:660px;
+}
+
+div#apps {
+
+	}
+
+.box {
+	float:left;
+	background: #ffffff;
+	left:-6px;
+	margin:-3px;
+	top:-6px;
+	position:relative;
+}
+
+.box:hover{
+left:0;
+top:0;
+}
+
+
+.app {
+	width:182px;
+	height:184px;
+	display: table-cell;
+    text-align: center;
+    vertical-align: middle;	
+    cursor:pointer;
+}
+
+.app img {
+	
+}
+
+
+#ic{
+}
+.app * {
+    vertical-align: middle;
+}
+
+.mr {
+	//margin-right:20px;
+	//margin-bottom:20px;
+}
+
+.info {
+border:1px solid #FFFFFF;
+padding:0 !important;
+background:green;
+}
+
+.widget {
+-moz-background-clip:border;
+-moz-background-inline-policy:continuous;
+-moz-background-origin:padding;
+background:#FFFFFF;
+border:1px solid #FFFFFF;
+padding:0 !important;
+}
+
+/*
+.widget:hover{
+//border:1px solid #31c3f3;	
+}
+*/
+
+div.info h1{
+	font-size:12px;
+}
+
+div.info{
+	font-size:11px;
+}
+
+
+#info1,
+#info2,
+#info3,
+#info4,
+#info5,
+#info6,
+#info7,
+#info8{
+	display:none;
+}
+
+
+DIV.shadow, DIV.shadow2, DIV.shadow3, DIV.shadow4, DIV.shadow5 {
+   padding: 1px;
+   }
+DIV.shadow {
+   background-color: #8e8e8e;
+   //border: 1px solid #959595;
+   margin: 0px;
+   }
+DIV.shadow2 {
+   background-color: #aaa;
+   //border: 1px solid #bebebe;
+   margin: 0;
+   }
+DIV.shadow3 {
+   //background-color: #d1d1d1;
+   //border: 1px solid #e1e1e1;
+   margin: 0;
+   }
+DIV.shadow4 {
+   //background-color: #ededed;
+   //border: 1px solid #f6f6f6;
+   margin: 0;
+   }
+DIV.shadow5 {
+   float: left;
+   //background-color: #fcfcfc;
+   //border: 1px solid #fff;
+   margin: 0.7em 1em;
+   }
+   
+DIV.shadow5:hover{
+	border-width:5px;
+}   

@@ -1,0 +1,395 @@
+########################################################################
+## Path:           Network/Server
+## Description:    Basic Configuration of the Open School Server
+########################################################################
+
+########################################################################
+## Path:        Network/Server/Backup
+## Description: Configuration of the Open School Server: Backup
+########################################################################
+
+## Type:	yesno
+## Default:	no
+# Shows if backup will be done 
+SCHOOL_BACKUP="no"
+
+## Type:	yesno
+## Default:	no
+# Set this variable to yes if your backup medium can not save file access control lists (ACLs) 
+SCHOOL_BACKUP_CAN_NOT_SAVE_ACL="no"
+
+## Type:        string
+## Default:     
+# Space separated list of the full path of custom scripts which will executed at last but befor SCHOOL_BACKUP_STOP_CMD 
+SCHOOL_BACKUP_CUSTOM_SCRIPTS=""
+
+## Type:	yesno
+## Default:	yes
+# Must we check if the backup directories are mounted 
+SCHOOL_BACKUP_CHECK_MOUNT="yes"
+
+## Type:	yesno
+## Default:	yes
+# Shows if the groupware data base will be backuped 
+SCHOOL_BACKUP_DB="yes"
+
+## Type:	string
+## Default:	
+# The path to the directory of the full backup 
+SCHOOL_BACKUP_FULL_DIR=""
+
+## Type:	yesno
+## Default:	yes
+# Shows if the home directory will be backuped 
+SCHOOL_BACKUP_HOME="yes"
+
+## Type:	string
+## Default:	
+# The path to the directory of the incremental backups 
+SCHOOL_BACKUP_INC_DIR=""
+
+## Type:	yesno
+## Default:	yes
+# Shows if the ldap data base will be backuped 
+SCHOOL_BACKUP_LDAP="yes"
+
+## Type:	yesno
+## Default:	yes
+# Shows if the mail system will be backuped 
+SCHOOL_BACKUP_MAIL="yes"
+
+## Type:    yesno
+## Default: yes
+# Shows if the e-learning system will be backuped
+SCHOOL_BACKUP_MOODLE="yes"
+
+## Type:    yesno
+## Default: yes
+# Shows if the cms system will be backuped
+SCHOOL_BACKUP_JOOMLA="yes"
+
+# Type:        string
+## Default:     
+# Shell command to execute befor the backup is started
+SCHOOL_BACKUP_START_CMD=""
+
+## Type:        string
+## Default:     
+# Shell command to execute after the backup is stoped
+SCHOOL_BACKUP_STOP_CMD=""
+
+
+########################################################################
+## Path:        Network/Server/Basis
+## Description: Configuration of the Open School Server: Basis
+########################################################################
+
+## Type:        string readonly
+## Default:     Extis School
+# The name of the school  
+SCHOOL_NAME="Extis School"
+
+## Type:	string readonly
+## Default:	172
+# IP-address range for new and not registered clients  
+SCHOOL_ANON_DHCP_RANGE="172.17.1.1 172.17.1.25"
+
+## Type:	string readonly
+## Default:	
+# DNS Domain of the school
+SCHOOL_DOMAIN="extis.edu"
+
+## Type:	string readonly
+## Default:	172
+# The network address of the first school room. 
+SCHOOL_FIRST_ROOM_NET="172.17.2.0"
+
+## Type:	string readonly
+## Default:	
+# Base of the school home directory
+SCHOOL_HOME_BASE="/home"
+
+## Type:	yesno readonly
+## Default:	yes
+# This varibale shows if the Open School Server was configured as a gateway 
+SCHOOL_ISGATE="yes"
+
+## Type:	yesno readonly
+## Default:	no
+# This variable shows if the Open School Server is conected via a ppp  device to the internet 
+SCHOOL_ISPPP="no"
+
+## Type:	yesno readonly
+## Default:	no
+# Shows if the it is a demo version 
+SCHOOL_IS_DEMO="no"
+
+## Type:	string readonly
+## Default:	172
+# IP-address of the mail server and groupware of the Open School Server 
+SCHOOL_MAILSERVER="172.17.0.3"
+
+## Type:	string readonly
+## Default:	255
+# Network Mask of the internal network 
+SCHOOL_NETMASK="255.255.0.0"
+
+## Type:	string readonly
+## Default:	172
+# Network Address of the internal network 
+SCHOOL_NETWORK="172.17.0.0"
+
+## Type:	string readonly
+## Default:	
+# The default gateway for the internal net, not for the server.  The server mostly have an other default gateway, and the server's  firts IP address is the default gateway for the internal network. 
+SCHOOL_NET_GATEWAY=""
+
+## Type:	string readonly
+## Default:	172
+# IP-address of the print server of the Open School Server 
+SCHOOL_PRINTSERVER="172.17.0.4"
+
+## Type:	string readonly
+## Default:	172
+# IP-address of the print server of the Open School Server 
+SCHOOL_PROXY="172.17.0.5"
+
+## Type:	integer readonly
+## Default:	32
+# The (appr.) number of the school rooms. 
+SCHOOL_ROOM_NR="32"
+
+## Type:	string readonly
+## Default:	172
+# IP-address of the admin server of the Open School Server 
+SCHOOL_SERVER="172.17.0.2"
+
+## Type:	string readonly
+## Default:	
+# The default gateway of the server 
+SCHOOL_SERVER_EXT_GW=""
+
+## Type:	string readonly
+## Default:	
+# The external ip address of the server 
+SCHOOL_SERVER_EXT_IP=""
+
+## Type:	string readonly
+## Default:	
+# The netmask of the external ip address of the server 
+SCHOOL_SERVER_EXT_NETMASK=""
+
+## Type:	string readonly
+## Default:	172
+# The Open School Server server networks network address 
+SCHOOL_SERVER_NET="172.17.0.0/24"
+
+## Type:	yesno readonly
+## Default:	no
+# Shows if the teachers have read rights in the home directories of  the students  
+SCHOOL_TEACHER_OBSERV_HOME="no"
+
+## Type:	yesno readonly
+## Default:	no
+# Shows if the eGroupware groupware will be used 
+SCHOOL_USE_EGROUPWARE="no"
+
+## Type:	yesno readonly
+## Default:	no
+# Shows if the OpeneXchange groupware will be used 
+SCHOOL_USE_OX="yes"
+
+## Type:	yesno readonly
+## Default:	
+# The Open School Server uses the Time for Kids web filter programm.
+SCHOOL_USE_TFK="no"
+
+## Type:	string readonly
+## Default:	EXTIS
+# The windows domain name of the school 
+SCHOOL_WORKGROUP="EXTIS-School"
+
+## Type:	string(primary,secondary,real,gymnasium,work,other) readonly
+## Default:	gymnasium
+# The type of the school 
+SCHOOL_TYPE="gymnasium"
+
+## Type:	string readonly
+## Default:	"5 6 7 8 9 10 11 -12"
+# Classes in the School 
+SCHOOL_NCLASSES="5 6 7 8 9 10 11 -12"
+
+## Type:	string readonly
+## Default:	"A B C D"
+# Parallel Classes in the School 
+SCHOOL_ACLASSES="A B C D"
+
+## Type:	string readonly
+## Default:	"DE"
+# Default Langugage 
+SCHOOL_LANGUAGE="DE"
+
+## Type:	string readonly
+## Default:	"DE"
+# Default Country Code 
+SCHOOL_CCODE="DE"
+
+########################################################################
+## Path:        Network/Server/GENERAL
+## Description: Configuration of the Open School Server: GENERAL
+########################################################################
+
+## Type:	yesno
+## Default:     no
+# Setting this variable yes, the oss scripts makes debug informations.
+SCHOOL_DEBUG="no"
+
+## Type:	yesno
+## Default:     no	
+SCHOOL_ENABLE_SIVE_EDITOR="no"
+
+## Type:	yesno
+## Default:     no	
+SCHOOL_ENABLE_USER_SPAM_FRONTEND="yes"
+
+## Type:	string(CSV,WinSV,SiBank,Schild-NRW)
+## Default:     CSV	
+SCHOOL_IMPORT_FILE_FORMAT="CSV"
+
+## Type:	yesno
+## Default:	
+SCHOOL_MONITOR_RESOLVE_ADDR="no"
+
+## Type:	string
+## Default:	
+SCHOOL_MONITOR_SERVICES="ldap,smb,nmb,sessiond,cyrus,postfix,named,cups,dhcpd,squid,rinetd,amavis,apcupsd"
+
+## Type:	yesno
+## Default:	
+SCHOOL_NEW_USER_CHANGE_PASSWORD="no"
+
+## Type:	integer
+## Default:	
+SCHOOL_USER_JPEG_PHOTO_MAX_HEIGHT="200"
+
+## Type:	integer
+## Default:	
+SCHOOL_USER_JPEG_PHOTO_MAX_WIDTH="150"
+
+########################################################################
+## Path:        Network/Server/SECURITY
+## Description: Configuration of the Open School Server: SECURITY
+########################################################################
+
+## Type:	yesno
+## Default:	
+SCHOOL_CHECK_CLIENT_IP="no"
+
+## Type:	string(SMD5,CRYPT)
+## Default:     SMD5	
+SCHOOL_DEFAULT_PASSWORD_HASH="SMD5"
+
+## Type:	yesno
+## Default:	
+SCHOOL_USE_COOKIE="yes"
+
+########################################################################
+## Path:        Network/Server/Settings
+## Description: Configuration of the Open School Server: Settings
+########################################################################
+
+## Type:	yesno
+## Default:	no
+# Show if the stylesheet must be adapted to the role of the user 
+SCHOOL_ADAPT_STYLESHEET="no"
+
+## Type:	string
+## Default:	
+# The Open School Server group prefix. This charactes will be set for all group name 
+SCHOOL_GROUP_PREFIX=""
+
+## Type:	string
+## Default:	
+# This are the default eGroupware applications for a not sutdent user. 
+SCHOOL_EGW_APPLICATIONS="addressbook,bookmarks,calendar,email,forum,messenger,preferences,projects,wiki,tts"
+
+## Type:	string
+## Default:	
+# This are the default eGroupware applications for a student user. 
+SCHOOL_EGW_STUDENT_APPLICATIONS="addressbook,bookmarks,calendar,email,forum,preferences,projects,wiki,tts"
+
+## Type:	integer
+## Default:	50
+# The default file system quota for students in MB 
+SCHOOL_FILE_QUOTA="50"
+
+## Type:	integer
+## Default:	250
+# The default file system quota for teachers in MB 
+SCHOOL_FILE_TEACHER_QUOTA="250"
+
+## Type:	string
+## Default:	
+# The Open School Server login prefix. This charactes will be set for all logins 
+SCHOOL_LOGIN_PREFIX=""
+
+## Type:	string
+## Default:	N4G4
+# The Open School Server login creating scheme. I.e. how many characters will be taken from the Name and from the Givenname 
+SCHOOL_LOGIN_SCHEME="N4G4"
+
+## Type:	integer
+## Default:	5
+# The default mail quota for students in MB 
+SCHOOL_MAIL_QUOTA="5"
+
+## Type:	integer
+## Default:	25
+# The default mail quota for teachers in MB 
+SCHOOL_MAIL_TEACHER_QUOTA="25"
+
+## Type:	yesno
+## Default:	yes
+# Shows if the sending of external mails is denied for studenst 
+SCHOOL_NO_EXTERN_MAIL="yes"
+
+## Type:	string
+## Default:	
+# The registration code of the Open School Server 
+SCHOOL_REG_CODE="NOT YET REGISTERED"
+
+## Type:	yesno
+## Default:	no
+# Show if Single Sing On is allowed 
+SCHOOL_SSO_ALLOWED="no"
+
+## Type:	yesno
+## Default:	no
+# Show if Single Sing On is forced 
+SCHOOL_SSO_FORCED="no"
+
+## Type:	yesno
+## Default:	no
+# Shows if studenst may download on the admin web-site 
+SCHOOL_STUDENTS_MAY_DOWNLOAD="no"
+
+## Type:	yesno
+## Default:	no
+# Shows if studenst may upload on the admin web-site 
+SCHOOL_STUDENTS_MAY_UPLOAD="no"
+
+## Type:	string
+## Default:	
+# The support email address 
+SCHOOL_SUPPORT_MAIL_ADDRESS="oss-support@extis.de"
+
+## Type:	yesno
+## Default:	
+# The Open School Server uses the imaging tool for the installation of clients.
+SCHOOL_USE_ITOOL="yes"
+
+## Type:	yesno
+## Default:	
+# If this variable is set yes, mobile room support is enabled.
+SCHOOL_USE_MOBILE_ROOMS="no"
+

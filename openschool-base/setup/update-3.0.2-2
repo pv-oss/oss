@@ -1,0 +1,46 @@
+#!/bin/bash
+# Update from 3.0.X to 3.0.2
+if [ -e /var/adm/oss/update-3.0.2-2 ]
+then
+	echo "Patch 3.0.2-2 already installed"
+	exit 0
+fi
+
+. /etc/sysconfig/ldap
+. /etc/sysconfig/schoolserver
+DATE=$( /usr/share/oss/tools/oss_date.sh )
+SCHOOL_LDAPBASE=`echo $BASE_CONFIG_DN | sed s/ou=ldapconfig,//`
+ldappasswd=$( oss_get_admin_pw )
+
+#Fix the acls and indizies
+cp /usr/share/oss/setup/ldap/acls.ldif   /tmp/acls.ldif
+sed -i "s/#LDAPBASE#/$SCHOOL_LDAPBASE/g" /tmp/acls.ldif
+ldapmodify -Y external -H ldapi:/// <    /tmp/acls.ldif
+
+#Use the new proxy redirector
+mv /etc/squid/squid.conf      /etc/squid/squid.conf.$DATE
+sed -i "s/#DOMAIN#/$SCHOOL_DOMAIN/g"         /srv/www/admin/cgi-bin/squidGuard.cgi
+sed -i "s/#DOMAIN#/$SCHOOL_DOMAIN/g"         /srv/www/admin/cgi-bin/squidGuard-simple.cgi
+sed -i "s/#LDAPSERVER#/$SCHOOL_SERVER/g"     /etc/squid/squid.conf.in
+sed -i "s/#LDAPBASE#/$SCHOOL_LDAPBASE/g"     /etc/squid/squid.conf.in
+sed -i "s/#DOMAIN#/$SCHOOL_DOMAIN/g"         /etc/squid/squid.conf.in
+sed -i "s/#PROXY#/$SCHOOL_PROXY/g"           /etc/squid/squid.conf.in
+sed -i "s/#DOMAIN#/$SCHOOL_DOMAIN/g"         /etc/squid/squid.primaryschool.in
+sed -i "s/#PROXY#/$SCHOOL_PROXY/g"           /etc/squid/squid.primaryschool.in
+sed -i "s/#LDAPBASE#/$SCHOOL_LDAPBASE/g"     /etc/squid/squid.primaryschool.in
+sed -i "s#SERVER_NET#$SCHOOL_SERVER_NET#g" /etc/squid/acl_server_net
+if [ "$SCHOOL_TYPE" = "primary" ]
+then
+	cp /etc/squid/squid.primaryschool.in /etc/squid/squid.conf
+else
+	cp /etc/squid/squid.conf.in /etc/squid/squid.conf
+fi
+
+#We have to reregister our product
+test -e /var/adm/oss/registered && rm /var/adm/oss/registered
+
+/usr/sbin/oss_ldap_to_sysconfig.pl
+
+#Mark this patch as installed
+mkdir -p /var/adm/oss
+touch /var/adm/oss/update-3.0.2-2

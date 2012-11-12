@@ -1,0 +1,7 @@
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+FQH=`hostname -f`
+PS1="$FQH:\w # "
+_bred="$(path tput bold 2> /dev/null; path tput setaf 1 2> /dev/null)"
+_sgr0="$(path tput sgr0 2> /dev/null)"
+PS1="\[$_bred\]$PS1\[$_sgr0\]"
+unset _bred _sgr0

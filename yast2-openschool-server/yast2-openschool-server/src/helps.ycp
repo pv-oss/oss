@@ -1,0 +1,414 @@
+/**
+ * File:	include/openschool-server/helps.ycp
+ * Package:	Configuration of openschool-server
+ * Summary:	Help texts of all the dialogs
+ * Authors:	Péter Varkoly <peter@varkoly.de>
+ *
+ * $Id: helps.ycp,v 2.7 2006/10/10 15:10:40 pv Exp $
+ */
+
+{
+
+textdomain "openschool-server";
+
+/**
+ * All helps are here
+ */
+map HELPS = $[
+    /* OSS Type Dialog */
+    "SchoolType" : _("<p><b><big>Field of Application</big></b><br></p>") +
+	_("<p>The setup programm will configure your OSS corresponding to your field of application.</p>") +
+	_("<p>This concerns in the first place the SAMBA-, proxy- and DHCP-server configuration.</p>") +
+	_("<p>Normaly the OSS delivers a strickt network setup with all network services.") +
+	_("If you want to integrate the OSS in existing network structure please select <b>Other Institute</b>."),
+
+    /* CardDialog dialog help 1/4 */
+    "CardDialog" : _("<p><b><big>Local Network Setup</big></b><br></p>") +
+    /* CardDialog dialog help 2/4 */
+	_("<p>Select which card to use for the connection to the local network. It will then be configured automatically.</p>\n
+") +
+    /* CardDialog dialog help 3/4 */
+    _("<p>If your system has another card installed for the connection to
+the Internet, configure it later in the installed system.</p>
+") +
+    /* CardDialog dialog help 4/4 */
+    _("<p>Not all hardware can be detected automatically.
+If your hardware is not shown here, configure it
+manually. Select <b>Other (not detected)</b>.</p>
+"),
+
+    /* AddressDialog dialog help 1/8 */
+   "AddressDialog" :  _("<p><b>This dialog allows you to configure your local network.</b></p>") +
+    /* AddressDialog dialog help 2/8 */
+        _("<p>Generally, you only have to set your domain name and choose a network.</p>") +
+    /* AddressDialog dialog help 3/8 */
+        _("<p>You can choose between three preconfigured networks.</p>") +
+    /* AddressDialog dialog help 4/8 */
+        _("<p>The OSS needs 4 IP addresses to control the access to the different services.</p>") +
+    /* AddressDialog dialog help 5/8 */
+        _("<p>The <b>Anon_DHCP</b> range is the range of IP addresses from which new, unregistered computers obtain an IP address.</p>") +
+    /* AddressDialog dialog help 6/8 */
+        _("<p>62 IP adresses will be reserved for each room. <b>First Room Network</b> defines the first network address for the rooms.</p>") +
+    /* AddressDialog dialog help 7/8 */
+        _("<p>The name server will be configured automatically by selecting the network.</p>") +
+    /* AddressDialog dialog help 8/8 */
+        _("<p>Contact your <b>network administrator</b> for more information about the network configuration.</p>"),
+
+    /* DSL card dialog help 1/2 */
+    "SelectDSLCard" : _("<p>Select which card to use for the connection to the DSL modem.
+Subsequently, it will be configured in the next step</p>
+") +
+
+    /* DSL card dialog help 2/2 */
+    _("<p>Not all hardware can be detected automatically.
+If your hardware is not shown here, configure it
+manually. Select <b>Other (not detected)</b>.</p>
+"),
+
+
+    /* GatewayDialog dialog help 1/4 */
+    "GatewayDialog" : _("<p>Either you have a gateway in your school network or the Open School Server will be your internet gateway.</p>") +
+    /* GatewayDialog dialog help 2/4 */
+	_("<p>In the first case, enter the IP address of the <i>Default Gateway</i>.</p>") +
+    /* GatewayDialog dialog help 3/4 */
+	_("<p>In the second case, configure your hardware device (network card, DSL, ISDN, or modem) for the Internet connection on the Open School Server.</p>") +
+    /* GatewayDialog dialog help 4/4 */
+	_("<p>Information on security and the configuration of various Internet connection types is available in the <i>Administration Manual</i>.</p>"),
+
+
+    /* Read dialog help 1/2 */
+    "read" : _("<p><b><big>Initializing Open School Server configuration</big></b><br>
+Please wait...<br></p>") +
+
+    /* Read dialog help 2/2 */
+    _("<p><b><big>Aborting initialization:</big></b><br>
+Safely abort the configuration utility by pressing <b>Abort</b> now.</p>"),
+
+    /* Write dialog help 1/2 */
+    "write" : _("<p><b><big>Saving Open School Server configuration</big></b><br>
+Please wait...<br></p>") +
+
+    /* Write dialog help 2/2 */
+_("<p><b><big>Aborting saving:</big></b><br>
+Abort saving by pressing <b>Abort</b>.
+An additional dialog informs you whether it is safe to do so.
+</p>"),
+
+
+    /* Setup1 dialog help 1/2 */
+    "setup1" : _("<p>
+To complete the setup of your <b>Open School Server</b>,
+provide some additional information.
+</p>") +
+_("<p>If your school uses special class names that cannot be generated
+on the basis of the promotion to the next grade, clear the field
+<b>Classes in the School</b> and enter the name of your classes
+into the field <b>Parallel Classes in the School</b></p>")+
+_("<p>If you select <b>Allow Teachers to Observ the Students Home Directories</b>
+ the teachers will get rights to read and write into the home directories of
+ the students.</p>"),
+
+    /* Setup2 dialog help 1/4 */
+    "setup2" : _("<p>
+In this step, enter the name of your school and select
+a country from the list.
+</p>") +
+
+    /* Setup2 dialog help 2/4 */
+    _("<p>
+The name of your school will be used in many different parts of your server,
+for example, in the global address book.
+</p>") +
+
+    /* Setup2 dialog help 3/4 */
+    _("<p>
+The registration code is needed for the support. You can insert it later too.
+</p>") +
+
+    /* Setup2 dialog help 4/4 */
+    _("<p>
+The country code is a two-letter code pursuant ISO 3166. It will be needed later to
+create certificates.
+</p>"),
+
+    /* Setup3 dialog help 1/4 */
+    "setup3" : _("<p>
+Here You can choose the groupware solution you want to install and configure.
+</p>") +
+
+    /* Setup3 dialog help 2/4 */
+    _("<p>
+<b>eGroupware</b> is an open source groupware software written in PHP.
+</p>") +
+
+    /* Setup3 dialog help 3/4 */
+    _("<p>
+<b>OpenExchange</b> is an open source groupware software written in java.
+</p>") +
+
+    _("<p><b>Note!</b></p> 
+<p>The groupware solutions on this CD are publicly available Open Source
+packages. The installation packages are preconfigured in order to work
+with the Open School Server. Your Open School support contract does not
+include support for the groupware solutions beyond the installation
+support. Please consult the Open Source community of your selected
+groupware solution for further support.</p>")
+
+];
+
+term cselect = `SelectionBox(`id(`ccode), _("&Select Your Country"),
+                                 [
+                                     `item(`id("DE"), "GERMANY", true),
+                                     `item(`id("HU"), "HUNGARY"),
+                                     `item(`id("RO"), "ROMANIA"),
+                                     `item(`id("AT"), "AUSTRIA"),
+                                     `item(`id("CZ"), "CZECH REPUBLIC"),
+                                     `item(`id("FR"), "FRANCE"),
+                                     `item(`id("IT"), "ITALY"),
+                                     `item(`id("ES"), "SPAIN"),
+                                     `item(`id("CH"), "SWITZERLAND"),
+                                     `item(`id("GB"), "UNITED KINGDOM"),
+                                     `item(`id("US"), "UNITED STATES"),
+                                     `item(`id("AF"), "AFGHANISTAN"),
+                                     `item(`id("AL"), "ALBANIA"),
+                                     `item(`id("DZ"), "ALGERIA"),
+                                     `item(`id("AS"), "AMERICAN SAMOA"),
+                                     `item(`id("AD"), "ANDORRA"),
+                                     `item(`id("AO"), "ANGOLA"),
+                                     `item(`id("AI"), "ANGUILLA"),
+                                     `item(`id("AQ"), "ANTARCTICA"),
+                                     `item(`id("AG"), "ANTIGUA AND BARBUDA"),
+                                     `item(`id("AR"), "ARGENTINA"),
+                                     `item(`id("AM"), "ARMENIA"),
+                                     `item(`id("AW"), "ARUBA"),
+                                     `item(`id("AU"), "AUSTRALIA"),
+                                     `item(`id("AT"), "AUSTRIA"),
+                                     `item(`id("AZ"), "AZERBAIJAN"),
+                                     `item(`id("BS"), "BAHAMAS"),
+                                     `item(`id("BH"), "BAHRAIN"),
+                                     `item(`id("BD"), "BANGLADESH"),
+                                     `item(`id("BB"), "BARBADOS"),
+                                     `item(`id("BY"), "BELARUS"),
+                                     `item(`id("BE"), "BELGIUM"),
+                                     `item(`id("BZ"), "BELIZE"),
+                                     `item(`id("BJ"), "BENIN"),
+                                     `item(`id("BM"), "BERMUDA"),
+                                     `item(`id("BT"), "BHUTAN"),
+                                     `item(`id("BO"), "BOLIVIA"),
+                                     `item(`id("BA"), "BOSNIA AND HERZEGOWINA"),
+                                     `item(`id("BW"), "BOTSWANA"),
+                                     `item(`id("BV"), "BOUVET ISLAND"),
+                                     `item(`id("BR"), "BRAZIL"),
+                                     `item(`id("IO"), "BRITISH INDIAN OCEAN TERRITORY"),
+                                     `item(`id("BN"), "BRUNEI DARUSSALAM"),
+                                     `item(`id("BG"), "BULGARIA"),
+                                     `item(`id("BF"), "BURKINA FASO"),
+                                     `item(`id("BI"), "BURUNDI"),
+                                     `item(`id("KH"), "CAMBODIA"),
+                                     `item(`id("CM"), "CAMEROON"),
+                                     `item(`id("CA"), "CANADA"),
+                                     `item(`id("CV"), "CAPE VERDE"),
+                                     `item(`id("KY"), "CAYMAN ISLANDS"),
+                                     `item(`id("CF"), "CENTRAL AFRICAN REPUBLIC"),
+                                     `item(`id("TD"), "CHAD"),
+                                     `item(`id("CL"), "CHILE"),
+                                     `item(`id("CN"), "CHINA"),
+                                     `item(`id("CX"), "CHRISTMAS ISLAND"),
+                                     `item(`id("CC"), "COCOS (KEELING) ISLANDS"),
+                                     `item(`id("CO"), "COLOMBIA"),
+                                     `item(`id("KM"), "COMOROS"),
+                                     `item(`id("CG"), "CONGO"),
+                                     `item(`id("CK"), "COOK ISLANDS"),
+                                     `item(`id("CR"), "COSTA RICA"),
+                                     `item(`id("CI"), "COTE D'IVOIRE"),
+                                     `item(`id("HR"), "CROATIA (local name: Hrvatska)"),
+                                     `item(`id("CU"), "CUBA"),
+                                     `item(`id("CY"), "CYPRUS"),
+                                     `item(`id("CZ"), "CZECH REPUBLIC"),
+                                     `item(`id("DK"), "DENMARK"),
+                                     `item(`id("DJ"), "DJIBOUTI"),
+                                     `item(`id("DM"), "DOMINICA"),
+                                     `item(`id("DO"), "DOMINICAN REPUBLIC"),
+                                     `item(`id("TP"), "EAST TIMOR"),
+                                     `item(`id("EC"), "ECUADOR"),
+                                     `item(`id("EG"), "EGYPT"),
+                                     `item(`id("SV"), "EL SALVADOR"),
+                                     `item(`id("GQ"), "EQUATORIAL GUINEA"),
+                                     `item(`id("ER"), "ERITREA"),
+                                     `item(`id("EE"), "ESTONIA"),
+                                     `item(`id("ET"), "ETHIOPIA"),
+                                     `item(`id("FK"), "FALKLAND ISLANDS (MALVINAS)"),
+                                     `item(`id("FO"), "FAROE ISLANDS"),
+                                     `item(`id("FJ"), "FIJI"),
+                                     `item(`id("FI"), "FINLAND"),
+                                     `item(`id("FR"), "FRANCE"),
+                                     `item(`id("FX"), "FRANCE, METROPOLITAN"),
+                                     `item(`id("GF"), "FRENCH GUIANA"),
+                                     `item(`id("PF"), "FRENCH POLYNESIA"),
+                                     `item(`id("TF"), "FRENCH SOUTHERN TERRITORIES"),
+                                     `item(`id("GA"), "GABON"),
+                                     `item(`id("GM"), "GAMBIA"),
+                                     `item(`id("GE"), "GEORGIA"),
+                                     `item(`id("DE"), "GERMANY"),
+                                     `item(`id("GH"), "GHANA"),
+                                     `item(`id("GI"), "GIBRALTAR"),
+                                     `item(`id("GR"), "GREECE"),
+                                     `item(`id("GL"), "GREENLAND"),
+                                     `item(`id("GD"), "GRENADA"),
+                                     `item(`id("GP"), "GUADELOUPE"),
+                                     `item(`id("GU"), "GUAM"),
+                                     `item(`id("GT"), "GUATEMALA"),
+                                     `item(`id("GN"), "GUINEA"),
+                                     `item(`id("GW"), "GUINEA-BISSAU"),
+                                     `item(`id("GY"), "GUYANA"),
+                                     `item(`id("HT"), "HAITI"),
+                                     `item(`id("HM"), "HEARD AND MC DONALD ISLANDS"),
+                                     `item(`id("HN"), "HONDURAS"),
+                                     `item(`id("HK"), "HONG KONG"),
+                                     `item(`id("IS"), "ICELAND"),
+                                     `item(`id("IN"), "INDIA"),
+                                     `item(`id("ID"), "INDONESIA"),
+                                     `item(`id("IR"), "IRAN (ISLAMIC REPUBLIC OF)"),
+                                     `item(`id("IQ"), "IRAQ"),
+                                     `item(`id("IE"), "IRELAND"),
+                                     `item(`id("IL"), "ISRAEL"),
+                                     `item(`id("IT"), "ITALY"),
+                                     `item(`id("JM"), "JAMAICA"),
+                                     `item(`id("JP"), "JAPAN"),
+                                     `item(`id("JO"), "JORDAN"),
+                                     `item(`id("KZ"), "KAZAKHSTAN"),
+                                     `item(`id("KE"), "KENYA"),
+                                     `item(`id("KI"), "KIRIBATI"),
+                                     `item(`id("KP"), "KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF"),
+                                     `item(`id("KR"), "KOREA, REPUBLIC OF"),
+                                     `item(`id("KW"), "KUWAIT"),
+                                     `item(`id("KG"), "KYRGYZSTAN"),
+                                     `item(`id("LA"), "LAO PEOPLE'S DEMOCRATIC REPUBLIC"),
+                                     `item(`id("LV"), "LATVIA"),
+                                     `item(`id("LB"), "LEBANON"),
+                                     `item(`id("LS"), "LESOTHO"),
+                                     `item(`id("LR"), "LIBERIA"),
+                                     `item(`id("LY"), "LIBYAN ARAB JAMAHIRIYA"),
+                                     `item(`id("LI"), "LIECHTENSTEIN"),
+                                     `item(`id("LT"), "LITHUANIA"),
+                                     `item(`id("LU"), "LUXEMBOURG"),
+                                     `item(`id("MO"), "MACAU"),
+                                     `item(`id("MK"), "MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF"),
+                                     `item(`id("MG"), "MADAGASCAR"),
+                                     `item(`id("MW"), "MALAWI"),
+                                     `item(`id("MY"), "MALAYSIA"),
+                                     `item(`id("MV"), "MALDIVES"),
+                                     `item(`id("ML"), "MALI"),
+                                     `item(`id("MT"), "MALTA"),
+                                     `item(`id("MH"), "MARSHALL ISLANDS"),
+                                     `item(`id("MQ"), "MARTINIQUE"),
+                                     `item(`id("MR"), "MAURITANIA"),
+                                     `item(`id("MU"), "MAURITIUS"),
+                                     `item(`id("YT"), "MAYOTTE"),
+                                     `item(`id("MX"), "MEXICO"),
+                                     `item(`id("FM"), "MICRONESIA, FEDERATED STATES OF"),
+                                     `item(`id("MD"), "MOLDOVA, REPUBLIC OF"),
+                                     `item(`id("MC"), "MONACO"),
+                                     `item(`id("MN"), "MONGOLIA"),
+                                     `item(`id("MS"), "MONTSERRAT"),
+                                     `item(`id("MA"), "MOROCCO"),
+                                     `item(`id("MZ"), "MOZAMBIQUE"),
+                                     `item(`id("MM"), "MYANMAR"),
+                                     `item(`id("NA"), "NAMIBIA"),
+                                     `item(`id("NR"), "NAURU"),
+                                     `item(`id("NP"), "NEPAL"),
+                                     `item(`id("NL"), "NETHERLANDS"),
+                                     `item(`id("AN"), "NETHERLANDS ANTILLES"),
+                                     `item(`id("NC"), "NEW CALEDONIA"),
+                                     `item(`id("NZ"), "NEW ZEALAND"),
+                                     `item(`id("NI"), "NICARAGUA"),
+                                     `item(`id("NE"), "NIGER"),
+                                     `item(`id("NG"), "NIGERIA"),
+                                     `item(`id("NU"), "NIUE"),
+                                     `item(`id("NF"), "NORFOLK ISLAND"),
+                                     `item(`id("MP"), "NORTHERN MARIANA ISLANDS"),
+                                     `item(`id("NO"), "NORWAY"),
+                                     `item(`id("OM"), "OMAN"),
+                                     `item(`id("PK"), "PAKISTAN"),
+                                     `item(`id("PW"), "PALAU"),
+                                     `item(`id("PA"), "PANAMA"),
+                                     `item(`id("PG"), "PAPUA NEW GUINEA"),
+                                     `item(`id("PY"), "PARAGUAY"),
+                                     `item(`id("PE"), "PERU"),
+                                     `item(`id("PH"), "PHILIPPINES"),
+                                     `item(`id("PN"), "PITCAIRN"),
+                                     `item(`id("PL"), "POLAND"),
+                                     `item(`id("PT"), "PORTUGAL"),
+                                     `item(`id("PR"), "PUERTO RICO"),
+                                     `item(`id("QA"), "QATAR"),
+                                     `item(`id("RE"), "REUNION"),
+                                     `item(`id("RU"), "RUSSIAN FEDERATION"),
+                                     `item(`id("RW"), "RWANDA"),
+                                     `item(`id("KN"), "SAINT KITTS AND NEVIS"),
+                                     `item(`id("LC"), "SAINT LUCIA"),
+                                     `item(`id("VC"), "SAINT VINCENT AND THE GRENADINES"),
+                                     `item(`id("WS"), "SAMOA"),
+                                     `item(`id("SM"), "SAN MARINO"),
+                                     `item(`id("ST"), "SAO TOME AND PRINCIPE"),
+                                     `item(`id("SA"), "SAUDI ARABIA"),
+                                     `item(`id("SN"), "SENEGAL"),
+                                     `item(`id("SC"), "SEYCHELLES"),
+                                     `item(`id("SL"), "SIERRA LEONE"),
+                                     `item(`id("SG"), "SINGAPORE"),
+                                     `item(`id("SK"), "SLOVAKIA (Slovak Republic)"),
+                                     `item(`id("SI"), "SLOVENIA"),
+                                     `item(`id("SB"), "SOLOMON ISLANDS"),
+                                     `item(`id("SO"), "SOMALIA"),
+                                     `item(`id("ZA"), "SOUTH AFRICA"),
+                                     `item(`id("GS"), "SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS"),
+                                     `item(`id("ES"), "SPAIN"),
+                                     `item(`id("LK"), "SRI LANKA"),
+                                     `item(`id("SH"), "ST. HELENA"),
+                                     `item(`id("PM"), "ST. PIERRE AND MIQUELON"),
+                                     `item(`id("SD"), "SUDAN"),
+                                     `item(`id("SR"), "SURINAME"),
+                                     `item(`id("SJ"), "SVALBARD AND JAN MAYEN ISLANDS"),
+                                     `item(`id("SZ"), "SWAZILAND"),
+                                     `item(`id("SE"), "SWEDEN"),
+                                     `item(`id("CH"), "SWITZERLAND"),
+                                     `item(`id("SY"), "SYRIAN ARAB REPUBLIC"),
+                                     `item(`id("TW"), "TAIWAN, PROVINCE OF CHINA"),
+                                     `item(`id("TJ"), "TAJIKISTAN"),
+                                     `item(`id("TZ"), "TANZANIA, UNITED REPUBLIC OF"),
+                                     `item(`id("TH"), "THAILAND"),
+                                     `item(`id("TG"), "TOGO"),
+                                     `item(`id("TK"), "TOKELAU"),
+                                     `item(`id("TO"), "TONGA"),
+                                     `item(`id("TT"), "TRINIDAD AND TOBAGO"),
+                                     `item(`id("TN"), "TUNISIA"),
+                                     `item(`id("TR"), "TURKEY"),
+                                     `item(`id("TM"), "TURKMENISTAN"),
+                                     `item(`id("TC"), "TURKS AND CAICOS ISLANDS"),
+                                     `item(`id("TV"), "TUVALU"),
+                                     `item(`id("UG"), "UGANDA"),
+                                     `item(`id("UA"), "UKRAINE"),
+                                     `item(`id("AE"), "UNITED ARAB EMIRATES"),
+                                     `item(`id("GB"), "UNITED KINGDOM"),
+                                     `item(`id("US"), "UNITED STATES"),
+                                     `item(`id("UM"), "UNITED STATES MINOR OUTLYING ISLANDS"),
+                                     `item(`id("UY"), "URUGUAY"),
+                                     `item(`id("UZ"), "UZBEKISTAN"),
+                                     `item(`id("VU"), "VANUATU"),
+                                     `item(`id("VA"), "VATICAN CITY STATE (HOLY SEE)"),
+                                     `item(`id("VE"), "VENEZUELA"),
+                                     `item(`id("VN"), "VIET NAM"),
+                                     `item(`id("VG"), "VIRGIN ISLANDS (BRITISH)"),
+                                     `item(`id("VI"), "VIRGIN ISLANDS (U.S.)"),
+                                     `item(`id("WF"), "WALLIS AND FUTUNA ISLANDS"),
+                                     `item(`id("EH"), "WESTERN SAHARA"),
+                                     `item(`id("YE"), "YEMEN"),
+                                     `item(`id("YU"), "YUGOSLAVIA"),
+                                     `item(`id("ZR"), "ZAIRE"),
+                                     `item(`id("ZM"), "ZAMBIA"),
+                                     `item(`id("ZW"), "ZIMBABWE")
+                                     ] );
+
+
+
+/* EOF */
+}

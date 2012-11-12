@@ -1,0 +1,25 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+read p
+#set >> /tmp/pw
+if [ $PAM_USER = "root" ]
+then
+        exit 0;
+fi
+if [ $PAM_TYPE = "auth" ]; then
+    /sbin/mount.cifs //admin/groups /home/groups -o user=$PAM_USER,password=$p
+    MOUNTED=$( mount | grep '/home/groups' )
+    if [ "$MOUNTED" ]
+    then
+        exit 0
+    else
+        exit 1
+    fi
+fi
+if [ $PAM_TYPE = "close_session" ]; then
+    if [ $PAM_SERVICE = "gdm" -o $PAM_SERVICE = "kdm" -o $PAM_SERVICE = "login" ]; then
+        /bin/umount /home/groups &>/dev/null
+    fi
+    exit 0
+fi
+

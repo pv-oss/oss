@@ -1,0 +1,9 @@
+# This file was created by yast2-mail-server. Please do not edit it!
+server_host=ldap
+query_filter=(&(objectclass=suseMailTransport)(suseMailTransportDestination=%s))
+search_base=ou=Mailserver,#LDAPBASE#
+timeout=20
+result_attribute=suseTLSPerSiteMode
+bind=no
+server_port=389
+scope=one

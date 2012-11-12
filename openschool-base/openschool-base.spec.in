@@ -1,0 +1,164 @@
+
+# spec file for package autoyast-openschool (@VERSION@)
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+#
+Name:         openschool-base
+License:      Commercial
+Vendor:       EXTIS GmbH, Uttenreuth, Germany
+Distribution: SLE11
+Group:        Productivity/
+Autoreqprov:  on
+Summary:      Base package for the Open School Server
+Version:      @VERSION@
+Release:      @RELEASE@
+Source:       openschool-base.tar.bz2
+BuildRoot:    %{_tmppath}/%{name}-root
+BuildArch:    noarch
+Requires:     amavisd-new
+Requires:     cron perl perl-Config-IniFiles perl-Crypt-SmbHash perl-DBI
+Requires:     perl-DBD-mysql perl-Digest-SHA1 perl-Net-Netmask perl-NetxAP
+Requires:     perl-ldap quota perl-Quota rinetd mysql 
+Prereq:	      apache2 openldap2 postfix samba yast2 filesystem sitar
+BuildRequires: update-desktop-files
+
+# ---------------------------------------------------------------------------
+%prep
+%setup -n openschool-base
+
+# ---------------------------------------------------------------------------
+%build
+
+# ---------------------------------------------------------------------------
+%install
+make DESTDIR=$RPM_BUILD_ROOT install
+
+#TODO do not remove if it is not SUSE
+rm -r $RPM_BUILD_ROOT/etc/postfix-non-suse/
+
+for f in `find $RPM_BUILD_ROOT/etc/skel/Desktop -name "*.desktop"` ; do
+    %suse_update_desktop_file $f
+done
+
+
+# ---------------------------------------------------------------------------
+%clean
+rm -rf $RPM_BUILD_ROOT;
+
+# ---------------------------------------------------------------------------
+%post
+cp /etc/openldap/schema/openxchange.schema.in  /etc/openldap/schema/openxchange.schema
+cp /etc/openldap/schema/phpgwaccount.schema.in /etc/openldap/schema/phpgwaccount.schema
+cp /etc/openldap/schema/phpgwcontact.schema.in /etc/openldap/schema/phpgwcontact.schema
+
+if [ ${1:-0} -gt 1 ]
+then
+    if [ -e /etc/sysconfig/schoolserver ]
+    then
+    	echo "Executing Update Scripts"
+    	mkdir -p /var/adm/oss
+    	mkdir -p /var/log/oss-update
+    	for i in /usr/share/oss/setup/update-%{version}-*
+    	do
+    		b=$(basename $i)
+    		$i &> /var/log/oss-update/$b 
+    	done
+    	rsync -av /usr/share/oss/software/oss/ /home/software/oss/
+    fi
+    cd /usr/share/oss/templates/
+    for i in *in
+    do
+        j=`basename $i .in`
+        test -r $j || cp $i $j
+    done
+else
+    #first installation
+    cp /usr/share/oss/templates/rootprofile /root/.profile
+    cp -a /usr/share/oss/software /home/software
+    cp /etc/sysconfig/scripts/SuSEfirewall2-custom.in /etc/sysconfig/scripts/SuSEfirewall2-custom
+    sed -i 's#^FW_CUSTOMRULES=.*#FW_CUSTOMRULES="/etc/sysconfig/scripts/SuSEfirewall2-custom"#' /etc/sysconfig/SuSEfirewall2
+    cp /etc/apache2/listen.conf.in    /etc/apache2/listen.conf
+    cp /etc/apache2/conf.d/jk.conf.in /etc/apache2/conf.d/jk.conf
+    cp /etc/tomcat6/server.xml.in     /etc/tomcat6/server.xml
+    cd /usr/share/oss/templates/
+    for i in *in
+    do
+        j=`basename $i .in`
+	cp $i $j
+    done
+fi
+
+#Bug clear text password word readable
+for i in $( ls /tmp/setup* ); do
+	chmod 0600 $i
+done
+
+# ---------------------------------------------------------------------------
+%files 
+%defattr(-,root,root)
+%config /etc/permissions.oss
+%config /etc/sysconfig/scripts/SuSEfirewall2-custom.in
+%config /etc/*in
+%config /etc/cups/cupsd.conf.in
+%config /etc/aliases.d/oss
+%config /etc/apache2/listen.conf.in
+%config /etc/apache2/conf.d/jk.conf.in
+%config /etc/apache2/vhosts.d/oss_vhost.template
+%config /etc/apache2/vhosts.d/admin_include.conf
+%config /etc/apache2/vhosts.d/oss_include.conf
+%config /etc/apache2/vhosts.d/oss/*
+%config /etc/apache2/vhosts.d/oss-ssl/*
+%config /etc/slp.reg.d/oss.reg
+%dir /etc/apache2/vhosts.d/admin/
+%dir /etc/apache2/vhosts.d/admin-ssl/
+%dir /etc/apache2/vhosts.d/oss/
+%dir /etc/apache2/vhosts.d/oss-ssl/
+%config /etc/apache2/vhosts.d/admin-ssl/admin.conf
+%config /etc/cron.daily/oss*
+%config(noreplace) /etc/cron.d/oss*
+%dir /etc/imap
+%config /etc/imap/procmailrc
+%config /etc/openldap/*
+%config(noreplace) /etc/rinetd.conf.ppp
+%config /etc/samba/*
+%dir /etc/squid/
+%config /etc/squid/squid*
+%config(noreplace) /etc/squid/acl_*
+%config(noreplace) /etc/uucp/*
+%dir /etc/skel/Desktop
+%config /etc/skel/Desktop/*
+%dir /etc/tomcat6 
+%config /etc/tomcat6/*
+/srv/www/oss
+/srv/www/admin
+/usr/share/oss
+/usr/share/cups/drivers/*
+/var/lib/samba/netlogon
+/var/adm/fillup-templates/sysconfig.schoolserver
+
+%dir /usr/share/cups
+%dir /usr/share/cups/drivers
+
+%defattr(755,root,root)
+/etc/init.d/*mb-printserver
+/etc/sysconfig/network/scripts/dhcpcd-restart-rinetd
+/etc/ppp/ip-up.d/rinetd_start
+/etc/ppp/ip-down.d/rinetd_stop
+/var/lib/support/oss.include
+/usr/sbin/*
+/srv/www/cgi-bin/*.cgi
+
+%defattr(644,root,root,755)
+%doc docs/*
+
+# ---------------------------------------------------------------------------
+%description
+This package contains the basic utilitis to setup configure and manipulate
+the Open School Server.
+
+Authors:
+--------
+        peter@varkoly.de
+
+ChangeLog:
+---------
+

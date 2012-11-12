@@ -1,0 +1,11 @@
+[default]
+SOUND=True
+SCREEN_01=shell
+SCREEN_07=ldm
+LOCAL_APPS=True
+LOCALDEV=True
+LDM_LANGUAGE="de_DE.UTF8"
+XkbLayout="de"
+XkbModel="microsoftpro"
+XkbRules="xfree86"
+XkbVariant="nodeadkeys"

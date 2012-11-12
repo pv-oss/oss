@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+@files = qw (
+  /etc/cups/cupsd.conf
+  /etc/cups/client.conf
+  /var/log/boot.log
+  /var/log/boot.msg
+  /var/log/boot.omsg
+);
+foreach my $f (`/bin/ls /etc/samba/*`)
+{
+  chomp $f;
+  next if ( $f =~ /*.tdb/);
+  push @files, $f;
+}
+foreach my $f (`/bin/ls /etc/squid/*`)
+{
+  chomp $f;
+  push @files, $f;
+}

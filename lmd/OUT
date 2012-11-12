@@ -1,0 +1,169 @@
+1269862876: LMD running in debug-mode on PID 27226
+Socket started
+2010-02-29 13:41:23.+02:00
+ Connection from 127.0.0.1
+1476 byte package is expected from client.
+XML got from client:
+
+<request name="setRoomsAccess" application="RoomAccessControl" line="" table="" sessionID="30266990d8e48f6eac35aa97ffab79d4" ip="172.16.0.1" result="0"><modify table="rooms" line="cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org">1</modify><all table="rooms" line="cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org">0</all><mailing table="rooms" line="cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org">1</mailing><printing table="rooms" line="cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org">1</printing><proxy table="rooms" line="cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org">1</proxy><samba table="rooms" line="cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org">0</samba><CATEGORY table="" line="">Security</CATEGORY><APPLICATION table="" line="">RoomAccessControl</APPLICATION><ACTION table="" line="">setRoomsAccess</ACTION><SESSIONID table="" line="">30266990d8e48f6eac35aa97ffab79d4</SESSIONID></request>
+modify  TEXT '1'
+all  TEXT '0'
+mailing  TEXT '1'
+printing  TEXT '1'
+proxy  TEXT '1'
+samba  TEXT '0'
+CATEGORY  TEXT 'Security'
+APPLICATION  TEXT 'RoomAccessControl'
+ACTION  TEXT 'setRoomsAccess'
+SESSIONID  TEXT '30266990d8e48f6eac35aa97ffab79d4'Now we start executing 
+$VAR1 = {
+          'rooms' => {
+                     'cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org' => {
+                                                                                                           'printing' => '1',
+                                                                                                           'mailing' => '1',
+                                                                                                           'modify' => '1',
+                                                                                                           'samba' => '0',
+                                                                                                           'proxy' => '1',
+                                                                                                           'all' => '0'
+                                                                                                         }
+                   },
+          'ACTION' => 'setRoomsAccess',
+          'APPLICATION' => 'RoomAccessControl',
+          'SESSIONID' => '30266990d8e48f6eac35aa97ffab79d4',
+          'CATEGORY' => 'Security'
+        };
+Now we start executing 
+rooms_cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org_modify 1
+rooms_cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org_all 0
+rooms_cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org_mailing 1
+rooms_cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org_printing 1
+rooms_cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org_proxy 1
+rooms_cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org_samba 0
+CATEGORY Security
+APPLICATION RoomAccessControl
+ACTION setRoomsAccess
+SESSIONID 30266990d8e48f6eac35aa97ffab79d4
+ARCH: 1
+RoomAccessControl:setRoomsAccess
+ClientControl:.*|.*:default
+Add*:.*|Edit*:.*|RoomAccessControl:set*
+INSERT history  VALUES ('1269862883','admin','','RoomAccessControl','setRoomsAccess','BAcIMTIzNDU2NzgECAgIGQAFAAAABBkAAQAAAAQZAAYAAAAXATECCAAAAHByaW50aW5nFwExAgcAAABtYWlsaW5nFwExAgYAAABtb2RpZnkXATACBQAAAHNhbWJhFwExAgUAAABwcm94eRcBMAIDAAAAYWxsAlAAAABjbj1Sb29tLTEsY249MTcyLjE2LjAuMCxjbj1jb25maWcxLGNuPXNjaG9vbGFkbWluLG91PURIQ1AsZGM9RVhUSVMtU2Nob29sLGRjPW9yZwIFAAAAcm9vbXMXDnNldFJvb21zQWNjZXNzAgYAAABBQ1RJT04XEVJvb21BY2Nlc3NDb250cm9sAgsAAABBUFBMSUNBVElPThcgMzAyNjY5OTBkOGU0OGY2ZWFjMzVhYTk3ZmZhYjc5ZDQCCQAAAFNFU1NJT05JRBcIU2VjdXJpdHkCCAAAAENBVEVHT1JZ')
+reply:$VAR1 = [
+          {
+            'subtitle' => 'Actuell Access State'
+          },
+          {
+            'table' => [
+                         'rooms',
+                         {
+                           'line' => [
+                                       'cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org',
+                                       {
+                                         'room' => 'ANON_DHCP'
+                                       },
+                                       {
+                                         'modify' => 0
+                                       },
+                                       {
+                                         'all' => '0'
+                                       },
+                                       {
+                                         'mailing' => '1'
+                                       },
+                                       {
+                                         'printing' => '1'
+                                       },
+                                       {
+                                         'proxy' => '1'
+                                       },
+                                       {
+                                         'samba' => '0'
+                                       },
+                                       {
+                                         'showAccessScheduler' => 'Anzeigen'
+                                       }
+                                     ]
+                         }
+                       ]
+          },
+          {
+            'action' => 'cancel'
+          },
+          {
+            'value' => 'setRoomsAccess',
+            'name' => 'action',
+            'attributes' => [
+                              'label',
+                              'apply'
+                            ]
+          }
+        ];
+writeVariable $VAR1 = {
+          'subtitle' => 'Actuell Access State'
+        };
+writeVariable $VAR1 = {
+          'room' => 'ANON_DHCP'
+        };
+writeVariable $VAR1 = {
+          'modify' => 0
+        };
+writeVariable $VAR1 = {
+          'all' => '0'
+        };
+writeVariable $VAR1 = {
+          'mailing' => '1'
+        };
+writeVariable $VAR1 = {
+          'printing' => '1'
+        };
+writeVariable $VAR1 = {
+          'proxy' => '1'
+        };
+writeVariable $VAR1 = {
+          'samba' => '0'
+        };
+writeVariable $VAR1 = {
+          'showAccessScheduler' => 'Anzeigen'
+        };
+writeVariable $VAR1 = {
+          'action' => 'cancel'
+        };
+writeVariable $VAR1 = {
+          'value' => 'setRoomsAccess',
+          'name' => 'action',
+          'attributes' => [
+                            'label',
+                            'apply'
+                          ]
+        };
+<?xml version="1.0" encoding="UTF-8"?>
+
+<reply name="RoomAccessControl" action="setRoomsAccess" sessionID="30266990d8e48f6eac35aa97ffab79d4" result="0">
+<title>Zugriffskontrolle</title>
+<subtitle type="string">Aktueller Zugangstatus</subtitle>
+<table name="rooms">
+<headLine>
+<head label="Raum">room</head>
+<head label="Ändern">modify</head>
+<head label="Direkter Internetzugang">all</head>
+<head label="Mailzugang">mailing</head>
+<head label="Drucken">printing</head>
+<head label="Proxy">proxy</head>
+<head label="Windows Zugang">samba</head>
+<head label="Zugriffszeitplan anzeigen">showAccessScheduler</head>
+</headLine>
+<line name="cn=Room-1,cn=172.16.0.0,cn=config1,cn=schooladmin,ou=DHCP,dc=EXTIS-School,dc=org">
+<room type="label" label="Raum">ANON_DHCP</room>
+<modify type="boolean" label="Ändern">0</modify>
+<all type="boolean" label="Direkter Internetzugang">0</all>
+<mailing type="boolean" label="Mailzugang">1</mailing>
+<printing type="boolean" label="Drucken">1</printing>
+<proxy type="boolean" label="Proxy">1</proxy>
+<samba type="boolean" label="Windows Zugang">0</samba>
+<showAccessScheduler type="action" label="Zugriffszeitplan anzeigen">Anzeigen</showAccessScheduler>
+</line>
+</table>
+<action label="Verwerfen">cancel</action>
+<action label="Anwenden">setRoomsAccess</action>
+</reply>
+

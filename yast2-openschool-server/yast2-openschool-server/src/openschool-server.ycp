@@ -1,0 +1,82 @@
+/**
+ * File:	clients/openschool-server.ycp
+ * Package:	Configuration of openschool-server
+ * Summary:	Main file
+ * Authors:	Péter Varkoly <peter@varkoly.de>
+ *
+ * $Id: openschool-server.ycp,v 2.0.0.1 2005/01/21 13:08:37 pv Exp $
+ *
+ * Main file for openschool-server configuration. Uses all other files.
+ */
+
+{
+
+/***
+ * <h3>Configuration of openschool-server</h3>
+ */
+
+textdomain "openschool-server";
+import  "CommandLine";
+include "openschool-server/wizards.ycp";
+
+string     action  = "setup";
+list       actions = ["all","setup","network","reset","help"];
+any        ret     = nil;
+string     help    ="
+YaST-Konfigurationsmodul: openschool-server
+--------------------------------------------------------------
+
+Configuration of the Openschool Server
+
+Grundsyntax:
+    yast2 openschool-server
+    yast2 openschool-server <Kommando>
+    yast2 openschool-server help
+
+Kommandos:
+    all      Setup the Openschool Server
+    network  Setup the school network
+    reset    Reset the school. Delets all users and classes
+    setup    Setup the school specific configuration
+--------------------------------------------------------------
+
+";
+
+
+define boolean HelpMe() ``{
+  CommandLine::Print (help);
+  return true;
+}
+
+/* The main () */
+y2milestone ("----------------------------------------");
+y2milestone ("OpenschoolServer module started");
+
+
+y2milestone("ARGS %1",WFM::Args());
+y2milestone("ARG  %1",WFM::Args(0));
+y2milestone("Size of ARGS %1",size(WFM::Args()));
+
+if(size(WFM::Args()) > 0) {
+	if(WFM::Args(0) == .propose) {
+	  action = "setup";
+	} else {
+	  action = (string)WFM::Args(0);
+	}
+        y2milestone("action %1",action);
+}
+if(!contains(actions,action) || action == "help" ){
+        y2milestone ("%1",help);
+	ret = HelpMe();
+} else {
+	ret = OpenschoolServerSequence(action);
+}
+
+/* Finish */
+y2milestone("OpenschoolServer module finished");
+y2milestone("----------------------------------------");
+
+return ret;
+
+/* EOF */
+}

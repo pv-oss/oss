@@ -1,0 +1,8 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+
+. /etc/sysconfig/ldap
+TMP=$( mktemp /var/log/YaST2/XXXXXXXX )
+/usr/sbin/oss_get_admin_pw > $TMP
+ldapsearch -LLLx -D $BIND_DN -y $TMP $@
+rm -f $TMP

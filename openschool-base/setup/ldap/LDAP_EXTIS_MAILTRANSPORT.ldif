@@ -1,0 +1,15 @@
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+dn: suseMailTransportDestination=.extis.de,ou=Mailserver,#LDAPBASE#
+objectClass: suseMailTransport
+suseMailTransportDestination: .extis.de
+suseMailTransportNexthop: smtp:mail.extis.de:11025
+
+dn: suseMailTransportDestination=extis.de,ou=Mailserver,#LDAPBASE#
+objectClass: suseMailTransport
+suseMailTransportDestination: extis.de
+suseMailTransportNexthop: smtp:mail.extis.de:11025
+
+dn: suseTLSPerSitePeer=mail.extis.de,ou=Mailserver,#LDAPBASE#
+objectClass: suseTLSPerSiteContainer
+suseTLSPerSiteMode: NONE
+suseTLSPerSitePeer: mail.extis.de

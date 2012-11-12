@@ -1,0 +1,143 @@
+/*******************/
+/* BASIC ELEMENTS '*/
+/*******************/
+body {
+   font: 69% Tahoma,Verdana,Arial,sans-serif;
+   margin: 0;
+   padding: 0;
+   background-color: #CCCACA;
+}
+
+table, input, select {
+   font: 1em Tahoma,Verdana,Arial,sans-serif;
+}
+
+a {
+   color: #225A8D; 
+}
+
+a:visited {
+   color: #225A8D;
+}
+
+a:hover {
+   color: #4B8BC7;
+} 
+
+a:active {
+   color: #FF9A00;
+}
+
+a img {
+   border: none;
+}
+
+/*********************/
+/* SPECIAL ELEMENTS '*/
+/*********************/
+a.HeadMenuItem {
+}
+
+/* TABLES '*/
+table.AdminBorder {
+	border-color: #295fa8;
+        border-width: 2px;
+        border-style: solid;
+	width:  700px;
+	height: 500px;
+}
+
+table.ContenContainer {
+        border-width: 0px;
+        border-style: solid;
+}
+
+table.MainMenu {
+        border-width: 0px;
+        border-style: solid;
+}
+
+table.SubMenu {
+        border-width: 0px;
+        border-style: solid;
+}
+
+table.ContentTable {
+        border-width: 0px;
+        border-style: solid;
+}
+
+tr.ContentTableLine {
+	text-align: center;	
+}
+
+tr.ContentLine {
+	text-align: center;	
+}
+
+td.AdminHead {
+	background-image: url(/images/top_bgimage.jpg);
+	height: 50px;
+}
+td.ApplicationTitle {
+	font-size: 1.8em;
+	text-align: center;	
+}
+
+td.ApplicationSubTitle {
+	font-size: 1.4em;
+	text-align: center;	
+}
+
+td.ERRORMesage {
+	font-size: 1.4em;
+	color: red;
+}
+
+td.Notice {
+	font-size: 1.4em;
+	color: blue;
+}
+
+td.MainMenuContent {
+}
+
+td.MainMenuItem {
+	font-size: 1.4em;
+}
+td.ActivMainMenuItem {
+	font-weight: bold;
+	font-size: 1.4em;
+}
+td.SubMenuItem {
+        padding: 5px;
+}
+td.ActivSubMenuItem {
+	font-weight: bold;
+        padding: 5px;
+}
+td.Actions {
+	text-align: center;
+}
+
+td.ContentLabel {
+	font-weight: bold;
+	text-align: right;
+}
+
+td.ContentValue {
+        margin:  10px;
+	text-align: left;
+}
+
+td.MainContent {
+}
+
+input.CentreButton {
+}
+
+input.BottomButton {
+}
+
+input.RightButton {
+}

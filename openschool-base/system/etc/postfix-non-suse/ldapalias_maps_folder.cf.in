@@ -1,0 +1,9 @@
+# This file was created by yast2-mail-server. Please do not edit it!
+server_host=ldap
+query_filter=(&(objectclass=suseMailRecipient)(cn=%s)(suseDeliveryToFolder=yes))
+search_base=#LDAPBASE#
+timeout=20
+result_attribute=suseMailForwardAddress,suseMailCommand
+bind=no
+server_port=389
+scope=sub

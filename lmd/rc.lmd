@@ -1,0 +1,89 @@
+#! /bin/sh
+#
+# Author:       Peter Varkoly, <peter@varkoly.de>
+#
+### BEGIN INIT INFO
+# Provides:          lmd
+# Required-Start:    $network $syslog $remote_fs mysql ldap
+# Should-Start:      $time smtp
+# Required-Stop:     $network $syslog $remote_fs
+# Should-Stop:       $time smtp
+# Default-Start:     3 5
+# Default-Stop:      0 1 6
+# Short-Description: lmd daemon providing the SL System Control Daemon
+# Description:       Enable/Disable the SL System Control Daemon.
+#	The remote managemet daemon for the OpenSchoolServer.
+### END INIT INFO
+
+LMD_BIN=/usr/sbin/lmd.pl
+LMD_CONFIG=/etc/sysconfig/lmd
+
+# check for mising binary and config
+#test -x $LMD_BIN || { echo "$LMD_BIN is not installed";
+#	if [ "$1" = "stop" ]; then exit 0;
+#	else exit 5; fi; }
+#
+#test -r $LMD_CONFIG || { echo "$LMD_CONFIG is not readable";
+#	if [ "$1" = "stop" ]; then exit 0;
+#	else exit 6; fi; }
+
+# Source functions from /etc/rc.status
+. /etc/rc.status
+
+# Source lmd configuration
+. $LMD_CONFIG
+ 
+# Reset status of this service
+rc_reset
+
+# The echo return value for success (defined in /etc/rc.config).
+return=$rc_done
+
+# See how we were called.
+case "$1" in
+  start)
+        # Start daemons.
+        echo -n "Starting lmd "
+	export PERL_UNICODE=63
+	$LMD_BIN --disabled=$LMD_DISABLED_MODULES --init &> /dev/null
+        /sbin/startproc $LMD_BIN --disabled=$LMD_DISABLED_MODULES --address=$LMD_ADDRESS --port=$LMD_PORT --stime=$LMD_SESSION_TIMEOUT
+        rc_status -v
+        ;;
+  stop)
+        # Stop daemons.
+        echo -n "Shutting down lmd "
+        killproc -TERM $LMD_BIN
+        rc_status -v
+        ;;
+  try-restart|condrestart)
+		## Do a restart only if the service was active before.
+		## Note: try-restart is now part of LSB (as of 1.9).
+		## RH has a similar command named condrestart.
+		if test "$1" = "condrestart"; then
+			echo "${attn} Use try-restart ${done}(LSB)${attn} rather than condrestart ${warn}(RH)${norm}"
+		fi
+		$0 status
+		if test $? = 0; then
+			$0 restart
+		else
+			rc_reset    # Not running is not a failure.
+		fi
+		# Remember status and be quiet
+		rc_status
+		;;
+  restart|force-reload)
+        $0 stop
+        $0 start
+        ;;
+  status)
+        echo -n "Checking for status of lmd "
+        checkproc $LMD_BIN
+        rc_status -v
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart|try-restart|force-reload|status}"
+        exit 1
+esac
+
+rc_exit
+

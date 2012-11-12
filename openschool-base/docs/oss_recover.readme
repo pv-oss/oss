@@ -1,0 +1,35 @@
+
+Readme for OSS Recover (German version below)
+
+---------------
+
+Please read the "backup" chapter in the Open School Server manual for a 
+detailed description of the backup and the restore scripts for the OSS.
+
+
+If you've already installed a new OSS and mounted the Backup in a 
+directory (let's say: /backup), than a simple:
+
+                  sh /backup/oss_restore.sh
+
+should work.
+ 
+---------------
+
+Für eine detaillierte Beschreibung der backup- und restore-Skripte lesen
+Sie bitte das Kapitel "Backup" im Benutzerhandbuchs für den Open 
+School Server 
+
+Wenn Sie den OSS bereits neu installiert haben und das Backup in ein 
+Verzeichnis gemounted wurde (z.B.: /backup), dann reicht der Aufruf 
+des folgenden Befehls:
+
+                  sh /backup/oss_restore.sh
+
+um den Server wieder herzustellen.
+
+---------------
+
+Your 
+  Open School Server Team
+

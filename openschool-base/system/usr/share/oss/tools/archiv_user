@@ -1,0 +1,72 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+# Copyright (c) 2002 SuSE Linux AG Nuernberg, Germany.  All rights reserved.
+# Copyright (c) 2005 Peter Varkoly Fuerth, Germany.  All rights reserved.
+#
+# $Id: archiv_user,v 2.2 2006/04/03 16:41:01 pv Exp $
+#
+# This script archive the files of deleted user
+#
+
+if [ "$1" = "--help" -o  "$1" = "-h" ]
+then
+	echo 'Usage: /usr/share/oss/tools/archiv_user [OPTION]'
+	echo 'This script archive the files of deleted user.'
+	echo
+	echo 'Options :'
+	echo 'Mandatory parameters :'
+	echo "		No need for mandatory parameters. (There's no need for parameters for running this script.)"
+	echo 'Optional parameters :'
+	echo '		-h,   --help         Display this help.'
+	echo '		-d,   --description  Display the descriptiont.'
+	exit
+fi
+
+if [ "$1" = "--description" -o  "$1" = "-d" ]
+then
+	echo 'NAME:'
+	echo '	archiv_user'
+	echo 'DESCRIPTION:'
+	echo '	This script archive the files of deleted user.'
+	echo 'PARAMETERS:'
+	echo '	MANDATORY:'
+	echo "		                    : No need for mandatory parameters. (There's no need for parameters for running this script.)"
+	echo '	OPTIONAL:'
+	echo '		-h,   --help        : Display this help.(type=boolean)'
+	echo '		-d,   --description : Display the descriptiont.(type=boolean)'
+	exit
+fi
+
+DATUM=`date +%d-%m-%Y-%H-%M`
+ARCHIV='/home/archiv'
+
+if [ -d $ARCHIV ] 
+then
+  cd $ARCHIV
+  for i in `find -maxdepth 1 -type d` 
+  do
+    test $i = "." || { 
+      test -e /home/profile/$i && mv /home/profile/$i $ARCHIV/$i/profile
+      UIDNUMBER=`cat $ARCHIV/$i/UIDNUMBER`
+      if test $UIDNUMBER
+      then
+  	find /home/all      -type f ! -newer $ARCHIV/$i/UIDNUMBER -user $UIDNUMBER >  /tmp/list
+  	find /home/groups   -type f ! -newer $ARCHIV/$i/UIDNUMBER -user $UIDNUMBER >> /tmp/list
+  	find /home/software -type f ! -newer $ARCHIV/$i/UIDNUMBER -user $UIDNUMBER >> /tmp/list
+      else
+  	echo -n "" > /tmp/list
+      fi
+      tar czf $i.$DATUM.tgz -T /tmp/list $i &>/dev/null && {
+  	for j in `cat /tmp/list`
+  	do 
+  	  rm $j
+  	done 
+  	rm -r $i
+  	rm /tmp/list
+  	echo "$i archived succesfully"
+      } || echo "Couldn't archiv $i"
+      chgrp teachers $i.$DATUM.tgz
+      chmod 640 $i.$DATUM.tgz
+    }
+  done
+fi

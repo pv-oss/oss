@@ -1,0 +1,7 @@
+system 		shuttle
+call-login	*
+call-password	*
+time		any
+address		<uucp-email-server>
+commands	rmail #rnews
+port 		TCP

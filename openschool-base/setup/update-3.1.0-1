@@ -1,0 +1,63 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+if [ -e /var/adm/oss/update-3.1.0-1 ]
+then
+	echo "Patch 3.1.0-1 already installed"
+	exit 0
+fi
+
+. /etc/sysconfig/ldap
+. /etc/sysconfig/schoolserver
+DATE=$( /usr/share/oss/tools/oss_date.sh )
+SCHOOL_LDAPBASE=`echo $BASE_CONFIG_DN | sed s/ou=ldapconfig,//`
+
+#Fix the acls and indizies
+cp /usr/share/oss/setup/ldap/acls.ldif   /tmp/acls.ldif
+sed -i "s/#LDAPBASE#/$SCHOOL_LDAPBASE/g" /tmp/acls.ldif
+ldapmodify -Y external -H ldapi:/// <    /tmp/acls.ldif
+
+#Remove some depracated sysconfig variables
+echo "configurationKey=SCHOOL_EGW_APPLICATIONS,ou=sysconfig,$SCHOOL_LDAPBASE" | oss_ldapdelete
+echo "configurationKey=SCHOOL_EGW_STUDENT_APPLICATIONS,ou=sysconfig,$SCHOOL_LDAPBASE" | oss_ldapdelete
+echo "configurationKey=SCHOOL_ENABLE_SIVE_EDITOR,ou=sysconfig,$SCHOOL_LDAPBASE" | oss_ldapdelete
+echo "configurationKey=SCHOOL_ENABLE_USER_SPAM_FRONTEND,ou=sysconfig,$SCHOOL_LDAPBASE" | oss_ldapdelete
+/usr/sbin/oss_ldap_to_sysconfig.pl
+
+#Deaktivate Novell registration
+perl -pi -e 's/(.*)/#$1/' /etc/cron.d/novell.com-suse_register
+
+#Adapt samba config
+if ( ! grep -q make_logon_script.pl /etc/samba/$SCHOOL_NETBIOSNAME.in );
+then
+	sed -i 's/logon script = %G.bat/logon script = %U.bat/' /etc/samba/smb.conf
+	cp /etc/samba/$SCHOOL_NETBIOSNAME.in /etc/samba/$SCHOOL_NETBIOSNAME.in.${DATE}.backup
+	cp /etc/samba/PDC-SERVER /etc/samba/$SCHOOL_NETBIOSNAME.in
+fi
+
+#Squid changes
+sed -i 's/ou=WhiteLists,//' /etc/squid/squid.conf
+echo "dn: ou=BlackLists,$SCHOOL_LDAPBASE
+objectClass: organizationalUnit
+ou: BlackLists
+"  | oss_ldapadd
+
+# Setup the new portal
+cp /srv/www/oss/index.html /srv/www/oss/index.html.backup
+
+echo "Dear Customer,
+
+we have changed the configuration files of samba and that of the scool portal site.
+We have made copies from the original versions:
+
+/etc/samba/$SCHOOL_NETBIOSNAME.in.${DATE}.backup
+/srv/www/oss/indext.html.backup" | mail -S "Backuped files" admin
+
+/usr/share/oss/setup/init-portal.pl
+
+# Now we start slpd too
+insserv slpd
+
+#Mark this patch as installed
+mkdir -p /var/adm/oss
+touch /var/adm/oss/update-3.1.0-1
+

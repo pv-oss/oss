@@ -1,0 +1,55 @@
+/**
+ * File:	clients/openschool-server.ycp
+ * Package:	Configuration of openschool-server
+ * Summary:	Main file
+ * Authors:	Péter Varkoly <peter@varkoly.de>
+ *
+ * $Id: inst_openschool-network.ycp,v 2.0.0.1 2005/01/21 13:08:38 pv Exp $
+ *
+ * Main file for openschool-server configuration. Uses all other files.
+ */
+
+{
+
+/***
+ * <h3>Configuration of openschool-server</h3>
+ */
+
+textdomain "openschool-server";
+import  "CommandLine";
+include "openschool-server/wizards.ycp";
+
+any        ret     = nil;
+string     help    ="
+YaST-Konfigurationsmodul: openschool-network
+--------------------------------------------------------------
+
+Configuration of the Openschool Network
+
+Grundsyntax:
+    yast2 openschool-network
+
+";
+
+
+define boolean HelpMe() ``{
+  CommandLine::Print (help);
+  return true;
+}
+
+/* The main () */
+y2milestone ("----------------------------------------");
+y2milestone ("Openschool network module started");
+
+ret = OpenschoolServerSequence("network");
+
+/* Finish */
+y2milestone("Openschool network module finished");
+y2milestone("----------------------------------------");
+SCR::Execute(.target.bash,"/etc/init.d/network restart");
+SCR::Execute(.target.bash,"/etc/init.d/named start");
+
+return ret;
+
+/* EOF */
+}

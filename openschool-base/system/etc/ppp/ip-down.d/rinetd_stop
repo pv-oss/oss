@@ -1,0 +1,6 @@
+#!/bin/sh
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+# (C) 2004-2009 Peter Varkoly, Fürth, Germany
+# (C) 1997-2003 SuSE Linux AG, Nuernberg, Germany
+
+/etc/init.d/rinetd stop

@@ -1,0 +1,3 @@
+# uncomment for email exchange via UUCP
+#-*/5 * * * * root /usr/sbin/uucico -S shuttle
+

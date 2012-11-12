@@ -1,0 +1,58 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+#
+# $Id: oss,v 1.1 2006/09/28 08:44:51 pv Exp $
+#
+. /etc/sysconfig/schoolserver
+
+BACKUPDIR=/var/lib/imap/backup
+DATE=$(date +%Y%m%d)
+
+backup_name() {
+    suffix=$(date +%Y-%m-%d)
+    serial=00
+    backupfile="$BACKUPDIR/mailboxes.txt.$suffix.$serial.gz"
+    while [ -f $backupfile ]; do
+        serial=$(printf "%02d" $(expr $serial + 1))
+        backupfile="$BACKUPDIR/mailboxes.txt.$suffix.$serial.gz"
+    done
+    echo $backupfile
+}
+
+# ---------------------- MAIN -------------------
+
+for i in $(db_archive -h /var/lib/ldap); do
+        echo "archiving transaction log /var/lib/ldap/$i"
+        bzip2 -c /var/lib/ldap/$i > /var/lib/ldap/${i}-${DATE}.bz2
+        rm -f /var/lib/ldap/$i
+done
+
+test -d $BACKUPDIR || mkdir -m 700 $BACKUPDIR
+chown cyrus.mail $BACKUPDIR
+
+bakfile=$(backup_name)
+rm -f $bakfile
+su - cyrus -c 'ctl_mboxlist -d' | gzip -9 -c > $bakfile
+chown cyrus.mail $bakfile
+chmod 640 $bakfile
+
+################################################################
+# Creating backup of /etc/samba/secrets.tdb
+################################################################
+if chkconfig -c smb
+then
+        test -e /etc/samba/secrets.tdb.5 && mv /etc/samba/secrets.tdb.5 /etc/samba/secrets.tdb.6
+        test -e /etc/samba/secrets.tdb.4 && mv /etc/samba/secrets.tdb.4 /etc/samba/secrets.tdb.5
+        test -e /etc/samba/secrets.tdb.3 && mv /etc/samba/secrets.tdb.3 /etc/samba/secrets.tdb.4
+        test -e /etc/samba/secrets.tdb.2 && mv /etc/samba/secrets.tdb.2 /etc/samba/secrets.tdb.3
+        test -e /etc/samba/secrets.tdb.1 && mv /etc/samba/secrets.tdb.1 /etc/samba/secrets.tdb.2
+        cp /etc/samba/secrets.tdb /etc/samba/secrets.tdb.1
+fi
+
+################################################################
+# Checking the disk quota
+# Überprüfen der Festplattenbelegung
+################################################################
+/usr/sbin/warnquota
+
+

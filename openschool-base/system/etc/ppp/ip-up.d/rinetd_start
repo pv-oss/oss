@@ -1,0 +1,24 @@
+#!/bin/sh
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+# (C) 2004-2009 Peter Varkoly, Fürth, Germany
+# (C) 1997-2003 SuSE Linux AG, Nuernberg, Germany
+
+BASENAME=${0##*/}
+INTERFACE=$1
+DEVICE=$2
+SPEED=$3
+LOCALIP=$4
+REMOTEIP=$5
+IPPARAM=$6
+
+
+if [ -z "$LOCALIP" ]; then
+    echo "Usage: $0 <INTERFACE> <DEVICE> <SPEED> <LOCALIP> <REMOTEIP>"
+    exit 1
+fi
+
+
+sed -e "s/#LOCALIP#/$LOCALIP/" /etc/rinetd.conf.ppp > /etc/rinetd.conf
+/usr/sbin/oss_set_default_access.pl DEFAULT
+sleep 2
+/etc/init.d/rinetd start

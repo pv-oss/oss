@@ -1,0 +1,8 @@
+[OSS-2.9]
+name=OSS-2.9
+enabled=1
+autorefresh=1
+baseurl=http://varkoly:bartok12@repo.openschoolserver.net/install/OSS-2.9
+path=/
+type=yast2
+keeppackages=0

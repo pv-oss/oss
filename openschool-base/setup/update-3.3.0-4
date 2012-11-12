@@ -1,0 +1,21 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+
+if [ -e /var/adm/oss/update-3.3.0-4 ]
+then
+echo "Patch 3.3.0-4 already installed"
+        exit 0
+fi
+
+. /etc/sysconfig/ldap
+. /etc/sysconfig/schoolserver
+DATE=$( /usr/share/oss/tools/oss_date.sh )
+SCHOOL_LDAPBASE=`echo $BASE_CONFIG_DN | sed s/ou=ldapconfig,//`
+
+sed 's/#LDAPBASE#/$ldapbase/g' /usr/share/oss/setup/ldap/LDAP_AUTOFS.ldif > /var/lib/ldap/LDAP_AUTOFS.ldif
+oss_ldapadd < /var/lib/ldap/LDAP_AUTOFS.ldif
+
+#Mark this patch as installed
+mkdir -p /var/adm/oss
+touch /var/adm/oss/update-3.3.0-4
+

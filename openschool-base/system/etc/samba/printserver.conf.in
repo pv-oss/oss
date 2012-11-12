@@ -1,0 +1,48 @@
+[global]
+   #add machine script = /sbin/yast /usr/share/YaST2/data/add_machine.ycp %m$
+   add machine script =
+   bind interfaces only = yes
+   cups options = raw
+   encrypt passwords = yes
+   interfaces = #PRINTSERVER#
+   local master = no
+   netbios name = printserver
+   os level = 100
+   printer admin = root admin
+   preferred master = no
+   printcap = cups
+   security = domain
+   server string = OSS Printserver
+   socket options = SO_KEEPALIVE
+   smb ports = 139
+   username map = /etc/samba/smbusers
+   wins server = #IPADDR#
+   workgroup = #WORKGROUP#
+   kernel change notify = no
+   unix extensions = no
+   pid   directory= /var/run/samba/printserver
+   lock  directory= /var/lib/samba/printserver
+   cache directory= /var/lib/samba/printserver
+   state directory= /var/lib/samba/printserver
+   private dir   = /etc/samba/printserver
+   log file      = /var/log/samba/log.printserver
+
+[print$]
+   browseable = yes
+   comment = Printer Drivers
+   create mask = 0664
+   directory mask = 0775
+   force group = ntadmin
+   guest ok = no
+   path = /var/lib/samba/drivers
+   printable = no
+   write list = @ntadmin root
+   read only = no
+
+[printers]
+   browseable = yes
+   comment = All Printers
+   create mask = 0600
+   path = /var/tmp
+   printable = yes
+

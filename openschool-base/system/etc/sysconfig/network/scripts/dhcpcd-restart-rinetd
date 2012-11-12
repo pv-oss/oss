@@ -1,0 +1,92 @@
+#! /bin/bash
+#
+# dhcpd-restart-rinetd - script to restart dhcpd on virtual interfaces
+#
+# Copyright (C) 2009 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# Author(s): Marius Tomaschewski <mt@suse.de>, 2009
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# Please send feedback via http://www.suse.de/feedback
+#
+
+set -e
+
+unset ${!LC_*} LANUGUAGE
+export LANG=POSIX
+export PATH=/sbin:/usr/sbin:/usr/bin:/bin
+
+SCRIPTNAME=${0##*/}
+
+usage () {
+        echo "usage: $SCRIPTNAME [<config>] <interface> [-o <options>]"
+        echo ""
+        echo "Any options are ignored"
+        exit $R_USAGE
+}
+
+R_INTERNAL=1      # internal error, e.g. no config or missing scripts
+cd /etc/sysconfig/network || exit $R_INTERNAL
+
+case $1 in ""|-h|*help*) usage ;; esac
+INTERFACE="$1"
+if test "x$2" != x -a "x$2" != "x-o" ; then
+        CONFIG=$INTERFACE
+        INTERFACE="$2"
+else
+        CONFIG=$INTERFACE
+fi
+
+
+. /etc/sysconfig/network/config
+. /etc/sysconfig/network/scripts/functions
+
+. /etc/sysconfig/dhcpd                   2>/dev/null
+. /etc/sysconfig/network/ifcfg-"$CONFIG" 2>/dev/null || true
+
+: ${DHCPD_IFUP_RESTART:=auto}
+
+iface_needs_restart()
+{
+        test -d /sys/class/net/$1/bridge  -o \
+             -d /sys/class/net/$1/bonding -o \
+             -d /proc/net/vlan/$1
+}
+
+case "$0" in
+*if-up.d*)
+        #
+        # don't do anything if we are disabled either
+        # in the /etc/sysconfig/dhcpd or per interface
+        # in the /etc/sysconfig/network/ifcfg-"$CONFIG"
+        #
+        test "$DHCPD_IFUP_RESTART" = no && exit 0
+
+        # don't restart for loopback interface
+        case $INTERFACE in (lo) exit 0 ;; esac
+
+	. /var/lib/dhcpcd/dhcpcd-$INTERFACE.info
+	sed s/#LOCALIP#/$IPADDR/ /etc/rinetd.conf.ppp > /etc/rinetd.conf
+	/etc/init.d/rinetd try-restart
+	
+;;
+*if-down.d*)
+        # don't do anything
+;;
+*)
+        echo "$SCRIPTNAME: don't know what to do" >&2
+;;
+esac
+

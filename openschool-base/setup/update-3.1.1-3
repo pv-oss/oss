@@ -1,0 +1,57 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly Nürnberg, Germany.  All rights reserved.
+
+if [ -e /var/adm/oss/update-3.1.1-2 ]
+then
+echo "Patch 3.1.1-2 already installed"
+        exit 0
+fi
+
+. /etc/sysconfig/ldap
+. /etc/sysconfig/schoolserver
+DATE=$( /usr/share/oss/tools/oss_date.sh )
+SCHOOL_LDAPBASE=`echo $BASE_CONFIG_DN | sed s/ou=ldapconfig,//`
+
+perl -e 'use strict;
+use Config::IniFiles;
+
+my $m = new Config::IniFiles( -file => "/etc/samba/smb.conf" );
+$m->ReadConfig;
+if( ! $m->val("global","unix extensions") )
+{
+        $m->newval("global","unix extensions","no");
+}
+if( ! $m->val("global","wide links") )
+{
+        $m->newval("global","wide links","yes");
+}
+if( $m->val("global","include") )
+{
+        $m->delval("global","include");
+        $m->newval("global","include","/etc/samba/%L.in");
+}
+
+$m->RewriteConfig;
+'
+
+#Fix the acls and indizies
+cp /usr/share/oss/setup/ldap/acls.ldif   /tmp/acls.ldif
+sed -i "s/#LDAPBASE#/$SCHOOL_LDAPBASE/g" /tmp/acls.ldif
+ldapmodify -Y external -H ldapi:/// <    /tmp/acls.ldif
+/usr/share/oss/tools/repair_oxgroupid.pl
+
+# Fix the role attribute of STUDENTS and TEACHERS
+echo "dn: cn=STUDENTS,ou=group,$SCHOOL_LDAPBASE
+add: role
+role: students" | oss_ldapmodify
+
+echo "dn: cn=TEACHERS,ou=group,$SCHOOL_LDAPBASE
+add: role
+role: teachers" | oss_ldapmodify
+
+/usr/share/oss/tools/repair_group_creatorsName.pl 
+
+#Mark this patch as installed
+mkdir -p /var/adm/oss
+touch /var/adm/oss/update-3.1.1-2
+

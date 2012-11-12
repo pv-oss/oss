@@ -1,0 +1,10 @@
+#!/bin/bash
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+PASSWD=$(/usr/bin/tdbdump /etc/samba/secrets.tdb | awk '
+BEGIN                   { OFS=" "; }
+/= "SECRETS\/LDAP_BIND_PW\//     { getline; print $3;}
+                        { next; };' | sed 's/^"\(.*\)"$/\1/g')
+if [ "$PASSWD" != "-n" -a "$PASSWD" != "-e" -a "$PASSWD" != "-E" ]; then
+	PASSWD=$(echo -e $PASSWD | sed 's#\\22#"#' )
+fi
+echo -n $PASSWD

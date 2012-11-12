@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2012 Peter Varkoly <peter@varkoly.de> Nürnberg, Germany.  All rights reserved.
+# Copyright (c) 2005 Peter Varkoly Fuerth, Germany.  All rights reserved.
+#
+# $Id: oss,v 1.1 2006/09/28 08:44:51 pv Exp $
+#
+root:	    admin
+cyrus:	    admin
+postmaster: admin
+mailadmin:  admin
+spam.police: admin
+virus-quarantine: admin
+virus-alert: admin

@@ -1,0 +1,113 @@
+#!/bin/sh
+
+echo "
+#
+# spec file for package autoyast-openschool ($1)
+# Copyright (c) 2006 Peter Varkoly Fuerth, Germany.  All rights reserved.
+#
+Name:         openschool-base
+License:      GPL
+Vendor:       EXTIS GmbH, Uttenreuth, Germany
+Distribution: SLE11
+Packager:     peter@varkoly.de
+Group:        Productivity/
+Autoreqprov:  on
+Summary:      Base package for the Open School Server
+Prereq:       sudo 
+Version:      $1
+Release:      $2
+Source:       openschool-base-$1.tar.bz2
+BuildRoot:    %{_tmppath}/%{name}-root
+BuildArchitectures: noarch
+
+# ---------------------------------------------------------------------------
+%prep
+%setup -n openschool-base
+
+# ---------------------------------------------------------------------------
+%build
+
+# ---------------------------------------------------------------------------
+%install"
+echo '
+
+make DESTDIR=$RPM_BUILD_ROOT install
+
+# ---------------------------------------------------------------------------
+%clean
+rm -rf $RPM_BUILD_ROOT;
+
+# ---------------------------------------------------------------------------
+%post
+DATE=`date +%Y-%m-%d-%H:%M`
+if [ -e /etc/sysconfig/scripts/SuSEfirewall2-custom ]
+then
+  cp /etc/sysconfig/scripts/SuSEfirewall2-custom /etc/sysconfig/scripts/SuSEfirewall2-custom.$DATE-oss
+fi
+if [ -e /etc/sudoers ]
+then
+  cp /etc/sudoers /etc/sudoers.$DATE-oss
+fi
+cp -p /etc/sudoers.in /etc/sudoers
+cp /etc/openldap/schema/openxchange.schema.in  /etc/openldap/schema/openxchange.schema
+cp /etc/openldap/schema/phpgwaccount.schema.in /etc/openldap/schema/phpgwaccount.schema
+cp /etc/openldap/schema/phpgwcontact.schema.in /etc/openldap/schema/phpgwcontact.schema
+cp /etc/sysconfig/scripts/SuSEfirewall2-custom.in /etc/sysconfig/scripts/SuSEfirewall2-custom
+
+# ---------------------------------------------------------------------------
+%postun
+
+# ---------------------------------------------------------------------------
+%files
+/etc/sysconfig/*
+/etc/*in
+/etc/sysconfig/scripts/SuSEfirewall2-custom.in
+%config /etc/aliases.d/oss
+/etc/apache2/listen.conf.in
+/etc/apache2/vhosts.d/oss_vhost.template
+/etc/apache2/vhosts.d/oss_include.conf
+/etc/apache2/vhosts.d/oss/
+/etc/apache2/vhosts.d/oss-ssl/
+%config /etc/cron.daily/oss*
+%config(noreplace) /etc/cron.d/oss*
+/etc/cron.hourly/lern_spam
+/etc/cups/cupsd.conf.in
+/etc/logrotate.d/
+/etc/openldap/*
+/etc/permissions.oss
+/etc/postfix/*
+/etc/ppp/scripts/dyndns
+/etc/ppp/ip-down.d/rinetd_stop
+/etc/ppp/ip-up.d/rinetd_start
+%config(noreplace) /etc/rinetd.conf.ppp
+/etc/samba/*
+/etc/skel/
+/etc/squid/squid*
+%config(noreplace) /etc/squid/acl_*
+%config(noreplace) /etc/uucp/*
+
+/srv/www/oss
+/srv/www/htdocs/*
+/srv/www/cgi-bin/*
+/usr/sbin/*
+/usr/share/oss
+/var/lib/samba/netlogon
+/var/lib/ldap/LDAP_BASE.ldif
+/var/lib/ldap/LDAP_DNS.ldif
+%config /usr/lib/sasl/smtpd.conf
+/usr/share/YaST2/clients/create_cert.ycp
+/home
+%doc docs/*
+
+# ---------------------------------------------------------------------------
+%description
+This package contains the basic utilitis to setup configure and manipulate
+the Open School Server.
+
+Authors:
+--------
+        peter@varkoly.de
+
+ChangeLog:
+---------
+'

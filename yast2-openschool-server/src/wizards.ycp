@@ -1,0 +1,245 @@
+/**
+ * File:	include/openschool-server/wizards.ycp
+ * Package:	Configuration of openschool-server
+ * Summary:	Wizards definitions
+ * Authors:	Péter Varkoly <peter@varkoly.de>
+ *
+ * $Id: wizards.ycp,v 2.2 2006/10/10 15:10:40 pv Exp $
+ */
+
+{
+
+textdomain "openschool-server";
+
+import "Sequencer";
+import "Wizard";
+
+include "openschool-server/dialogs.ycp";
+include "openschool-server/complex.ycp";
+
+/**
+ *  * Configure the School Network
+ *  * @return sequence result
+ */
+any OpenschoolServerNetworkSequence() {
+
+    map aliases = $[
+	"readBackup"	: ``(ReadBackupDialog()),
+	"read"		: ``(ReadNetworkDialog()),
+	"schooltype"	: ``(GetSchoolType()),
+	"readlan"	: ``(ReadLan()),
+	"card"          : ``(CardDialog()),
+	"address"       : ``(AddressDialog()),
+	"gateway"       : ``(GatewayDialog())
+    ];
+
+    map sequence = $[
+	"ws_start" : "readBackup",
+	"readBackup"          : $[
+	    `abort	: `abort,
+	    `next	: "read"
+	],
+	"read"          : $[
+	    `abort	: `abort,
+	    `next	: "schooltype"
+	],
+	"schooltype" : $[
+	    `abort	: `abort,
+	    `next	: "readlan"
+	],
+	"readlan"     : $[
+	    `abort	: `abort,
+	    `next	: "card"
+	],
+	"card"     : $[
+	    `abort	: `abort,
+	    `next	: "address"
+	],
+        "address"  : $[
+            `abort      : `abort,
+            `next       : "gateway"
+        ],
+        "gateway"  : $[
+            `back       : "gateway",
+            `abort      : `abort,
+            `next       : `next
+        ]
+    ];
+
+    any ret = Sequencer::Run(aliases, sequence);
+
+    return ret;
+}
+
+/**
+ *  * Setup the school specific configuration
+ *  * @return sequence result
+ */
+any OpenschoolServerSetupSequence() {
+
+    /* FIXME: adapt to your needs */
+    map aliases = $[
+	"read"		: ``(ReadDialog()),
+	"setup1"	: ``(Setup1Dialog()),
+	"setup2"	: ``(Setup2Dialog()),
+	"setup3"	: ``(Setup3Dialog()),
+	"write"	        : ``(WriteDialog())
+    ];
+
+    /* FIXME: adapt to your needs */
+    map sequence = $[
+	"ws_start" : "read",
+	"read" : $[
+	    `abort	: `abort,
+	    `next	: "setup1"
+	],
+	"setup1" : $[
+	    `abort	: `abort,
+	    `next	: "setup2"
+	],
+	"setup2" : $[
+	    `abort	: `abort,
+	    `next	: "setup3"
+	],
+	"setup3" : $[
+	    `abort	: `abort,
+	    `next	: "write"
+	],
+	"write" : $[
+	    `abort	: `abort,
+	    `next	: `next
+	]
+    ];
+
+    any ret = Sequencer::Run(aliases, sequence);
+
+    return ret;
+}
+
+/**
+ *  * Reset the school. Delets all users and classes
+ *  * @return sequence result
+ */
+any OpenschoolServerResetSequence() {
+
+    map aliases = $[
+	"reset"	: ``(ResetOpenschoolServerDialog())
+    ];
+
+    map sequence = $[
+	"ws_start" : "reset",
+	"reset" : $[
+	    `abort	: `abort,
+	    `next	: `next
+	]
+    ];
+
+    any ret = Sequencer::Run(aliases, sequence);
+
+    return ret;
+}
+
+/**
+ * Main workflow of the openschool-server configuration
+ * @return sequence result
+ */
+
+/**
+ * Whole configuration of openschool-server
+ * @return sequence result
+ */
+any OpenschoolServerSequence(string action) {
+
+    map aliases  = $[];
+    map sequence = $[];
+
+y2milestone("action %1",action);
+    if(action == "all") {
+	aliases = $[
+            "network"	:   ``( OpenschoolServerNetworkSequence() ),
+	    "setup"	:   ``( OpenschoolServerSetupSequence() )
+	];
+
+	sequence = $[
+	    "ws_start" : "network",
+	    "network" : $[
+	        `abort	: `abort,
+	        `next	: "setup"
+	    ],
+	    "setup" : $[
+	        `abort	: `abort,
+	        `next	: `next
+	    ]
+	];
+    } else if(action == "setup") {
+	aliases = $[
+	    "setup"	:   ``( OpenschoolServerSetupSequence() )
+	];
+
+	sequence = $[
+	    "ws_start" : "setup",
+	    "setup" : $[
+	        `abort	: `abort,
+	        `next	: `next
+	    ]
+	];
+    } else if(action == "network") {
+	aliases = $[
+	    "network"	:   ``( OpenschoolServerNetworkSequence() )
+	];
+
+	sequence = $[
+	    "ws_start" : "network",
+	    "network" : $[
+	        `abort	: `abort,
+	        `next	: `next
+	    ]
+	];
+    } else if(action == "reset") {
+	aliases = $[
+	    "reset"	:   ``( OpenschoolServerResetSequence() )
+	];
+
+	sequence = $[
+	    "ws_start" : "reset",
+	    "reset" : $[
+	        `abort	: `abort,
+	        `next	: `next
+	    ]
+	];
+    }
+
+    Wizard::CreateDialog();
+
+y2milestone("aliases  %1",aliases);
+y2milestone("sequence %1",sequence);
+    any ret = Sequencer::Run(aliases, sequence);
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/**
+ * Whole configuration of openschool-server but without reading and writing.
+ * For use with autoinstallation.
+ * @return sequence result
+ */
+any OpenschoolServerAutoSequence() {
+
+    /* Initialization dialog caption */
+    string caption = _("OpenschoolServer Configuration");
+    /* Initialization dialog contents */
+    term contents = `Label(_("Initializing..."));
+
+    Wizard::CreateDialog();
+    Wizard::SetContentsButtons(caption, contents, "",
+	    Label::BackButton(), Label::NextButton());
+
+    any ret = OpenschoolServerSequence("all");
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/* EOF */
+}

@@ -1,0 +1,264 @@
+Index: EditUser.pm
+===================================================================
+--- EditUser.pm	(Revision 1082)
++++ EditUser.pm	(Revision 1083)
+@@ -158,6 +158,11 @@
+ 	{
+ 		push @users , [ $dn, $user->{$dn}->{uid}->[0].' '.$user->{$dn}->{cn}->[0].' ('.$user->{$dn}->{description}->[0].')' ];
+ 	}
++	push @users , '---DEFAULTS---';
++	foreach my $dn ( sort keys %{$user} )
++	{
++		push @users , $dn;
++	}
+ 
+ 	if( $this->{ManageStudents} )
+ 	{
+Index: ManageRooms.pm
+===================================================================
+--- ManageRooms.pm	(Revision 1082)
++++ ManageRooms.pm	(Revision 1083)
+@@ -156,7 +156,9 @@
+                 "setRooms",
+                 "setRoomType",
+ 		"change_room",
+-		"apply_change_room"
++		"apply_change_room",
++		"selectWlanUser",
++		"setWlanUser"
+         ];
+ }
+ 
+@@ -840,8 +842,10 @@
+ 	my $base       = $block->base();
+ 	my $broadcast  = $block->broadcast();
+ 	my $counter    = 0;
+-	foreach my $i ($block->enumerate()) {
+-		if(  $i ne $base && $i ne $broadcast ) {
++	foreach my $i ($block->enumerate())
++	{
++		if(  $i ne $base && $i ne $broadcast )
++		{
+ 			$counter ++;
+ 			next if ( $this->ip_exists($i) );
+ 			next if ( $roompref eq 'SERVER_NET' && $counter < 10 );
+@@ -903,12 +907,13 @@
+ 	my @hosts       = @{thaw(decode_base64(main::GetSessionDatas('hosts')))};
+ 	my $result	= '';
+ 	my $host	= shift @hosts;
++	my $HOSTDN	= undef;
+ 	my $domain	= $this->{SYSCONFIG}->{SCHOOL_DOMAIN};
+ 
+ 	if( scalar( @HWS ) > 1 && $reply->{other_name} ne '' )
+ 	{
+-	    return { TYPE => 'ERROR' ,
+-	    	     CODE => 'TO_MANY_MAC_ADDRESS',
++	    return { TYPE    => 'ERROR' ,
++	    	     CODE    => 'TO_MANY_MAC_ADDRESS',
+ 		     MESSAGE => "If registering a computer with alternete name, you may only use one hardware address."
+ 	    };
+ 	}
+@@ -921,8 +926,8 @@
+ 		    length($reply->{other_name})<2           ||
+ 		    length($reply->{other_name}) > 15  )
+ 		{
+-		    return { TYPE => 'ERROR' ,
+-			     CODE => 'INVALID_HOST_NAME',
++		    return { TYPE    => 'ERROR' ,
++			     CODE    => 'INVALID_HOST_NAME',
+ 			     MESSAGE => "The alternate host name is invalid."
+ 	                   };
+ 		}
+@@ -988,6 +993,7 @@
+ 			$name = $reply->{other_name};
+ 		}
+ 		my @dns = $this->add_host($name.'.'.$domain,$ip,$hw,$reply->{hwconfig},$reply->{master},$reply->{wlanaccess});
++		$HOSTDN = $dns[$#dns];
+ 		if( ! $this->add( { uid          	   => $name,
+ 			     sn			   => $name.' Workstation-User',
+ 			     role         	   => 'workstations',
+@@ -1011,16 +1017,80 @@
+         $reply->{dn} =~ /cn=config1,cn=(.*),ou=DHCP/;
+         my $server = ($1 eq 'schooladmin') ? undef : $1;
+         $this->rc("named","restart",$server);
+-        $this->rc("named","restart") if( !undef $server );
++        $this->rc("named","restart") if( defined $server );
+         $this->rc("dhcpd","restart",$server);
+         $reply->{line} = $reply->{dn};
+-	if(exists($reply->{flag})){
++	if(exists($reply->{flag}))
++	{
+ 		return 1;
+-	}else{
+-		$this->room($reply);
+ 	}
++	else
++	{
++		if( $reply->{wlaneccess} && scalar( @HWS ) == 1 )
++		{
++			$reply->{HOSTDN} = $HOSTDN;
++			$this->selectWlanUser($reply);
++		}
++		else
++		{
++			$this->room($reply);
++		}
++	}
+ }
+ 
++sub selectWlanUser
++{
++	my $this  = shift;
++	my $reply = shift;
++	if( $reply->{FILTERED} )
++	{
++		my $name        = $reply->{name} || '*';
++		my @role        = split /\n/, $reply->{role}  || ();
++		my @group       = split /\n/, $reply->{workgroup} || ();
++		my @class       = split /\n/, $reply->{class} || ();
++		my $user        = $this->search_users($name,\@class,\@group,\@role);
++		my @users	= ();
++		foreach my $dn ( sort keys %{$user} )
++        	{
++                	push @users , [ $dn, $user->{$dn}->{uid}->[0].' '.$user->{$dn}->{cn}->[0].' ('.$user->{$dn}->{description}->[0].')' ];
++        	}
++		my @ret = ({ subtitle    => 'Select the User for this WLAN Device!' } );
++		push @ret, { user => \$users };	
++		push @ret, { name => 'rightaction', value => "selectWlanUser", attributes => [ label => 'searchAgain' ]  };
++		push @ret, { name => 'rightaction', value => "setWlanUser",    attributes => [ label => 'apply' ]  };
++		push @ret, { name => 'rightaction', value => "room",             attributes => [ label => 'cancel' ]  };
++		push @ret, { name => 'HOSTDN',      value => $reply->{HOSTDN},   attributes => [ type  => 'hidden' ] };
++		push @ret, { name => 'line',        value => $reply->{line},     attributes => [ type  => 'hidden' ] };
++		return \@ret;
++	}
++	else
++	{
++		my @ret = ({ subtitle    => 'Search User' } );
++		push @ret, { name        => '*' };
++		push @ret, { role        => $roles};
++		push @ret, { workgroup   => $workgroups };
++		push @ret, { name => 'rightaction', value => "selectWlanUser", attributes => [ label => 'search' ]  };
++		push @ret, { name => 'HOSTDN',      value => $reply->{HOSTDN},   attributes => [ type  => 'hidden' ] };
++		push @ret, { name => 'line',        value => $reply->{line},     attributes => [ type  => 'hidden' ] };
++		push @ret, { name => 'FILTERED',    value => 1,                  attributes => [ type  => 'hidden' ] };
++		return \@ret;
++
++	}
++}
++
++sub setWlanUser
++{
++	my $this  = shift;
++	my $reply = shift;
++	my $HW    = uc($this->get_attribute($reply->{HOSTDN},'dhcpHWAddress'));
++	$HW =~ s/ethernet //i;
++        $HW =~ s/:/-/g;
++	$this->{LDAP}->modify($reply->{user}, delete => { rassAccess => 'no' } );
++	$this->{LDAP}->modify($reply->{user}, delete => { rassAccess => 'all' } );
++	$this->{LDAP}->modify($reply->{user}, add    => { rassAccess => $HW } );
++	$this->room($reply);
++}
++
+ sub ip_exists
+ {
+ 	my $this = shift;
+Index: ClassRoomLoggedin.pm
+===================================================================
+--- ClassRoomLoggedin.pm	(Revision 1082)
++++ ClassRoomLoggedin.pm	(Revision 1083)
+@@ -93,20 +93,32 @@
+ 			push @ret, { NOTICE => main::__("You can see in the displayed list all currently logged in users. Press \"refresh\" to check again.") };
+ 		}
+ 		push @ret, { rooms => \@roomsname },
+-	}elsif( ($type eq "teachers") and (!$actuale_room_dn) ){
++	}
++	elsif ( ($type eq "teachers") and (!$actuale_room_dn) )
++	{
+ 		push @ret, { NOTICE => main::__("This page can only be accessed from one room only!")};
+-	}else{
++	}
++	else
++	{
+ 		
+ 		push @ret, { subtitle => "$room_name"};
+ 		push @ret, { NOTICE => main::__("You can see in the displayed list all currently logged in users. Press \"refresh\" to check again.")};
+ 	}
+ 
+-	if($actuale_room_dn or ($type eq "sysadmins_root")){
++	if($actuale_room_dn or ($type eq "sysadmins_root"))
++	{
+ 		my $logged_users = $this->get_logged_users("$actuale_room_dn");
+-		foreach my $dn (sort keys %{$logged_users} ){
++		my %lu = ();
++		foreach my $dn (keys %{$logged_users} )
++		{
++			$lu{$logged_users->{$dn}->{user_cn}} = $dn;
++		}
++		foreach my $cn (sort keys %{$lu} )
++		{
++			my $dn = $lu{$cn};
+ 			push @lines, { line => [ $dn, 
+-						{ pc_name => "$logged_users->{$dn}->{host_name}" },
+-						{ user => "$logged_users->{$dn}->{user_name}" },
++						{ pc_name   => "$logged_users->{$dn}->{host_name}" },
++						{ user      => "$logged_users->{$dn}->{user_name}" },
+ 						{ user_name => "$logged_users->{$dn}->{user_cn}" }
+ 					]};
+ 		}
+@@ -121,9 +133,12 @@
+ 	my $this   = shift;
+ 	my $reply  = shift;
+ 
+-	if( exists($reply->{rooms}) ){
++	if( exists($reply->{rooms}) )
++	{
+ 		$this->default($reply, "$reply->{rooms}");
+-	}else{
++	}
++	else
++	{
+ 		$this->default($reply);
+ 	}
+ }
+Index: SystemOverview.pm
+===================================================================
+--- SystemOverview.pm	(Revision 1082)
++++ SystemOverview.pm	(Revision 1083)
+@@ -103,19 +103,26 @@
+ 	}
+ 
+ 	#SystemUpTime
+-        my $systemuptime = cmd_pipe("LANG=en_EN uptime | awk -F , '{ print \$1 }'");
++        my $systemuptime = cmd_pipe("procinfo | awk  '{ if( \$1 == \"uptime:\") { print \$2 }}'");
+         chomp $systemuptime;
+-        $systemuptime =~ s/.*up //;
+-        if( $systemuptime =~ /(\d+)\s+days\s+(\d+):(\d+)/ )
+-        {
+-                $systemuptime = $1." ".main::__('days').", ".$2." ".main::__('hours').", ".$3." ".main::__('minutes');
++        my $output_uptime = '';
++        if( $systemuptime =~ /^[0-9]d$/){
++                my $days = ($systemuptime =~ s/d//);
++                my $years = int($days/364);
++                $days = $days-(364*$years);
++                if( $years ne 0 ){
++                        $output_uptime .= $years." ".main::__('years').", ";
++                }
++
++                $output_uptime .= $days." ".main::__('days').", ";
++                $systemuptime = cmd_pipe("procinfo | awk  '{ if( \$1 == \"uptime:\") { print \$2 }}'");
++                chomp $systemuptime;
+         }
+-        else
+-        {
+-                $systemuptime =~ /(\d+):(\d+)/;
+-                $systemuptime = $1." ".main::__('hours').", ".$2." ".main::__('minutes');
+-        }
+-        push @software, { line => [ 'systemuptime', { name => main::__('SystemUpTime : ') }, { value => "$systemuptime"} ]};
++        my ($time, $tmp) = split('\.', $systemuptime);
++        my ( $hour, $minute, $sec ) = split(":", $time);
++        if($minute =~ /^0[0-9]/){$minute =~ s/0//}
++        $output_uptime .= $hour." ".main::__('hours').", ".$minute." ".main::__('minutes');
++        push @software, { line => [ 'systemuptime', { name => main::__('SystemUpTime : ') }, { value => "$output_uptime"} ]};
+ 
+ 	#MonitorProcesses
+ 	my $monitorprocesses = '';

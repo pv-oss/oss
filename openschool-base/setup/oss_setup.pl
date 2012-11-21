@@ -1173,6 +1173,7 @@ chkconfig syslog on
 chkconfig apache2 on
 chkconfig tomcat6 on
 chkconfig ldap on
+chkconfig mysql on
 chkconfig lmd on
 chkconfig xrdp on
 if [ "'.$globals->{ISGATE}.'" = "yes" ]

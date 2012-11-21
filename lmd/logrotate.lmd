@@ -1,0 +1,14 @@
+/var/log/lmd.log /var/log/lmd.err {
+    compress
+    dateext
+    maxage 365
+    rotate 99
+    missingok
+    notifempty
+    size +4096k
+    create 640 news news
+    sharedscripts
+    postrotate
+        /etc/init.d/lmd restart > /dev/null
+    endscript
+}

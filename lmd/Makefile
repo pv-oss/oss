@@ -21,6 +21,7 @@ install:
 	mkdir -p $(TOMCATROOT)
 	mkdir -p $(DESTDIR)/usr/sbin/
 	mkdir -p $(DESTDIR)/etc/init.d
+	mkdir -p $(DESTDIR)/etc/logrotate.d
 	mkdir -p $(DESTDIR)/etc/apache2/vhosts.d/admin-ssl/
 	mkdir -p $(DESTDIR)/etc/apache2/vhosts.d/oss-ssl/
 	mkdir -p $(DESTDIR)/var/adm/fillup-templates/
@@ -43,6 +44,7 @@ install:
 	   rm $(DESTDIR)/usr/sbin/rclmd; \
 	fi
 	ln -s /etc/init.d/lmd $(DESTDIR)/usr/sbin/rclmd
+	install -m 644 logrotate.lmd $(DESTDIR)/etc/logrotate.d/lmd
 	install -m 644 sysconfig.lmd $(DESTDIR)/var/adm/fillup-templates/
 
 installalibs:
@@ -54,7 +56,7 @@ dist:
 	svn ci;
 	if [ -e lmd ]; then rm -rf lmd; fi
 	mkdir lmd
-	cp -rp Makefile alibs enhance_translation.pl helper images itool.pl jk.conf lang lmd.pl ossadmin.war rc.lmd sql sysconfig.lmd tools lmd
+	cp -rp Makefile alibs enhance_translation.pl helper images itool.pl jk.conf lang lmd.pl ossadmin.war *.lmd sql tools lmd
 	find lmd \( -not -regex "^.*\/CVS.*" -a -not -regex "^.*\.svn\/.*" \) -xtype f > files; \
 	    tar jcpf $(PACKAGE).tar.bz2 -T files;
 	rm files

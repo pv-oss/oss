@@ -1,0 +1,10 @@
+/var/log/shallainit.log {
+    compress
+    dateext
+    maxage 365
+    rotate 99
+    missingok
+    size +4096k
+    create 644 root root
+
+}

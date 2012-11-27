@@ -24,8 +24,6 @@ install:
 		done  
 
 dist:
-		svn up
-		svn ci
 		if [ -e $(PACKAGE) ] ;  then rm -rf $(PACKAGE) ; fi   
 		mkdir $(PACKAGE)
 		for i in $(TOPACKAGE); do \
@@ -33,7 +31,7 @@ dist:
 		done
 		if [ -e package ]; then rm -r package; fi
 		mkdir package
-		find $(PACKAGE) -not -regex "^.*\.svn\/.*" -xtype f > files; \
+		find $(PACKAGE) -not -regex "^.*\.git\/.*" -xtype f > files; \
 		  tar jcpf $(PACKAGE).tar.bz2 -T files; 
 		rm files  
 		sed 's/@VERSION@/$(VERSION)/'   $(PACKAGE).spec.in > $(PACKAGE).spec
@@ -47,7 +45,6 @@ dist:
 			osc ci -m "New Build Version"; \
 		fi
 		echo $(NRELEASE) > RELEASE
-		svn ci -m "New RELEASE"
 
 package:	dist
 		rm -rf /usr/src/packages/*

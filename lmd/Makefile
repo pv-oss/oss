@@ -52,12 +52,10 @@ installalibs:
 	install -m 755 alibs/*sh   $(LMDDIR)/alibs
 
 dist:
-	svn up;
-	svn ci;
 	if [ -e lmd ]; then rm -rf lmd; fi
 	mkdir lmd
 	cp -rp Makefile alibs enhance_translation.pl helper images itool.pl jk.conf lang lmd.pl ossadmin.war *.lmd sql tools lmd
-	find lmd \( -not -regex "^.*\/CVS.*" -a -not -regex "^.*\.svn\/.*" \) -xtype f > files; \
+	find lmd \( -not -regex "^.*\.git\/.*" -a -not -regex "^.*\.svn\/.*" \) -xtype f > files; \
 	    tar jcpf $(PACKAGE).tar.bz2 -T files;
 	rm files
 	sed "s/@VERSION@/$(VERSION)/" $(PACKAGE).spec.in > $(PACKAGE).spec
@@ -71,7 +69,6 @@ dist:
 	        osc ci -m "New Build Version"; \
 	fi
 	echo $(NRELEASE) > RELEASE
-	svn ci -m "increase RELEASE"
 
 package:        dist
 	rm -rf /usr/src/packages/*

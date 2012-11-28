@@ -16,8 +16,6 @@ install:
 	install -m 644 DE_OSSEvaluateSquidlogs.ini $(LMDDIR)/lang/
 
 dist:
-	svn up;
-	svn ci;
 	if [ -e $(PACKAGE) ]; then rm -rf $(PACKAGE); fi
 	mkdir $(PACKAGE)
 	cp Makefile *.pm *.pl *.ini $(PACKAGE)
@@ -32,7 +30,6 @@ dist:
 	        osc ci -m "New Build Version"; \
 	fi
 	echo $(NRELEASE) > RELEASE
-	svn ci -m "increase RELEASE"
 
 package:        dist
 	rm -rf /usr/src/packages/*

@@ -9,8 +9,6 @@ HERE		= $(shell pwd)
 PACKAGE		=oss-svn
 
 dist:
-	svn up
-	svn ci
 	if [ -e $(PACKAGE) ]; then rm -rf $(PACKAGE); fi
 	mkdir $(PACKAGE)
 	#TODO cp something
@@ -26,7 +24,6 @@ dist:
 	        osc ci -m "New Build Version"; \
 	fi
 	echo $(NRELEASE) > RELEASE
-	svn ci -m "increase RELEASE"
 
 install:
 	mkdir -p $(DESTDIR)/usr/share/oss/{plugins/add_group,plugins/del_group,plugins/modify_group,setup}

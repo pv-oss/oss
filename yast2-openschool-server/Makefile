@@ -881,8 +881,6 @@ install-data-local: # $(if $(IS_DEVTOOLS),,install-pot)
 	done
 
 dist: package-local
-	svn up
-	svn ci
 	if [ -d /data1/OSC/home\:openschoolserver/yast2-openschool-server/ ] ; then \
 	        cd /data1/OSC/home:openschoolserver/yast2-openschool-server/; \
 	        osc up; \
@@ -894,7 +892,6 @@ dist: package-local
 	        osc ci -m "New build version"; \
 	fi
 	echo $(NRELEASE) > RELEASE
-	svn ci -m "increase RELEASE"
 
 package-local: check-parse $(if $(IS_DEVTOOLS),,$(POT_DST)) $(RPMNAME).tar.bz2
 	rm -f package/$(RPMNAME)-*.tar.bz2

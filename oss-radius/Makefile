@@ -9,8 +9,6 @@ HERE		= $(shell pwd)
 PACKAGE		=oss-radius
 
 dist:
-	svn up
-	svn ci
 	if [ -e $(PACKAGE) ]; then rm -rf $(PACKAGE); fi
 	mkdir $(PACKAGE)
 	cp Makefile $(PACKAGE)/
@@ -25,7 +23,6 @@ dist:
 	        osc ci -m "New Build Version"; \
 	fi
 	echo $(NRELEASE) > RELEASE
-	svn ci -m "increase RELEASE"
 
 install:
 	  mkdir   -p $(DESTDIR)/usr/share/oss/templates/oss-radius

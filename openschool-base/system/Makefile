@@ -15,20 +15,20 @@ install:
 	mkdir -p $(DESTDIR)/etc/skel/{Import,Export} 
 	mkdir -p $(DESTDIR)/etc/apache2/vhosts.d/{admin,admin-ssl}
 	(  cd etc ; \
-	  for i in `find -type d -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type d -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -d -m 755 $(DESTDIR)/etc/$$i; \
 	  done; \
-	  for i in `find -type f -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type f -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -m 644 $$i $(DESTDIR)/etc/$$i; \
 	  done; \
 	) 
 	#Install the contents of the web server
 	mkdir -p -m 755 $(DESTDIR)/srv/www/
 	(  cd srv/www/; \
-	  for i in `find -type d -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type d -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -d -m 755 $(DESTDIR)/srv/www/$$i; \
 	  done; \
-	  for i in `find -type f -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type f -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -m 644 $$i $(DESTDIR)/srv/www/$$i; \
 	  done; \
 	) 
@@ -38,10 +38,10 @@ install:
 	chmod 0755 $(DESTDIR)/etc/init.d/*   
 	#Install the contents of the var directory
 	( cd var ; \
-	  for i in `find -type d -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type d -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -d -m 755 $(DESTDIR)/var/$$i; \
 	  done; \
-	  for i in `find -type f -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type f -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -m 644 $$i $(DESTDIR)/var/$$i; \
 	  done; \
 	) 
@@ -60,20 +60,20 @@ backupinstall:
 	mkdir -p $(DESTDIR)/etc/skel/{Import,Export}
 	mkdir -p $(DESTDIR)/etc/apache2/vhosts.d/{admin,admin-ssl}
 	(  cd etc ; \
-	  for i in `find -type d -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type d -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -b -d -m 755 $(DESTDIR)/etc/$$i; \
 	  done; \
-	  for i in `find -type f -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type f -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -b -m 644 $$i $(DESTDIR)/etc/$$i; \
 	  done; \
 	)
 	#Install the contents of the web server
 	mkdir -p -m 755 $(DESTDIR)/srv/www/
 	(  cd srv/www/; \
-	  for i in `find -type d -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type d -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -b -d -m 755 $(DESTDIR)/srv/www/$$i; \
 	  done; \
-	  for i in `find -type f -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type f -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -b -m 644 $$i $(DESTDIR)/srv/www/$$i; \
 	  done; \
 	)
@@ -82,10 +82,10 @@ backupinstall:
 	chmod 0755 $(DESTDIR)/etc/ppp/*/*
 	#Install the contents of the var directory
 	( cd var ; \
-	  for i in `find -type d -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type d -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -b -d -m 755 $(DESTDIR)/var/$$i; \
 	  done; \
-	  for i in `find -type f -not -regex "^.*\/CVS.*" -not -regex "^.*\.svn.*"`; do \
+	  for i in `find -type f -not -regex "^.*\.git.*" -not -regex "^.*\.svn.*"`; do \
 	    install -b -m 644 $$i $(DESTDIR)/var/$$i; \
 	  done; \
 	)

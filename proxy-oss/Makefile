@@ -7,8 +7,6 @@ PACKAGE		=proxy-oss
 SUBDIRS		=etc usr var
 
 dist:
-		svn up;
-		svn ci;
 		sed "s/@VERSION@/$(VERSION)/"      $(PACKAGE).spec.template > $(PACKAGE).spec
 		sed -i "s/@PACKAGE@/$(PACKAGE)/"   $(PACKAGE).spec
 		sed -i "s/@PRODNAME@/$(PRODNAME)/" $(PACKAGE).spec
@@ -33,7 +31,6 @@ dist:
 		        osc ci -m "New Build Version"; \
 		fi
 		echo $(NRELEASE) > RELEASE
-		svn ci -m "increase RELEASE"
 
 package:        dist
 		rm -rf /usr/src/packages/*
